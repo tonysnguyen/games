@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics="">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Barlow+Condensed:wght@500;600;700&amp;family=IBM+Plex+Mono:wght@500;600&amp;display=swap" rel="stylesheet">
+<style>
+html,body{height:100%;overflow:hidden}
+body{margin:0;background:#17151a;font-family:'Barlow Condensed',system-ui,sans-serif;-webkit-text-size-adjust:100%;overscroll-behavior:none}
+button,a{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+a{color:#e0362f}a:hover{color:#f2b705}
+@keyframes swing{0%,100%{transform:rotate(-7deg)}50%{transform:rotate(7deg)}}
+@keyframes pop{0%{transform:scale(.6);opacity:0}30%{transform:scale(1.15);opacity:1}100%{transform:scale(1) translateY(-26px);opacity:0}}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(224,54,47,.55)}70%{box-shadow:0 0 0 14px rgba(224,54,47,0)}}
+@keyframes breathe{0%,100%{box-shadow:0 0 0 0 rgba(224,54,47,.5),0 10px 26px rgba(224,54,47,.28)}55%{box-shadow:0 0 0 12px rgba(224,54,47,0),0 10px 30px rgba(224,54,47,.5)}}
+@keyframes sheen{0%{transform:translateX(-160%) skewX(-18deg)}55%,100%{transform:translateX(360%) skewX(-18deg)}}
+@keyframes glint{0%{transform:translateX(-140%) skewX(-14deg)}45%,100%{transform:translateX(320%) skewX(-14deg)}}
+@keyframes drop{0%{opacity:0;transform:translateY(-120%) scaleX(.96) scaleY(1.07)}30%{opacity:.3;transform:translateY(-72%) scaleX(.95) scaleY(1.08)}55%{opacity:1;transform:translateY(-18%) scaleX(.95) scaleY(1.08)}68%{transform:translateY(0) scaleX(1) scaleY(1)}78%{transform:translateY(0) scaleX(1.08) scaleY(.9)}100%{transform:translateY(0) scaleX(1) scaleY(1)}}
+@keyframes settle{from{opacity:0;transform:translateY(12px) scale(.97)}to{opacity:1;transform:none}}
+</style>
+</helmet>
+
+<div style="height:100dvh;display:flex;align-items:center;justify-content:center;padding:clamp(0px,calc((100vw - 430px) * 100),28px);box-sizing:border-box;background:radial-gradient(120% 90% at 50% 0%,#26222b 0%,#121014 70%)">
+<div style="width:min(390px,100vw);height:min(844px,100dvh);position:relative;border-radius:clamp(0px,calc((100vw - 430px) * 100),52px);background:#08070a;box-shadow:0 0 0 clamp(0px,calc((100vw - 430px) * 100),11px) #1c1a20,0 40px 90px rgba(0,0,0,.7);overflow:hidden">
+
+  <div style="position:absolute;top:0;left:0;right:0;height:clamp(0px,calc((100vw - 430px) * 100),54px);overflow:hidden;z-index:40;display:flex;align-items:center;justify-content:space-between;padding:0 26px;font:600 13px 'IBM Plex Mono',monospace;color:#f2ece1;letter-spacing:.04em;pointer-events:none">
+    <span>9:41</span>
+    <span style="position:absolute;left:50%;top:9px;transform:translateX(-50%);width:104px;height:28px;border-radius:16px;background:#000"></span>
+    <span style="opacity:.75">5G ▮▮▮</span>
+  </div>
+
+  <div style="position:absolute;inset:0;display:flex;flex-direction:column;background:#100e12">
+
+    <div style="padding:calc(10px + env(safe-area-inset-top,0px) + clamp(0px,calc((100vw - 430px) * 100),52px)) 20px 0;display:flex;align-items:center;gap:12px">
+      <div style="flex:none;width:38px;height:38px;border-radius:11px;background:#e0362f;display:grid;place-items:center;font:400 19px Anton,sans-serif;color:#fff">3</div>
+      <div style="flex:1">
+        <div style="display:flex;justify-content:space-between;align-items:baseline">
+          <span style="font:400 15px Anton,sans-serif;color:#f2ece1;letter-spacing:.06em">ROUND 3 · BAG WORK</span>
+        </div>
+        <div style="margin-top:6px;height:5px;border-radius:3px;background:#262230;overflow:hidden">
+          <div style="height:100%;background:linear-gradient(90deg,#e0362f,#f2b705);border-radius:3px;width:{{ progressW }}"></div>
+        </div>
+      </div>
+    </div>
+
+    <div data-gym-stage="1" style="position:relative;flex:1;min-height:190px;margin:14px 0 0;overflow:hidden;background:#0d0b10">
+      <div style="position:absolute;inset:0;background-image:url('assets/gym-background.png');background-size:cover;background-position:50% 22%"></div>
+      <div style="position:absolute;inset:0;background:linear-gradient(rgba(13,11,16,0) 42%,rgba(13,11,16,.55) 72%,#0d0b10 100%)"></div>
+      <a href="https://theclinicmuaythaigym.com/the-clinic-muay-thai-gym" target="_blank" rel="noopener" style="position:absolute;top:15px;left:21px;width:105px;height:102px;display:grid;place-items:center;box-sizing:border-box;padding:6px;border:2px solid #2f2a38;border-radius:12px;background:#16131c;box-shadow:0 6px 18px rgba(0,0,0,.5);cursor:pointer;transition:border-color .15s,transform .1s" style-hover="border-color:#e0362f" style-active="transform:scale(.96)">
+        <img src="assets/gym-logo.png" alt="The Clinic Muay Thai" style="width:100%;height:100%;object-fit:contain;display:block">
+      </a>
+
+      <div style="position:absolute;right:{{ bagRight }};top:0;width:{{ bagW }};display:flex;flex-direction:column;align-items:center;transform-origin:50% 0;transform:rotate({{ bagRot }});filter:drop-shadow(0 16px 22px rgba(0,0,0,.55))">
+        <div style="width:{{ chainW }};height:{{ chainH }};background-image:url('assets/heavy-bag.png');background-repeat:no-repeat;background-size:{{ chainSize }};background-position:{{ chainPos }}"></div>
+        <div style="width:{{ bagW }};height:{{ bagH }};margin-top:-2px;background-image:url('assets/heavy-bag.png');background-repeat:no-repeat;background-size:{{ bagSize }};background-position:{{ bagPos }}"></div>
+      </div>
+
+      <div style="position:absolute;left:{{ charLeft }};bottom:calc(31% - 59px);height:150px;display:flex;align-items:flex-end">
+        <div style="width:200px;height:145px;position:relative;overflow:hidden;transform:{{ charScale }};transform-origin:bottom left">
+          <sc-if value="{{ ready }}" hint-placeholder-val="{{ false }}">
+            <div style="position: absolute; bottom: 0; left: 82px; width: 92px; height: 107px; background-image: {{ sprite.bg }}; background-size: 100% 100%; background-repeat: no-repeat"></div>
+          </sc-if>
+        </div>
+      </div>
+
+      <div style="position:absolute;left:0;right:0;bottom:0;height:46px;background:linear-gradient(transparent,#0d0b10)"></div>
+
+      <sc-if value="{{ showFx }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;right:96px;top:150px;font:400 34px Anton,sans-serif;color:#f2b705;text-shadow:0 3px 0 #8a2018;animation:pop .55s ease-out forwards">{{ fxText }}</div>
+      </sc-if>
+
+      <sc-if value="{{ comboOn }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;left:0;right:0;bottom:6px;display:flex;justify-content:center;align-items:baseline;gap:7px">
+          <span style="font:400 40px Anton,sans-serif;color:#f2ece1;line-height:.9">{{ combo }}</span>
+          <span style="font:600 13px 'IBM Plex Mono',monospace;color:#e0362f;letter-spacing:.12em">COMBO</span>
+        </div>
+      </sc-if>
+    </div>
+
+    <div style="flex:none;display:flex;justify-content:center;align-items:baseline;gap:26px;padding:6px 20px 4px;background:#0a0910;height:47px;box-sizing:border-box">
+      <div style="display:flex;align-items:baseline;gap:6px">
+        <span style="font:400 28px Anton,sans-serif;color:#f2ece1;line-height:1">{{ hitsLabel }}</span>
+        <span style="font:600 9px 'IBM Plex Mono',monospace;color:#6f6878;letter-spacing:.16em">LANDED</span>
+      </div>
+      <div style="display:flex;align-items:baseline;gap:6px">
+        <span style="font:400 28px Anton,sans-serif;color:#f2ece1;line-height:1">{{ score }}</span>
+        <span style="font:600 9px 'IBM Plex Mono',monospace;color:#6f6878;letter-spacing:.16em">SCORE</span>
+      </div>
+    </div>
+
+    <div style="position:relative;flex:none;height:clamp(74px,11dvh,92px);background:#0a0910;border-top:1px solid #211d29;border-bottom:1px solid #211d29;overflow:hidden">
+      <div style="position:absolute;left:0;right:0;top:50%;height:1px;background:repeating-linear-gradient(90deg,#231f2c 0 6px,transparent 6px 12px)"></div>
+      <div style="position:absolute;left:38px;top:50%;transform:translate(-50%,-50%);width:64px;height:64px;border-radius:50%;border:2px solid #3a3444;animation:pulse 1.6s infinite"></div>
+      <sc-for list="{{ notes }}" as="n" hint-placeholder-count="3">
+        <div style="position:absolute;top:50%;transform:translate(-50%,-50%);width:56px;height:56px;border-radius:50%;display:grid;place-items:center;font:400 14px Anton,sans-serif;letter-spacing:.06em;left:{{ n.left }};color:{{ n.fg }};background:{{ n.bg }};border:2px solid {{ n.bd }};opacity:{{ n.op }}">{{ n.label }}</div>
+      </sc-for>
+    </div>
+
+    <div style="padding:8px 18px calc(18px + env(safe-area-inset-bottom,0px));display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;background:#0a0910">
+      <sc-for list="{{ buttons }}" as="b" hint-placeholder-count="4">
+        <button onClick="{{ b.press }}" style="appearance:none;border:2px solid {{ b.bd }};background:{{ b.bg }};color:{{ b.fg }};border-radius:18px;height:clamp(58px,9dvh,78px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;transform:{{ b.tf }};transition:transform .07s" style-active="transform:scale(.93)">
+          <span style="font:400 17px Anton,sans-serif;letter-spacing:.04em">{{ b.label }}</span>
+          <span style="font:600 9px 'IBM Plex Mono',monospace;opacity:.6;letter-spacing:.12em">{{ b.sub }}</span>
+        </button>
+      </sc-for>
+    </div>
+  </div>
+
+  <sc-if value="{{ showTitle }}" hint-placeholder-val="{{ true }}">
+    <div style="position:absolute;inset:0;z-index:60;background:linear-gradient(#0e0c11f2,#0e0c11),radial-gradient(80% 50% at 50% 30%,#3a1a18,#0e0c11);display:flex;flex-direction:column;justify-content:flex-end;padding:0 30px calc(34px + env(safe-area-inset-bottom,0px))">
+      <div style="flex:1;min-height:0;display:flex;align-items:flex-end;justify-content:center;padding-top:56px">
+        <img src="assets/cover-pose.png" alt="" style="max-width:318px;max-height:100%;width:auto;height:auto;display:block;filter:drop-shadow(0 24px 34px rgba(0,0,0,.55));transform-origin:50% 100%;animation:drop .56s cubic-bezier(.3,0,.7,1) .26s both">
+      </div>
+      <div style="animation:rise .5s ease-out both">
+        <div style="font:600 12px 'IBM Plex Mono',monospace;color:#e0362f;letter-spacing:.26em">DAY 1 · PADS &amp; BAG</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:8px">
+          <h1 style="margin:0;font:400 66px/.86 Anton,sans-serif;color:#f2ece1;letter-spacing:-.01em">BAG<br>WORK</h1>
+          <a href="https://theclinicmuaythaigym.com/the-clinic-muay-thai-gym" target="_blank" rel="noopener" style="flex:none;width:128px;height:128px;display:grid;place-items:center;box-sizing:border-box;padding:8px;border:2px solid #2f2a38;border-radius:14px;background:#16131c;box-shadow:0 6px 18px rgba(0,0,0,.5);cursor:pointer;transition:border-color .15s,transform .1s" style-hover="border-color:#e0362f" style-active="transform:scale(.96)">
+            <img src="assets/gym-logo.png" alt="The Clinic Muay Thai" style="width:100%;height:100%;object-fit:contain;display:block">
+          </a>
+        </div>
+        <p style="margin:14px 0 0;max-width:270px;font:500 17px/1.35 'Barlow Condensed',sans-serif;color:#a29aad">Strikes roll in from the right. Hit the button when the marker lands in the ring. Keep the combo alive for the round.</p>
+        <button onClick="{{ start }}" style="position:relative;overflow:hidden;margin-top:26px;width:100%;height:62px;border:none;border-radius:18px;background:#e0362f;color:#fff;font:400 22px Anton,sans-serif;letter-spacing:.08em;cursor:pointer;animation:breathe 2.2s ease-in-out infinite" style-active="transform:scale(.97)" style-after="content:'';position:absolute;top:0;left:0;width:26%;height:100%;background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.42),rgba(255,255,255,0));animation:sheen 2.6s ease-in-out infinite">START ROUND</button>
+        <div style="margin-top:14px;display:flex;justify-content:center;gap:18px;font:600 11px 'IBM Plex Mono',monospace;color:#5f5869;letter-spacing:.1em">
+          <span>BEST {{ best }}</span><span>·</span><span>20 STRIKES</span><span>·</span><span>~18s</span>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ showResult }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute;inset:0;z-index:60;background:linear-gradient(#0e0c11ee,#0e0c11);display:flex;flex-direction:column;justify-content:flex-end;padding:0 30px calc(34px + env(safe-area-inset-bottom,0px))">
+      <div style="flex:1;min-height:0;display:flex;justify-content:center;align-items:flex-end;padding-top:56px">
+        <sc-if value="{{ won }}" hint-placeholder-val="{{ false }}">
+          <img src="assets/win-pose.png" alt="" style="max-width:286px;max-height:100%;width:auto;height:auto;display:block;filter:drop-shadow(0 24px 34px rgba(0,0,0,.55));animation:settle .75s ease-out .12s both">
+        </sc-if>
+        <sc-if value="{{ lost }}" hint-placeholder-val="{{ false }}">
+          <img src="assets/loss-pose.png" alt="" style="max-width:300px;max-height:100%;width:auto;height:auto;display:block;filter:drop-shadow(0 24px 34px rgba(0,0,0,.55));animation:settle .75s ease-out .12s both">
+        </sc-if>
+      </div>
+      <div style="animation:rise .45s ease-out both">
+        <div style="font:600 12px 'IBM Plex Mono',monospace;color:{{ gradeColor }};letter-spacing:.26em">{{ grade }}</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;margin:6px 0 18px">
+          <h1 style="margin:0;font:400 54px/.9 Anton,sans-serif;color:#f2ece1">ROUND<br>{{ resultWord }}</h1>
+          <a href="https://theclinicmuaythaigym.com/the-clinic-muay-thai-gym" target="_blank" rel="noopener" style="position:relative;overflow:hidden;flex:none;width:128px;height:128px;display:grid;place-items:center;box-sizing:border-box;padding:8px;border:2px solid #2f2a38;border-radius:14px;background:#16131c;box-shadow:0 6px 18px rgba(0,0,0,.5);cursor:pointer;transition:border-color .15s,transform .1s" style-hover="border-color:#e0362f" style-active="transform:scale(.96)" style-after="content:'';position:absolute;top:-10%;left:0;width:34%;height:120%;background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.2),rgba(255,255,255,0));animation:glint 4.2s ease-in-out infinite;pointer-events:none">
+            <img src="assets/gym-logo.png" alt="The Clinic Muay Thai" style="width:100%;height:100%;object-fit:contain;display:block">
+          </a>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+          <div style="padding:14px 12px;border:1px solid #262130;border-radius:14px"><div style="font:400 28px Anton,sans-serif;color:#f2ece1">{{ score }}</div><div style="font:600 9px 'IBM Plex Mono',monospace;color:#6f6878;letter-spacing:.14em">SCORE</div></div>
+          <div style="padding:14px 12px;border:1px solid #262130;border-radius:14px"><div style="font:400 28px Anton,sans-serif;color:#f2ece1">{{ accuracy }}</div><div style="font:600 9px 'IBM Plex Mono',monospace;color:#6f6878;letter-spacing:.14em">ACCURACY</div></div>
+          <div style="padding:14px 12px;border:1px solid #262130;border-radius:14px"><div style="font:400 28px Anton,sans-serif;color:#f2ece1">{{ best }}</div><div style="font:600 9px 'IBM Plex Mono',monospace;color:#6f6878;letter-spacing:.14em">BEST COMBO</div></div>
+        </div>
+        <button onClick="{{ start }}" style="margin-top:22px;width:100%;height:60px;border:none;border-radius:18px;background:#e0362f;color:#fff;font:400 21px Anton,sans-serif;letter-spacing:.08em;cursor:pointer" style-active="transform:scale(.97)">RUN IT BACK</button>
+        <button onClick="{{ toTitle }}" style="margin-top:10px;width:100%;height:52px;border:1px solid #2c2735;background:transparent;border-radius:16px;color:#9a93a4;font:400 17px Anton,sans-serif;letter-spacing:.08em;cursor:pointer">BACK TO GYM</button>
+      </div>
+    </div>
+  </sc-if>
+
+</div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:460,&quot;height&quot;:920}}">
+const COVER = 'assets/cover-pose.png';
+const WIN_ART = 'assets/win-pose.png';
+const LOSS_ART = 'assets/loss-pose.png';
+const BOX_W = 120, BOX_H = 145;
+const STAND_H = 118; // one standing height for every animation, from either sheet
+
+// Two sheets: the original grid (idle, guard, hit, win) and the dense strike
+// sheet, whose rows hold 10–13 cleanly separated frames per attack.
+const SHEETS = {
+  A: {src: 'assets/sprites-legacy.png', w: 1536, h: 1024, ref: 'guard'},
+  B: {src: 'assets/sprites-strikes.png', w: 2172, h: 724, ref: 'jab'}
+};
+
+// Sheet A rows are evenly spaced cells inside a group window. Sheet B rows have a
+// gap between every frame, so `auto` segments them and takes the count from the art.
+// `impact` is the frame where the strike lands — the bag reacts there.
+const ANIM = {
+  // The strike sheet has no idle row. Holding the jab row's opening stance keeps the
+  // same sheet and registration as the attacks, and reads calmer than cycling
+  // windup frames — the bag swing and note track carry the motion instead.
+  idle:  {sheet:'B', y:[ 13,165], x:[230,2172], auto:true, fps:1, loop:true, order:[0]},
+  guard: {sheet:'A', y:[855,978], x:[  14, 271], n:4, fps:12, order:[0,1,2,3,2]},
+  hit:   {sheet:'A', y:[855,978], x:[ 563, 877], n:4, fps:10},
+  win:   {sheet:'A', y:[855,978], x:[1207,1524], n:3, fps:8,  loop:true},
+  jab:   {sheet:'B', y:[ 13,165], x:[230,2172], auto:true, snap:true, impact:5, profile:'punch'},
+  cross: {sheet:'B', y:[185,343], x:[230,2172], auto:true, snap:true, impact:5, profile:'punch'},
+  kick:  {sheet:'B', y:[364,513], x:[230,2172], auto:true, snap:true, impact:6, profile:'heavy'},
+  knee:  {sheet:'B', y:[540,697], x:[230,2172], auto:true, snap:true, impact:5, profile:'heavy'}
+};
+
+// A strike is not evenly paced: the windup loads, the strike itself is a blur, the
+// extended pose holds for a beat so the hit reads, then it retracts and settles.
+// The bag and its ceiling chain are two pieces of one artwork file, cropped by
+// background-position. Measured boxes within the 1536×1024 source.
+const BAG_ART = 'assets/heavy-bag.png';
+const ART = {w: 1536, h: 1024, bag: {x: 328, y: 23, w: 436, h: 972}, chain: {x: 927, y: 169, w: 320, h: 749}};
+
+function bagGeom(stageH) {
+  const h = Math.min(250, stageH * 0.7);
+  const w = h * ART.bag.w / ART.bag.h;
+  const chainH = Math.min(96, stageH * 0.2);
+  const chainW = chainH * ART.chain.w / ART.chain.h;
+  const crop = (p, dispW) => {
+    const k = dispW / p.w;
+    return {size: (ART.w * k).toFixed(1) + 'px ' + (ART.h * k).toFixed(1) + 'px',
+      pos: (-p.x * k).toFixed(1) + 'px ' + (-p.y * k).toFixed(1) + 'px'};
+  };
+  const b = crop(ART.bag, w), c = crop(ART.chain, chainW);
+  return {h, w, chainH, chainW, bagSize: b.size, bagPos: b.pos,
+    chainSize: c.size, chainPos: c.pos, right: 77 - w / 2};
+}
+
+const PROFILES = {
+  punch: {anticip:38, accel:20, hold:65, retract:26, recover:34}, // 11 frames ≈ 373ms
+  heavy: {anticip:52, accel:24, hold:90, retract:32, recover:34}  // 13 frames ≈ 546ms
+};
+
+function frameTimes(n, impact, p) {
+  const t = [];
+  for (let i = 0; i < n; i++) {
+    if (i < impact - 2) t.push(p.anticip);
+    else if (i < impact) t.push(p.accel);
+    else if (i === impact) t.push(p.hold);
+    else if (i <= impact + 2) t.push(p.retract);
+    else t.push(p.recover);
+  }
+  return t;
+}
+
+// --- one-time sprite-sheet slicer -------------------------------------------
+// Poses overlap their neighbours on the sheet, so a straight vertical cut clips
+// extended arms and legs. Instead each cell seeds a flood fill from its own body
+// and the fills grow together: every frame keeps all the ink connected to it and
+// none of its neighbour's, however far a limb reaches past the nominal edge.
+function claimRegions(A, y0, y1, rx0, rx1, edges) {
+  const w = rx1 - rx0, h = y1 - y0, n = edges.length - 1;
+  const lab = new Int16Array(w * h).fill(-1);
+  const qx = new Int32Array(w * h), qy = new Int32Array(w * h);
+  let head = 0, tail = 0;
+  for (let i = 0; i < n; i++) {
+    const a = edges[i], b = edges[i + 1], cw = b - a;
+    const s0 = Math.round(a + cw * 0.3), s1 = Math.round(b - cw * 0.3);
+    for (let y = y0; y < y1; y++) for (let x = s0; x < s1; x++) {
+      if (x < rx0 || x >= rx1) continue;
+      const p = (y - y0) * w + (x - rx0);
+      if (lab[p] === -1 && A(x, y) > 24) { lab[p] = i; qx[tail] = x; qy[tail] = y; tail++; }
+    }
+  }
+  while (head < tail) {
+    const x = qx[head], y = qy[head], me = lab[(y - y0) * w + (x - rx0)];
+    head++;
+    for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+      const nx = x + dx, ny = y + dy;
+      if (nx < rx0 || nx >= rx1 || ny < y0 || ny >= y1) continue;
+      const p = (ny - y0) * w + (nx - rx0);
+      if (lab[p] !== -1 || A(nx, ny) <= 24) continue;
+      lab[p] = me; qx[tail] = nx; qy[tail] = ny; tail++;
+    }
+  }
+  return lab;
+}
+
+function cells(cols, x0, x1, n) {
+  const cw = (x1 - x0) / n, edges = [x0];
+  for (let i = 1; i < n; i++) {
+    const nom = x0 + cw * i, r = Math.round(cw * 0.28);
+    let best = nom, min = Infinity;
+    for (let x = Math.round(nom - r); x <= Math.round(nom + r); x++) {
+      const v = cols[x - x0];
+      if (v !== undefined && v < min) { min = v; best = x; }
+    }
+    edges.push(best);
+  }
+  edges.push(x1);
+  return edges.slice(0, -1).map((a, i) => [a, edges[i + 1]]);
+}
+
+// Frames on the strike sheet are separated by clear gutters, so a run of
+// non-empty columns is exactly one pose — the count comes from the art itself.
+function runs(cols, x0) {
+  const out = [];
+  let s = -1;
+  for (let i = 0; i <= cols.length; i++) {
+    const on = i < cols.length && cols[i] > 0;
+    if (on && s < 0) s = i;
+    if (!on && s >= 0) { if (i - s > 20) out.push([x0 + s, x0 + i]); s = -1; }
+  }
+  return out;
+}
+
+// Every frame is registered on the same body landmark: the left edge of the torso
+// (measured across the middle of the figure, clear of arms, legs and headband
+// tails). Limbs then extend outward from a body that stays put.
+function torsoLeft(own, bx0, bx1, by0, by1) {
+  const h = by1 - by0 + 1;
+  const t0 = by0 + Math.round(h * 0.34), t1 = by0 + Math.round(h * 0.70);
+  for (let x = bx0; x <= bx1; x++) for (let y = t0; y <= t1; y++) if (own(x, y)) return x;
+  return bx0;
+}
+
+function sliceSheets(imgs) {
+  const px = {};
+  for (const s in SHEETS) {
+    const sh = SHEETS[s], c = document.createElement('canvas');
+    c.width = sh.w; c.height = sh.h;
+    const ctx = c.getContext('2d', {willReadFrequently:true});
+    ctx.drawImage(imgs[s], 0, 0);
+    px[s] = {d: ctx.getImageData(0, 0, sh.w, sh.h).data, w: sh.w, img: imgs[s]};
+  }
+  const out = {}, pending = [];
+  for (const key in ANIM) {
+    const spec = ANIM[key], [y0, y1] = spec.y, [gx0, gx1] = spec.x;
+    const P = px[spec.sheet], SW = P.w, d = P.d, img = P.img;
+    const A = (x, y) => d[(y * SW + x) * 4 + 3];
+    const cols = new Uint16Array(gx1 - gx0);
+    for (let y = y0; y < y1; y++) for (let x = gx0; x < gx1; x++) if (A(x, y) > 24) cols[x - gx0]++;
+    // Pass 1: grow each frame from its own body and take that region's true box,
+    // in cell-relative coordinates (x from the cell centre, y from the ground).
+    let rect, lab = null, rx0 = gx0, rx1 = gx1, rw = gx1 - gx0;
+    if (spec.auto) {
+      rect = runs(cols, gx0);
+      spec.n = rect.length;
+    } else {
+      rect = cells(cols, gx0, gx1, spec.n);
+      // Neighbouring groups can touch this one (the two round kicks meet mid-row),
+      // so add a decoy cell at each end: the adjacent pose gets claimed by the decoy
+      // instead of being swallowed into this group's first or last frame.
+      const cw = (gx1 - gx0) / spec.n;
+      const pad = Math.round(cw * 1.6);
+      rx0 = Math.max(0, gx0 - pad); rx1 = Math.min(SW, gx1 + pad); rw = rx1 - rx0;
+      const edges = [rx0].concat(rect.map(r => r[0]), [gx1, rx1]);
+      lab = claimRegions(A, y0, y1, rx0, rx1, edges);
+    }
+    if (!spec.order) spec.order = Array.from({length: spec.n}, (_, i) => i);
+    const boxes = rect.map(([x0, x1], ci) => {
+      const i = ci + 1; // label 0 is the left decoy
+      const own = lab
+        ? (x, y) => lab[(y - y0) * rw + (x - rx0)] === i
+        : (x, y) => x >= x0 && x < x1 && A(x, y) > 24;
+      let bx0 = rx1, bx1 = rx0, by0 = y1, by1 = y0;
+      for (let y = y0; y < y1; y++) for (let x = rx0; x < rx1; x++) {
+        if (!own(x, y)) continue;
+        if (x < bx0) bx0 = x; if (x > bx1) bx1 = x;
+        if (y < by0) by0 = y; if (y > by1) by1 = y;
+      }
+      if (bx1 < bx0) { bx0 = x0; bx1 = x1 - 1; by0 = y0; by1 = y1 - 1; }
+      const ax = torsoLeft(own, bx0, bx1, by0, by1);
+      return {bx0, bx1, by0, by1, ax, own, i};
+    });
+    // Pass 2: one cell size for the whole animation — the union of every frame's
+    // box — so each frame is an identically sized image on a shared ground line.
+    const base = Math.max(...boxes.map(b => b.by1));
+    const L = Math.min(...boxes.map(b => b.bx0 - b.ax));
+    const R = Math.max(...boxes.map(b => b.bx1 - b.ax));
+    const T = Math.min(...boxes.map(b => b.by0 - base));
+    const cellW = Math.ceil(R - L) + 1, cellH = Math.ceil(base - (base + T)) + 1;
+    const frames = boxes.map(b => {
+      const fc = document.createElement('canvas');
+      fc.width = cellW; fc.height = cellH;
+      const fx = fc.getContext('2d');
+      fx.imageSmoothingEnabled = false;
+      // copy only the pixels this frame owns, so no neighbouring pose bleeds in
+      const dst = fx.createImageData(cellW, cellH);
+      const ox = Math.round(b.bx0 - b.ax - L) - b.bx0;
+      // `snap` pins each frame's own ground contact to the cell floor, so a pose
+      // drawn a pixel high in the source can't bob the fighter.
+      const foot = spec.snap ? b.by1 : base;
+      const oy = Math.round(cellH - 1 - (foot - b.by0)) - b.by0;
+      for (let y = b.by0; y <= b.by1; y++) for (let x = b.bx0; x <= b.bx1; x++) {
+        if (!b.own(x, y)) continue;
+        const tx = x + ox, ty = y + oy;
+        if (tx < 0 || tx >= cellW || ty < 0 || ty >= cellH) continue;
+        const s = (y * SW + x) * 4, t = (ty * cellW + tx) * 4;
+        dst.data[t] = d[s]; dst.data[t+1] = d[s+1]; dst.data[t+2] = d[s+2]; dst.data[t+3] = d[s+3];
+      }
+      fx.putImageData(dst, 0, 0);
+      const frame = {src: '', w: cellW, h: cellH};
+      pending.push(new Promise(res => fc.toBlob(bl => { frame.src = URL.createObjectURL(bl); res(); }, 'image/png')));
+      return frame;
+    });
+    frames.cellW = cellW; frames.cellH = cellH; frames.left = L;
+    frames.sheet = spec.sheet;
+    frames.stand = boxes[0].by1 - boxes[0].by0 + 1; // first frame is always a stance
+    // Per-frame durations along the played order, plus the cumulative table the
+    // player walks — no constant frame rate, and the impact time is exact.
+    const ord = spec.order;
+    frames.dur = spec.impact != null
+      ? frameTimes(ord.length, spec.impact, PROFILES[spec.profile] || PROFILES.punch)
+      : ord.map(() => 1000 / spec.fps);
+    frames.cum = [];
+    let acc = 0;
+    for (const ms of frames.dur) { acc += ms; frames.cum.push(acc); }
+    frames.total = acc;
+    spec.impactMs = spec.impact != null ? frames.cum[spec.impact] : null;
+    out[key] = frames;
+  }
+  // Each row is drawn at its own figure height (jab 152px, cross 158, kick 147…),
+  // so every animation gets the scale that makes ITS stance exactly STAND_H tall.
+  // A single sheet-wide scale made the fighter grow on a cross and shrink on a kick.
+  for (const key in out) {
+    const fs = out[key], k = STAND_H / fs.stand;
+    fs.dw = fs.cellW * k; fs.dh = fs.cellH * k; fs.dl = fs.left * k;
+    for (const f of fs) { f.dw = fs.dw; f.dh = fs.dh; f.dl = fs.dl; }
+  }
+  return Promise.all(pending).then(() => out);
+}
+const TYPES = {
+  jab:   {label:'JAB',   sub:'LEAD',  bg:'#f2ece1', fg:'#12101a', bd:'#f2ece1'},
+  cross: {label:'CROSS', sub:'REAR',  bg:'#e0362f', fg:'#fff',    bd:'#e0362f'},
+  kick:  {label:'KICK',  sub:'ROUND', bg:'#f2b705', fg:'#1a1408', bd:'#f2b705'},
+  guard: {label:'BLOCK', sub:'GUARD', bg:'#3f6fa8', fg:'#fff',    bd:'#3f6fa8'}
+};
+// The round ramps: single strikes a beat apart to warm up, then tighter spacing
+// and more of the vocabulary, finishing on fast four-strike combinations.
+const SEQ = [
+  [0.9,'jab'], [2.0,'jab'], [3.1,'cross'], [4.2,'jab'],            // 1.1s apart, hands only
+  [5.2,'cross'], [6.05,'kick'], [7.0,'jab'], [7.85,'guard'],       // 0.85s, kicks and blocks join
+  [8.8,'jab'], [9.45,'cross'], [10.2,'kick'], [10.85,'jab'],       // 0.65s, real combinations
+  [11.8,'jab'], [12.3,'cross'], [12.85,'kick'], [13.35,'guard'],   // 0.5s
+  [14.2,'jab'], [14.65,'cross'], [15.1,'jab'], [15.55,'kick']      // 0.45s finish
+];
+const LEAD = 2.4, TARGET_X = 38;
+
+class Component extends DCLogic {
+  state = {screen:'title', now:0, anim:'idle', animAt:-9, notes:[], combo:0, best:0, score:0, hits:0, fx:null, fxAt:-9, bagAt:-9};
+
+  componentDidMount() {
+    [COVER, WIN_ART, LOSS_ART].forEach(s => { const i = new Image(); i.src = s; }); // warm the still art
+    Promise.all(Object.keys(SHEETS).map(s => new Promise(res => {
+      const i = new Image();
+      i.onload = () => res([s, i]);
+      i.src = SHEETS[s].src;
+    }))).then(pairs => {
+      const imgs = {};
+      for (const [s, i] of pairs) imgs[s] = i;
+      return sliceSheets(imgs);
+    }).then(f => { this.frames = f; this.setState({ready: true}); });
+    this.t0 = performance.now();
+    const loop = () => {
+      this.raf = requestAnimationFrame(loop);
+      const now = (performance.now() - this.t0) / 1000;
+      if (this.state.screen === 'play') {
+        let combo = this.state.combo, miss = false;
+        const notes = this.state.notes.map(n => {
+          if (n.st === 'pending' && now > n.t + 0.26) { miss = true; return {...n, st:'miss'}; }
+          return n;
+        });
+        if (miss) combo = 0;
+        const done = now > LEAD + SEQ[SEQ.length-1][0] + 1.6;
+        this.setState({now, notes, combo, screen: done ? 'result' : 'play'});
+      } else this.setState({now});
+    };
+    this.raf = requestAnimationFrame(loop);
+    this.onKey = e => {
+      const m = {a:'jab', s:'cross', d:'kick', f:'guard'}[e.key];
+      if (m) this.strike(m);
+    };
+    window.addEventListener('keydown', this.onKey);
+    // The fighter and the bag are sized off the gym view's measured height, not the
+    // window's — the chrome around it varies. Found in the DOM after mount.
+    const stage = document.querySelector('[data-gym-stage]');
+    if (stage) {
+      const read = () => {
+        const h = stage.clientHeight;
+        if (h && h !== this.state.stageH) this.setState({stageH: h});
+      };
+      this.ro = new ResizeObserver(read);
+      this.ro.observe(stage);
+      read();
+    }
+  }
+  componentWillUnmount() {
+    cancelAnimationFrame(this.raf);
+    window.removeEventListener('keydown', this.onKey);
+    if (this.ro) this.ro.disconnect();
+  }
+
+  start = () => {
+    this.t0 = performance.now();
+    this.setState({screen:'play', now:0, notes:SEQ.map((s,i)=>({id:i, t:s[0]+LEAD, type:s[1], st:'pending'})), combo:0, best:0, score:0, hits:0, fx:null, fxAt:-9, anim:'idle', animAt:-9, lockUntil:0, bagAt:-9});
+  };
+  toTitle = () => this.setState({screen:'title', anim:'idle', animAt:-9});
+
+  strike(type) {
+    const now = this.state.now;
+    if (this.state.screen !== 'play') return;
+    let hit = null, bd = 1;
+    for (const n of this.state.notes) {
+      if (n.st !== 'pending' || n.type !== type) continue;
+      const d = Math.abs(n.t - now);
+      if (d < bd && d < 0.34) { bd = d; hit = n; }
+    }
+    // The bag is kicked when the strike lands, not when the button is pressed. A
+    // strike in flight is never cut short before its impact reads — scoring still
+    // registers, only the sprite keeps playing.
+    const A = ANIM[type];
+    const busy = now < (this.state.lockUntil || 0);
+    const s = busy ? {} : {
+      anim: type, animAt: now,
+      bagAt: now + (A.impactMs != null ? A.impactMs / 1000 : 99),
+      lockUntil: now + (A.impactMs != null ? (A.impactMs + 60) / 1000 : 0)
+    };
+    if (hit) {
+      const perfect = bd < 0.13;
+      const combo = this.state.combo + 1;
+      s.notes = this.state.notes.map(n => n.id === hit.id ? {...n, st:'hit'} : n);
+      s.combo = combo;
+      s.best = Math.max(this.state.best, combo);
+      s.hits = this.state.hits + 1;
+      s.score = this.state.score + (perfect ? 200 : 100) * Math.min(1 + Math.floor(combo/5) * 0.5, 3);
+      s.fx = perfect ? 'PERFECT' : 'CLEAN';
+      s.fxAt = now;
+    } else {
+      s.combo = 0; s.fx = 'MISS'; s.fxAt = now;
+      if (!busy) s.bagAt = now + 99; // whiffed, bag stays still
+    }
+    this.setState(s);
+  }
+
+  renderVals() {
+    const S = this.state, now = S.now, screen = S.screen;
+    const F = this.frames;
+    // Walk the per-frame duration table rather than a constant frame rate.
+    const pick = (key, elapsed) => {
+      const spec = ANIM[key], list = F ? F[key] : null;
+      if (!list || !list.length) return null;
+      const ord = spec.order;
+      let ms = elapsed * 1000;
+      if (spec.loop) ms = ((ms % list.total) + list.total) % list.total;
+      else if (ms >= list.total) return null;
+      let i = 0;
+      while (i < ord.length - 1 && ms >= list.cum[i]) i++;
+      return {f: list[ord[i]], done: false};
+    };
+    const BLANK = {bg:'none', w:'0px', h:'0px', left:'0px', bottom:'0px'};
+    const box = fr => fr ? {bg: 'url("' + fr.src + '")', w: fr.dw.toFixed(2) + 'px', h: fr.dh.toFixed(2) + 'px',
+      left: (BOX_W / 2 + fr.dl).toFixed(2) + 'px', bottom: '0px'} : BLANK;
+    let anim = S.anim;
+    let cur = anim === 'idle' ? pick('idle', now) : pick(anim, now - S.animAt);
+    if (!cur) { anim = 'idle'; cur = pick('idle', now); }
+    const bt = now - S.bagAt;
+    const swing = bt < 0 ? 0 : Math.max(0, 1 - bt / 1.1);
+    const bagRot = (Math.sin(bt * 9) * 10 * swing * swing).toFixed(2) + 'deg';
+
+    const notes = (screen === 'play' ? S.notes : []).map(n => {
+      const left = TARGET_X + (n.t - now) * 122;
+      if (left < -70 || left > 430) return null;
+      const T = TYPES[n.type];
+      return {id:n.id, label:T.label, bg:n.st==='pending'?T.bg:'transparent', fg:n.st==='pending'?T.fg:T.bd,
+        bd:T.bd, op:n.st==='pending'?'1':'0.25', left:left.toFixed(1)+'px'};
+    }).filter(Boolean);
+
+    const buttons = Object.keys(TYPES).map(k => {
+      const T = TYPES[k], on = anim === k;
+      return {key:k, label:T.label, sub:T.sub, bg:on?T.bg:'#15121c', fg:on?T.fg:T.bd, bd:on?T.bd:'#2a2434',
+        tf:on?'scale(.94)':'none', press:() => this.strike(k)};
+    });
+
+    // Biggest fighter the gym view can hold: the sprite plus its floor offset has
+    // to clear the top of the stage, so the cap comes off the stage's real height.
+    // He stands at 36% of the stage height minus 59px, so the headroom left for the
+    // sprite is 0.64 * stageH + 59. Cap the scale so the tallest cell still fits.
+    // fallback only covers the first frame, before the observer reports
+    const stageH = S.stageH || Math.max(190, Math.min(560, window.innerHeight - 300));
+    const cellH = F ? Math.max(...Object.keys(F).map(k => F[k].dh)) : STAND_H;
+    const charScale = Math.max(1, Math.min(2.17, (stageH * 0.64 + 59) / cellH));
+    // stand him just off the bag: his jab reaches ~103px into the cell, and the
+    // bag's left edge is 132px in from the stage's right side
+    const bag = bagGeom(stageH);
+    const reach = F && F.jab ? BOX_W / 2 + F.jab.dl + F.jab.dw : 102.6;
+    const charLeft = 'calc(100% - ' + (bag.right + bag.w + reach * charScale - 10).toFixed(1) + 'px)';
+
+    const done = S.hits, total = SEQ.length;
+    const acc = Math.round(done / total * 100);
+    return {
+      sprite: box(cur && cur.f),
+      won: acc >= 65, lost: acc < 65,
+      charScale: 'scale(' + charScale.toFixed(3) + ')', charLeft,
+      // Chain + bag always fits the measured stage, so it hangs complete. Both are
+      // cropped out of one artwork file by background-position.
+      chainW: bag.chainW.toFixed(1) + 'px', chainH: bag.chainH.toFixed(1) + 'px',
+      chainSize: bag.chainSize, chainPos: bag.chainPos,
+      bagW: bag.w.toFixed(1) + 'px', bagH: bag.h.toFixed(1) + 'px',
+      bagSize: bag.bagSize, bagPos: bag.bagPos, bagRight: bag.right.toFixed(1) + 'px',
+      ready: !!F,
+      bagRot, notes, buttons,
+      score: S.score, combo: S.combo, best: S.best,
+      comboOn: S.combo >= 2 && screen === 'play',
+      showFx: now - S.fxAt < 0.55, fxText: S.fx,
+      showTitle: screen === 'title', showResult: screen === 'result',
+      hitsLabel: done + '/' + total,
+      progressW: Math.min(100, Math.max(0, (now - LEAD) / SEQ[SEQ.length-1][0] * 100)).toFixed(1) + '%',
+      accuracy: acc + '%',
+      grade: acc >= 90 ? 'AJARN APPROVED' : acc >= 65 ? 'SOLID SESSION' : 'ROUND LOST',
+      resultWord: acc >= 65 ? 'DONE' : 'LOST',
+      gradeColor: acc >= 65 ? '#f2b705' : '#e0362f',
+      start: this.start, toTitle: this.toTitle
+    };
+  }
+}
+</script>
+</body>
+</html>
