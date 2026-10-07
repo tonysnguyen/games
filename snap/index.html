@@ -43,7 +43,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;-webki
 button:focus-visible{outline:2px solid var(--tint);outline-offset:3px}
 
 #app{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  padding:max(16px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) max(16px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left))}
+  padding:max(12px,env(safe-area-inset-top)) max(8px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left))}
 #side{width:var(--bw);display:flex;flex-direction:column}
 .top{display:flex;align-items:center;justify-content:space-between;height:44px;margin-bottom:6px}
 .brand{font-size:17px;font-weight:600;letter-spacing:-.2px}
@@ -65,7 +65,7 @@ button:focus-visible{outline:2px solid var(--tint);outline-offset:3px}
 .low-bar #bar{background:var(--t-red)}
 .tbonus{position:absolute;top:14px;left:100%;margin-left:4px;font:700 15px var(--round);color:var(--t-green);white-space:nowrap;pointer-events:none}
 
-#board{position:relative;width:var(--bw);height:var(--bw);margin-top:12px;border-radius:22px;background:var(--glass);
+#board{position:relative;width:var(--bw);height:var(--bw);border-radius:calc(var(--cell)*.26 + var(--pad,10px));background:var(--glass);
   -webkit-backdrop-filter:blur(20px) saturate(180%);backdrop-filter:blur(20px) saturate(180%);
   box-shadow:0 0 0 .5px var(--separator),var(--shadow);touch-action:none;user-select:none;-webkit-user-select:none;
   -webkit-tap-highlight-color:transparent;contain:layout;outline:none}
@@ -79,11 +79,15 @@ button:focus-visible{outline:2px solid var(--tint);outline-offset:3px}
   box-shadow:inset 0 1px 0 rgba(255,255,255,.45),0 2px 4px rgba(0,0,0,var(--tsh));
   transition:transform 160ms var(--spring);will-change:transform}
 .dk .in{color:#5C4400}
-.in svg{position:absolute;z-index:1;left:24%;top:24%;width:52%;height:52%;display:block;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;overflow:visible}
+.in svg{position:absolute;z-index:1;left:18%;top:18%;width:64%;height:64%;display:block;fill:none;stroke:currentColor;stroke-width:2.3;stroke-linecap:round;stroke-linejoin:round;overflow:visible}
 .in::after{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:0 0 0 3px var(--surface),0 0 0 5.5px var(--tint);opacity:0;transition:opacity 100ms linear;pointer-events:none}
 .tile.sel{z-index:2}
 .tile.sel .in{transform:scale(1.08)}
 .tile.sel .in::after{opacity:1}
+@media (hover:hover) and (pointer:fine){
+  .tile.hov .in{transform:translateY(-2px) scale(1.04)}
+  .tile.sel.hov .in{transform:translateY(-2px) scale(1.08)}
+}
 .tile.pr .in{transform:scale(.94);transition-duration:80ms;transition-timing-function:var(--ease-out)}
 .tile.sel.pr .in{transform:scale(1.02)}
 .line-h .in::before,.line-v .in::before{content:"";position:absolute;opacity:.6;border:0 solid currentColor}
@@ -95,16 +99,33 @@ button:focus-visible{outline:2px solid var(--tint);outline-offset:3px}
 .dk.burst .in::before{border-color:rgba(92,68,0,.8)}
 @keyframes glow{from{opacity:.55}to{opacity:1}}
 .flash{position:absolute;inset:0;border-radius:inherit;background:#fff;pointer-events:none;z-index:2}
-.beam{position:absolute;border-radius:12px;background:linear-gradient(var(--bdir,90deg),rgba(255,255,255,0),rgba(255,255,255,.95) 20%,rgba(255,255,255,.95) 80%,rgba(255,255,255,0));
-  box-shadow:0 0 18px rgba(255,255,255,.8);pointer-events:none}
-.ring{position:absolute;border-radius:50%;border:3px solid rgba(255,255,255,.95);box-shadow:0 0 16px rgba(255,255,255,.8),inset 0 0 12px rgba(255,255,255,.6);pointer-events:none}
-.float{position:absolute;left:0;top:0;transform:translate(-50%,-50%);font:800 20px/1 var(--round);color:#fff;white-space:nowrap;
-  text-shadow:0 1px 2px rgba(0,0,0,.35),0 2px 10px rgba(0,0,0,.25);pointer-events:none;opacity:0}
+.beam{position:absolute;border-radius:12px;--bc:color-mix(in srgb,var(--c,#fff) 30%,#fff);
+  background:linear-gradient(var(--bdir,90deg),rgba(255,255,255,0),var(--bc) 18%,var(--bc) 82%,rgba(255,255,255,0));
+  box-shadow:0 0 18px color-mix(in srgb,var(--c,#fff) 75%,transparent);pointer-events:none}
+.streak{position:absolute;left:0;top:0;border-radius:999px;pointer-events:none;transform-origin:0 0;
+  background:linear-gradient(90deg,rgba(255,255,255,0),color-mix(in srgb,var(--c) 60%,#fff) 50%,#fff 90%);
+  box-shadow:0 0 14px color-mix(in srgb,var(--c) 85%,transparent)}
+.ring{position:absolute;border-radius:50%;border:3px solid color-mix(in srgb,var(--c,#fff) 30%,#fff);pointer-events:none;
+  box-shadow:0 0 16px color-mix(in srgb,var(--c,#fff) 80%,transparent),inset 0 0 12px color-mix(in srgb,var(--c,#fff) 50%,#fff)}
+.ring.thin{border-width:1.5px}
+.glow{position:absolute;left:0;top:0;border-radius:50%;pointer-events:none;
+  background:radial-gradient(closest-side,color-mix(in srgb,var(--c) 14%,transparent) 40%,color-mix(in srgb,var(--c) 60%,transparent) 68%,color-mix(in srgb,var(--c) 20%,transparent) 84%,transparent)}
+.edge{position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;
+  box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--ec) 80%,transparent),inset 0 0 22px color-mix(in srgb,var(--ec) 45%,transparent),0 0 24px color-mix(in srgb,var(--ec) 40%,transparent)}
+#pfx{position:absolute;left:-48px;top:-48px;pointer-events:none;z-index:4}
+.shim{position:absolute;inset:0;border-radius:inherit;overflow:hidden;pointer-events:none;z-index:2}
+.shim i{position:absolute;top:-30%;bottom:-30%;left:0;width:42%;background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.9),rgba(255,255,255,0));
+  transform:translateX(-140%) skewX(-18deg)}
+/* Combo strip: fixed-height row between HUD and board (side column in landscape). Holds the combo word
+   and the step's "+N" so no text ever covers the tiles; height is reserved so nothing jumps. */
+#combo{position:relative;height:48px;display:flex;align-items:center;justify-content:center;gap:10px;pointer-events:none;white-space:nowrap}
+#toast{padding:7px 16px;border-radius:999px;background:var(--glass);-webkit-backdrop-filter:blur(20px) saturate(180%);backdrop-filter:blur(20px) saturate(180%);
+  box-shadow:0 0 0 .5px var(--separator),var(--shadow);font:700 18px/22px var(--round);color:var(--label);white-space:nowrap;opacity:0}
+#toast.tinted{color:var(--ec)}
+#pts{font:800 22px/26px var(--round);font-variant-numeric:tabular-nums;color:color-mix(in srgb,var(--c,var(--label)) 65%,#000);opacity:0}
+@media (prefers-color-scheme:dark){#pts{color:color-mix(in srgb,var(--c,var(--label)) 75%,#fff)}}
 .kcur{position:absolute;left:0;top:0;width:var(--cell);height:var(--cell);border-radius:26%;outline:2.5px dashed var(--tint);outline-offset:3px;pointer-events:none}
-#toastWrap{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:6}
-#toast{padding:10px 20px;border-radius:999px;background:var(--glass);-webkit-backdrop-filter:blur(20px) saturate(180%);backdrop-filter:blur(20px) saturate(180%);
-  box-shadow:0 0 0 .5px var(--separator),var(--shadow);font:700 20px var(--round);color:var(--label);white-space:nowrap;opacity:0}
-.foot{width:var(--bw);margin-top:16px;text-align:center;font-size:13px;color:var(--label-2);min-height:18px}
+.foot{width:var(--bw);margin-top:10px;text-align:center;font-size:13px;color:var(--label-2);min-height:18px}
 
 .btn{display:block;width:100%;max-width:340px;height:50px;border-radius:25px;font-size:17px;font-weight:600;
   transition:transform 160ms var(--spring),opacity 160ms}
@@ -155,12 +176,14 @@ button:focus-visible{outline:2px solid var(--tint);outline-offset:3px}
   .home-badge::before{box-shadow:0 0 0 .5px var(--separator),0 2px 8px rgba(0,0,0,.4)}
   .home-badge img{filter:brightness(1.45) saturate(1.05)}
 }
-/* Portrait: reserve a row at the top so the badge never meets the brand row/HUD */
-html:not(.land) #app{padding-top:calc(max(16px,env(safe-area-inset-top)) + 48px)}
+/* Badge clearance (toggled by JS only when the column would actually reach the badge's corner):
+   portrait reserves a row above the brand row; landscape reserves a column left of the side panel. */
+html.badge-row #app{padding-top:calc(max(12px,env(safe-area-inset-top)) + 48px)}
+html.badge-col #app{padding-left:calc(max(12px,env(safe-area-inset-left)) + 52px)}
 
 html.land #app{flex-direction:row;gap:24px}
 html.land #side{width:220px}
-html.land #board{margin-top:0}
+html.land #combo{height:88px;flex-direction:column;gap:6px;margin-top:10px}
 html.land .hud{grid-template-columns:1fr 1fr;row-gap:2px}
 html.land .hud .stat:first-child{grid-column:1/-1}
 html.land .stat.mid{align-items:flex-start}
@@ -168,7 +191,7 @@ html.land .lt{font-size:34px}
 html.land .foot{display:none}
 @media (prefers-reduced-motion:reduce){
   .in,.btn,.icon,.home-badge{transition:opacity 120ms linear!important}
-  .tile.sel .in,.tile.pr .in,.btn:active,.icon:active,.home-badge:active{transform:none}
+  .tile.sel .in,.tile.pr .in,.tile.hov .in,.btn:active,.icon:active,.home-badge:active{transform:none}
   .burst .in::before{animation:none}
 }
 </style>
@@ -205,12 +228,12 @@ html.land .foot{display:none}
       <div class="stat end"><div class="cap">Best</div><div class="val num" id="best">0</div></div>
     </div>
     <div class="track" id="track"><div id="bar"></div></div>
+    <div id="combo" aria-hidden="true"><div id="toast" hidden></div><div id="pts"></div></div>
   </div>
   <div id="board" role="application" aria-label="Game board, 8 by 8" tabindex="-1">
     <div id="cells"></div>
     <div id="tiles"></div>
     <div id="fx"></div>
-    <div id="toastWrap"><div id="toast"></div></div>
   </div>
   <div class="foot" id="foot">Swipe a tile, or tap two neighbors to swap</div>
 </div>
@@ -245,6 +268,252 @@ html.land .foot{display:none}
 </div>
 
 <script>
+/* Snap Match - procedural SFX (WebAudio only, no files).
+   Glossy ceramic/acrylic tile clacks + pentatonic glass chimes.
+   Global API: window.SFX (see bottom). Every call is a safe no-op when
+   muted, locked or when WebAudio is unavailable, and never throws. */
+(function () {
+  "use strict";
+
+  /* ---------- State ---------- */
+  var ctx = null, bus = null, noiseBuf = null, voices = 0, test = false;
+  var MAX_VOICES = 40;                       // oscillator/noise sources alive at once
+  var landWin = { t: -1, n: 0 };             // landing-clack throttle window
+  var MASTER = 0.8, muted = false;
+  try { muted = localStorage.getItem("m3.mute") === "1"; } catch (e) {}
+
+  /* ---------- Master bus: gain -> comp -> soft limiter (+ tiny room) ---------- */
+  function build(c) {
+    ctx = c; voices = 0; landWin = { t: -1, n: 0 };
+    var comp = c.createDynamicsCompressor();
+    comp.threshold.value = -16; comp.knee.value = 12; comp.ratio.value = 4;
+    comp.attack.value = 0.002; comp.release.value = 0.15;
+    // Soft clipper: unity for small signals, asymptote at 0.88 (~ -1.1 dBFS).
+    var pre = c.createGain(); pre.gain.value = 0.5;
+    var lim = c.createWaveShaper(), n = 2048, curve = new Float32Array(n);
+    for (var i = 0; i < n; i++) { var x = i / (n - 1) * 2 - 1; curve[i] = 0.88 * Math.tanh(2 * x / 0.88); }
+    lim.curve = curve; lim.oversample = "2x";
+    bus = c.createGain(); bus.gain.value = muted ? 0 : MASTER;
+    bus.connect(comp); comp.connect(pre); pre.connect(lim); lim.connect(c.destination);
+    // "Room": short feedback delay, darkened, low mix - adds gloss without mud.
+    var dl = c.createDelay(0.2), fb = c.createGain(), lp = c.createBiquadFilter(), wet = c.createGain();
+    dl.delayTime.value = 0.029; fb.gain.value = 0.2; lp.type = "lowpass"; lp.frequency.value = 3200; wet.gain.value = 0.07;
+    bus.connect(dl); dl.connect(lp); lp.connect(fb); fb.connect(dl); lp.connect(wet); wet.connect(comp);
+    noiseBuf = c.createBuffer(1, (c.sampleRate * 0.5) | 0, c.sampleRate);
+    var d = noiseBuf.getChannelData(0);
+    for (var j = 0; j < d.length; j++) d[j] = Math.random() * 2 - 1;
+  }
+
+  function ready() { return !!(ctx && bus && !muted && (test || ctx.state === "running") && voices < MAX_VOICES); }
+  function now() { return ctx.currentTime + (test ? 0.1 : 0.005); }   // test: skip compressor warm-up
+  function vary(a) { return 1 + (Math.random() * 2 - 1) * a; }           // tiny humanize
+  function out(col, extra) {                                              // per-sound panned output
+    var g = ctx.createGain(); g.gain.value = vary(0.08);
+    var p = (typeof col === "number" && isFinite(col)) ? Math.max(-1, Math.min(1, (col - 3.5) / 3.5)) * 0.45 : 0;
+    p = Math.max(-0.6, Math.min(0.6, p + (extra || 0)));
+    if (ctx.createStereoPanner) { var s = ctx.createStereoPanner(); s.pan.value = p; g.connect(s); s.connect(bus); }
+    else g.connect(bus);
+    return g;
+  }
+  function track(src, end, nodes) {
+    voices++; src.onended = function () { voices--; try { nodes.forEach(function (n) { n.disconnect(); }); } catch (e) {} };
+    src.start(Math.max(0, end[0])); src.stop(end[1]);
+  }
+
+  /* ---------- Voice primitives ---------- */
+  // Sine/triangle partial with fast attack + exponential decay (modal resonance).
+  function tone(dest, t, f, dur, gain, type, f2) {
+    if (voices >= MAX_VOICES) return;
+    var o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = type || "sine"; o.frequency.setValueAtTime(f, t);
+    if (f2) o.frequency.exponentialRampToValueAtTime(f2, t + dur * 0.8);
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(gain, t + 0.002);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(g); g.connect(dest); track(o, [t, t + dur + 0.02], [o, g]);
+  }
+  // Filtered noise burst (the "contact" of a clack, or a whoosh with sweep f->f2).
+  function burst(dest, t, f, q, dur, gain, type, f2, atk) {
+    if (voices >= MAX_VOICES) return;
+    var s = ctx.createBufferSource(), fl = ctx.createBiquadFilter(), g = ctx.createGain();
+    s.buffer = noiseBuf; fl.type = type || "bandpass"; fl.Q.value = q; fl.frequency.setValueAtTime(f, t);
+    if (f2) fl.frequency.exponentialRampToValueAtTime(f2, t + dur);
+    atk = atk || 0.001;
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(gain, t + atk);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    s.connect(fl); fl.connect(g); g.connect(dest);
+    voices++; s.onended = function () { voices--; try { g.disconnect(); fl.disconnect(); } catch (e) {} };
+    s.start(t, Math.random() * 0.3); s.stop(t + dur + 0.02);
+  }
+  // Ceramic tile clack: bright contact click + inharmonic bar modes (1 : 2.76 : 5.40) + small body knock.
+  function clack(dest, t, pitch, g) {
+    pitch *= vary(0.04); g *= vary(0.1);
+    var f = 1900 * pitch;
+    burst(dest, t, 3400 * pitch, 1.4, 0.016, g * 0.55);
+    tone(dest, t, f, 0.045, g * 0.32);
+    tone(dest, t, f * 2.756, 0.026, g * 0.13);
+    tone(dest, t, f * 5.404, 0.012, g * 0.05);
+    tone(dest, t, 430 * pitch, 0.03, g * 0.18, "triangle");
+  }
+  // Glass chime: fundamental + octave + soft upper partial, slight detune for shimmer.
+  function chime(dest, t, f, g, dec, bright) {
+    f *= vary(0.004); bright = bright || 1;
+    tone(dest, t, f, dec, g * 0.5);
+    tone(dest, t, f * 1.003, dec * 0.8, g * 0.18, "triangle");
+    tone(dest, t, f * 2.001, dec * 0.55, g * 0.22 * bright);
+    tone(dest, t, f * 3.98, dec * 0.3, g * 0.07 * bright);
+  }
+  // Major pentatonic from C5; index can go up across octaves.
+  var PENT = [0, 2, 4, 7, 9];
+  function note(i) { i = Math.max(0, i | 0); return 523.25 * Math.pow(2, (12 * Math.floor(i / 5) + PENT[i % 5]) / 12); }
+
+  // Wrap each public sound: gate + try/catch so callers never see errors.
+  function safe(fn) { return function () { if (!ready()) return; try { fn.apply(null, arguments); } catch (e) {} }; }
+
+  /* ---------- Sounds ---------- */
+  var S = {};
+  S.select = safe(function (col) { clack(out(col), now(), 1.18, 0.22); });
+
+  S.swap = safe(function (col) {
+    var o = out(col), t = now();
+    burst(o, t, 1800, 0.8, 0.045, 0.035, "bandpass", 2600, 0.025); // slide
+    clack(o, t + 0.035, 1.0, 0.36);                                 // kiss
+    clack(o, t + 0.042, 0.9, 0.2);
+  });
+
+  S.invalid = safe(function (col) {
+    var o = out(col), t = now();
+    [0, 0.085].forEach(function (d, i) {                           // dull double knock
+      var g = i ? 0.22 : 0.32;
+      tone(o, t + d, 240 * vary(0.03), 0.07, g, "triangle", 200);
+      burst(o, t + d, 900, 1.2, 0.03, g * 0.6, "lowpass");
+    });
+  });
+
+  S.land = safe(function (col, row, intensity) {
+    var t = ctx.currentTime;
+    if (t - landWin.t > 0.03) { landWin.t = t; landWin.n = 0; }
+    if (landWin.n >= 4) return;                                     // throttle cascades
+    landWin.n++;
+    var k = Math.max(0, Math.min(1, +intensity || 0.5));
+    var g = (0.1 + 0.22 * k) / Math.sqrt(landWin.n);
+    var r = (typeof row === "number") ? row : 4;
+    clack(out(col), now() + (landWin.n - 1) * 0.006, 0.86 + 0.012 * r, g);
+  });
+
+  S.match = safe(function (size, step, col) {
+    var o = out(col), t = now(), n = Math.max(3, Math.min(+size || 3, 6)), s = Math.max(1, Math.min(+step || 1, 6));
+    for (var i = 0; i < Math.min(n, 4); i++) clack(o, t + i * 0.014, 1.05 + i * 0.05 + s * 0.03, 0.26 - i * 0.03);
+    var base = (s - 1) * 1 + 2, bright = 0.8 + s * 0.15, notes = [base, base + 2];
+    if (n >= 4) notes.push(base + 4);
+    if (n >= 5) notes.push(base + 7);
+    notes.forEach(function (ni, k) { chime(o, t + 0.03 + k * 0.03, note(ni), 0.2 - k * 0.025, 0.42, bright); });
+  });
+
+  S.special = safe(function (kind, col) {
+    var t = now();
+    if (kind === "line") {
+      var o = out(col);
+      burst(o, t, 500, 1.5, 0.28, 0.12, "bandpass", 5200, 0.08);   // whoosh sweep
+      tone(o, t + 0.06, 2350, 0.36, 0.08, "sine", 3500);           // glassy zing (detuned pair)
+      tone(o, t + 0.06, 2364, 0.32, 0.06, "triangle", 3520);
+      chime(o, t + 0.12, note(12), 0.1, 0.35, 1.2);
+    } else {
+      var b = out(col);
+      tone(b, t, 120, 0.28, 0.32, "sine", 52);                     // soft low thump
+      burst(b, t, 300, 0.7, 0.08, 0.12, "lowpass");
+      for (var i = 0; i < 5; i++)                                   // sparkle
+        tone(out(col, (Math.random() - 0.5) * 0.6), t + 0.05 + i * 0.035, note(10 + ((Math.random() * 6) | 0)), 0.16, 0.05);
+    }
+  });
+
+  S.create = safe(function (kind, col) {
+    var o = out(col), t = now(), b = kind === "burst" ? 3 : 5;
+    burst(o, t, 2500, 1, 0.3, 0.025, "highpass", 7000, 0.15);       // airy rise
+    for (var i = 0; i < 5; i++) tone(o, t + i * 0.045, note(b + i * 2), 0.18, 0.06 + i * 0.008, "triangle");
+  });
+
+  S.combo = safe(function (step) {
+    var s = Math.max(2, Math.min(+step || 2, 6)), t = now(), cnt = Math.min(3 + s, 8), st = 3 + s;
+    for (var i = 0; i < cnt; i++) chime(out(undefined, (i / cnt - 0.5) * 0.5), t + i * 0.042, note(st + i), 0.09 + 0.01 * s, 0.32, 1 + 0.1 * s);
+  });
+
+  S.settle = safe(function () {
+    var o = out(), t = now();
+    clack(o, t, 0.62, 0.2);                                         // tock (woody, low)
+    tone(o, t, 330, 0.06, 0.1, "triangle");
+    chime(o, t + 0.09, note(9), 0.1, 0.3, 0.8);                     // tink (resolves to A5/C6)
+  });
+
+  S.tick = safe(function () {
+    var o = out(), t = now();                                       // quiet woodblock
+    burst(o, t, 1200, 6, 0.03, 0.03);
+    tone(o, t, 920, 0.04, 0.035, "sine"); tone(o, t, 920 * 2.6, 0.02, 0.01);
+  });
+
+  S.hint = safe(function () {
+    var o = out(), t = now();
+    tone(o, t, note(15), 0.13, 0.05); tone(o, t, note(15) * 2.003, 0.08, 0.02);
+  });
+
+  S.start = safe(function () {
+    var o = out(), t = now();
+    burst(o, t, 300, 1.2, 0.26, 0.1, "bandpass", 3200, 0.16);      // whoosh up
+    tone(o, t + 0.22, 620, 0.12, 0.2, "sine", 1050);                // pop
+    clack(o, t + 0.22, 1.1, 0.22);
+    chime(o, t + 0.26, note(7), 0.1, 0.35);
+  });
+
+  S.end = safe(function (isBest) {
+    var t = now(), seq = isBest ? [0, 2, 4, 5, 7, 10] : [0, 2, 4, 5], gap = isBest ? 0.08 : 0.1;
+    seq.forEach(function (ni, i) { chime(out(undefined, (i / seq.length - 0.5) * 0.6), t + i * gap, note(ni), 0.13, 0.7, 1); });
+    var tf = t + seq.length * gap, chord = isBest ? [0, 2, 4, 10] : [0, 2, 4];
+    chord.forEach(function (ni) { chime(out(), tf, note(ni + 5) * 0.5, 0.09, 1.0, 0.7); });   // resolving chord
+  });
+
+  /* ---------- Public API ---------- */
+  // Resume a suspended/"interrupted" (iOS) context. Cheap no-op when already running.
+  var kicked = false;
+  function wake() {
+    if (!ctx || ctx.state === "running" || ctx.state === "closed" || !ctx.resume) return;
+    try { var p = ctx.resume(); if (p && p.catch) p.catch(function () {}); } catch (e) {}
+  }
+  // iOS can leave the context suspended/interrupted after backgrounding or a call.
+  try {
+    document.addEventListener("visibilitychange", function () {
+      if (!ctx || test) return;
+      if (document.hidden) return;
+      if (!muted) wake();
+    });
+  } catch (e) {}
+
+  window.SFX = {
+    // Called on every pointerdown/keydown: creates the context once, then only resumes if needed.
+    unlock: function () {
+      try {
+        if (!ctx) { var C = window.AudioContext || window.webkitAudioContext; if (!C) return; build(new C()); }
+        if (!kicked) {                                       // iOS kick: one silent buffer inside the first gesture
+          kicked = true;
+          var s = ctx.createBufferSource(); s.buffer = ctx.createBuffer(1, 1, ctx.sampleRate); s.connect(ctx.destination); s.start(0);
+        }
+        wake();
+      } catch (e) {}
+    },
+    setMuted: function (m) {
+      muted = !!m;
+      try { localStorage.setItem("m3.mute", muted ? "1" : "0"); } catch (e) {}
+      try { if (bus) bus.gain.setTargetAtTime(muted ? 0 : MASTER, ctx.currentTime, 0.02); } catch (e) {}
+      if (!muted) wake();
+    },
+    isMuted: function () { return muted; },
+    select: S.select, swap: S.swap, invalid: S.invalid, land: S.land, match: S.match,
+    special: S.special, create: S.create, combo: S.combo, settle: S.settle,
+    tick: S.tick, hint: S.hint, start: S.start, end: S.end,
+    // Test hook: render into an injected (Offline)AudioContext.
+    _renderTest: function (c) { try { test = true; muted = false; build(c); } catch (e) {} }
+  };
+})();
+</script>
+<script>
 (function(){
 "use strict";
 const N=8, NT=6, COLORS=["yellow","green","orange","red","blue","purple"];
@@ -270,74 +539,119 @@ const store={
 };
 
 /* ---------- Audio & haptics ---------- */
-let ac=null, master=null, noiseBuf=null, voices=0, muted=store.get("m3.mute","0")==="1";
-function initAudio(){
-  try{
-    if(!ac){const C=window.AudioContext||window.webkitAudioContext;if(!C)return;ac=new C();master=ac.createGain();master.gain.value=muted?0:.6;master.connect(ac.destination);}
-    if(ac.state==="suspended")ac.resume();
-  }catch(e){ac=null;}
+let muted=store.get("m3.mute","0")==="1";
+/* Sound hooks -> window.SFX (inlined module above). Positional args named `col` are the BOARD COLUMN 0..7
+   (fractional allowed for midpoints/centers); SFX maps it to stereo pan. */
+function sound(name){
+  try{const S=window.SFX;if(S&&typeof S[name]==="function")S[name].apply(S,Array.prototype.slice.call(arguments,1));}catch(e){}
 }
-const canPlay=()=>ac&&!muted&&voices<6&&ac.state==="running";
-function env(g,t,a,r,peak){g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(peak,t+a);g.gain.exponentialRampToValueAtTime(.0001,t+a+r);}
-function tone(type,f,a,r,gain,f2,glide,delay){
-  if(!canPlay())return;
-  try{
-    const t=ac.currentTime+(delay||0), o=ac.createOscillator(), g=ac.createGain();
-    o.type=type;o.frequency.setValueAtTime(f,t);
-    if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+glide);
-    env(g,t,a,r,gain);o.connect(g);g.connect(master);
-    voices++;o.onended=()=>{voices--;try{g.disconnect();}catch(e){}};
-    o.start(t);o.stop(t+a+r+.03);
-  }catch(e){}
-}
-function noise(ftype,f1,f2,q,a,r,gain){
-  if(!canPlay())return;
-  try{
-    const t=ac.currentTime;
-    if(!noiseBuf){noiseBuf=ac.createBuffer(1,(ac.sampleRate*.4)|0,ac.sampleRate);const d=noiseBuf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;}
-    const s=ac.createBufferSource(), f=ac.createBiquadFilter(), g=ac.createGain();
-    s.buffer=noiseBuf;f.type=ftype;f.Q.value=q;f.frequency.setValueAtTime(f1,t);
-    if(f2)f.frequency.exponentialRampToValueAtTime(f2,t+.12);
-    env(g,t,a,r,gain);s.connect(f);f.connect(g);g.connect(master);
-    voices++;s.onended=()=>{voices--;try{g.disconnect();}catch(e){}};
-    s.start(t);s.stop(t+a+r+.03);
-  }catch(e){}
-}
-const popF=step=>520*Math.pow(2,Math.min(step,8)*2/12);
-const sfx={
-  select(){tone("triangle",1800,.002,.03,.12);},
-  swap(){noise("bandpass",600,2400,1.2,.01,.11,.10);},
-  clear(step){const f=popF(step);tone("sine",f,.002,.09,.22,f*.5,.08);},
-  special(step){const f=popF(step);sfx.clear(step);tone("square",f*2,.002,.06,.05);},
-  invalid(){tone("sine",140,.003,.12,.28,70,.09);noise("lowpass",400,0,1,.002,.02,.06);},
-  combo(){tone("triangle",880,.002,.15,.08);tone("triangle",1320,.002,.15,.08);},
-  end(){[1047,1319,1568,2093].forEach((f,i)=>tone("sine",f,.005,.5,.14,0,0,i*.07));tone("triangle",523,.005,.5,.04);}
-};
+const unlockAudio=()=>sound("unlock");
 let lastBuzz=0;
 const buzz=p=>{const n=performance.now();if(n-lastBuzz<60)return;lastBuzz=n;try{if(!muted&&navigator.vibrate)navigator.vibrate(p);}catch(e){}};
 
 /* ---------- Geometry ---------- */
-const PAD=10, GAP=6;
+let PAD=10, GAP=6;
 let BW=358, CELL=38, PITCH=44;
 const probe=document.createElement("div");
-probe.style.cssText="position:fixed;visibility:hidden;pointer-events:none;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)";
+probe.style.cssText="position:fixed;visibility:hidden;pointer-events:none;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)";
 document.body.appendChild(probe);
 for(let i=0;i<N*N;i++){const d=document.createElement("div");d.className="cell";cellsEl.appendChild(d);}
 const curEl=document.createElement("div");curEl.className="kcur";curEl.hidden=true;fxEl.appendChild(curEl);
 
+const appEl=$("app"), sideEl=$("side"), footEl=$("foot");
+/* Board fills the free space: up to min(viewport - gutters, 560), never taller than what is left under
+   HUD + combo strip (+ hint line). Gutters/safe areas come from #app's padding, the rest is measured. */
 function computeTileSize(){
-  const vw=window.innerWidth, vh=window.innerHeight;
-  let st=0, sb=0;
-  try{const cs=getComputedStyle(probe);st=parseFloat(cs.paddingTop)||0;sb=parseFloat(cs.paddingBottom)||0;}catch(e){}
-  const land=vh<500&&vw>vh;
-  document.documentElement.classList.toggle("land",land);
-  let bw=land?Math.min(vh-32-st-sb,520,vw-32-244):Math.min(vw*.92,vw-32,520,vh-260-st-sb);
-  bw=Math.max(200,Math.floor(bw));
+  const vw=window.innerWidth, vh=window.innerHeight, H=document.documentElement;
+  let sl=0;
+  try{const cs=getComputedStyle(probe);sl=parseFloat(cs.paddingLeft)||0;}catch(e){}
+  const land=vh<500&&vw>vh, badgeR=Math.max(12,sl)+44+4;
+  H.classList.toggle("land",land);
+  const fit=()=>{
+    const cs=getComputedStyle(appEl), n=k=>parseFloat(cs[k])||0;
+    const pl=n("paddingLeft"), pr=n("paddingRight"), pt=n("paddingTop"), pb=n("paddingBottom");
+    let w,h;
+    if(land){w=vw-pl-pr-sideEl.offsetWidth-(parseFloat(cs.columnGap)||24);h=vh-pt-pb;}
+    else{const fh=footEl.offsetHeight?footEl.offsetHeight+(parseFloat(getComputedStyle(footEl).marginTop)||0):0;
+      w=vw-pl-pr;h=vh-pt-pb-sideEl.offsetHeight-fh;}
+    const bw=Math.max(200,Math.floor(Math.min(w,h,560)));
+    const left=land?pl+(vw-pl-pr-(sideEl.offsetWidth+(parseFloat(cs.columnGap)||24)+bw))/2:(vw-bw)/2;
+    return {bw,left};
+  };
+  H.classList.remove("badge-row","badge-col");
+  let f=fit();
+  if(f.left<badgeR){H.classList.add(land?"badge-col":"badge-row");f=fit();}
+  const bw=f.bw;
+  // compact well spacing on phone-size boards so the tiles themselves get the pixels
+  if(bw<440){PAD=6;GAP=4;}else{PAD=10;GAP=6;}
   BW=bw;CELL=(bw-2*PAD-7*GAP)/8;PITCH=CELL+GAP;
-  const rs=document.documentElement.style;
-  rs.setProperty("--bw",bw+"px");rs.setProperty("--cell",CELL+"px");
+  const rs=H.style;
+  rs.setProperty("--bw",bw+"px");rs.setProperty("--cell",CELL+"px");rs.setProperty("--pad",PAD+"px");
+  sizeCanvas();
   layoutAll();
 }
+
+/* ---------- FX: pooled particle canvas (max 80, one rAF loop only while alive) ---------- */
+const PM=48, PMAX=80, pool=[];
+const pcv=document.createElement("canvas");pcv.id="pfx";pcv.setAttribute("aria-hidden","true");boardEl.insertBefore(pcv,fxEl);
+const pctx=pcv.getContext("2d");
+const edgeEl=document.createElement("div");edgeEl.className="edge";boardEl.insertBefore(edgeEl,cellsEl);
+for(let i=0;i<PMAX;i++)pool.push({on:false,t:0,life:1});
+let pRaf=0, pLast=0, dpr=1, COLV=[], COLL=[];
+function readColors(){
+  try{
+    const cs=getComputedStyle(document.documentElement);
+    COLV=COLORS.map(n=>cs.getPropertyValue("--t-"+n).trim()||"#8E8E93");
+    COLL=COLV.map(h=>{const m=/^#?([0-9a-f]{6})$/i.exec(h);if(!m)return h;const v=parseInt(m[1],16);
+      const f=x=>Math.round(x+(255-x)*.45);return "rgb("+f(v>>16)+","+f((v>>8)&255)+","+f(v&255)+")";});
+  }catch(e){}
+}
+function sizeCanvas(){
+  dpr=Math.min(2,window.devicePixelRatio||1);const s=BW+2*PM;
+  pcv.style.width=pcv.style.height=s+"px";pcv.width=pcv.height=Math.round(s*dpr);
+}
+function spawnP(x,y,vx,vy,col,size,life,delay,round){
+  let p=null;
+  for(const q of pool){if(!q.on){p=q;break;}if(!p||q.t/q.life>p.t/p.life)p=q;}  // free slot, else recycle the oldest
+  p.on=true;p.x=x;p.y=y;p.vx=vx;p.vy=vy;p.col=col;p.size=size;p.life=life;p.t=0;p.delay=delay||0;p.round=round;
+  p.rot=Math.random()*6.283;p.vr=(Math.random()-.5)*14;
+}
+function pFrame(now){
+  const dt=Math.min(.033,Math.max(0,(now-pLast)/1000));pLast=now;
+  const g=1500*(PITCH/44), d=dpr;
+  pctx.setTransform(1,0,0,1,0,0);pctx.clearRect(0,0,pcv.width,pcv.height);
+  let n=0;
+  for(const p of pool){
+    if(!p.on)continue;n++;
+    if(p.delay>0){p.delay-=dt;continue;}
+    p.t+=dt;if(p.t>=p.life){p.on=false;continue;}
+    p.vy+=g*dt;p.vx*=1-2*dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.rot+=p.vr*dt;
+    const k=p.t/p.life, s=p.size*(1-.4*k);
+    pctx.globalAlpha=k<.5?1:1-(k-.5)/.5;pctx.fillStyle=p.col;
+    const c=Math.cos(p.rot), si=Math.sin(p.rot);
+    pctx.setTransform(d*c,d*si,-d*si,d*c,(PM+p.x)*d,(PM+p.y)*d);
+    pctx.beginPath();
+    if(p.round)pctx.arc(0,0,s/2,0,6.2832);
+    else if(pctx.roundRect)pctx.roundRect(-s/2,-s/2,s,s,s*.3);
+    else pctx.rect(-s/2,-s/2,s,s);
+    pctx.fill();
+  }
+  pctx.globalAlpha=1;
+  pRaf=n?requestAnimationFrame(pFrame):0;
+}
+function kickP(){if(!pRaf){pLast=performance.now();pRaf=requestAnimationFrame(pFrame);}}
+// burst from a set of tile centers: evenly spread angles, upward bias, gravity does the rest
+function burstP(pts,type,n,delay,power){
+  if(RM||!pts.length)return;
+  const s=PITCH/44, a0=Math.random()*6.283;
+  for(let i=0;i<n;i++){
+    const o=pts[(Math.random()*pts.length)|0], ang=a0+i/n*6.283+(Math.random()-.5)*.5, sp=(120+Math.random()*150)*s*power;
+    spawnP(o[0]+(Math.random()-.5)*CELL*.35,o[1]+(Math.random()-.5)*CELL*.35,Math.cos(ang)*sp,Math.sin(ang)*sp-170*s,
+      i%3===2?COLL[type]:COLV[type],(3.5+Math.random()*2.5)*s*(power>1?1.3:1),.42+Math.random()*.22,delay/1000,i%4===3);
+  }
+  kickP();
+}
+const ctr=k=>{const p=px((k/N)|0,k%N);return [p[0]+CELL/2,p[1]+CELL/2];};
 const px=(r,c)=>[PAD+c*PITCH,PAD+r*PITCH];
 const tf=(r,c)=>{const p=px(r,c);return "translate3d("+p[0]+"px,"+p[1]+"px,0)";};
 function layoutAll(){
@@ -375,16 +689,41 @@ function move(t,dur,ease,delay){
 function swapGrid(a,b){
   const ar=a.r,ac2=a.c;a.r=b.r;a.c=b.c;b.r=ar;b.c=ac2;grid[a.r][a.c]=a;grid[b.r][b.c]=b;
 }
-async function swapMove(a,b,dur,ease){
+async function swapMove(a,b,dur,ease,amt){
   a.el.style.zIndex=4;b.el.style.zIndex=3;
   if(RM||!dur){move(a,0);move(b,0);xfade(a);xfade(b);await wait(RM?120:0);}
-  else{move(a,dur,ease);move(b,dur,ease);await wait(dur);}
+  else{
+    if(amt){swapSquash(a,b,dur,amt,1);swapSquash(b,a,dur,amt,-1);}
+    move(a,dur,ease);move(b,dur,ease);await wait(dur);
+  }
   a.el.style.zIndex=b.el.style.zIndex="";
 }
+/* Stretch along travel mid-slide (front tile lifts, back tile dips), then a soft "kiss" squash on arrival
+   that springs back. Tail runs ~120ms past the slide; a following clear pop simply overrides it. */
+function swapSquash(t,o,dur,k,depth){
+  const dx=t.c-o.c, dy=t.r-o.r, hz=dx!==0, tot=dur+120, p=dur/tot;
+  const org=hz?(dx>0?"100% 50%":"0% 50%"):(dy>0?"50% 100%":"50% 0%");
+  const S=(al,cr,z)=>"scale("+((hz?al:cr)*z).toFixed(3)+","+((hz?cr:al)*z).toFixed(3)+")";
+  const z=1+.045*k*depth;
+  t.inn.animate([
+    {transform:"scale(1,1)",transformOrigin:org,easing:"ease-out"},
+    {transform:S(1+.09*k,1-.06*k,z),transformOrigin:org,offset:p*.5,easing:"ease-in"},
+    {transform:S(1-.08*k,1+.05*k,1),transformOrigin:org,offset:p,easing:"ease-out"},
+    {transform:S(1+.02*k,1-.015*k,1),transformOrigin:org,offset:p+(1-p)*.5,easing:"ease-in-out"},
+    {transform:"scale(1,1)",transformOrigin:org}
+  ],{duration:tot});
+}
 const xfade=t=>t.el.animate([{opacity:.35},{opacity:1}],{duration:120,easing:"linear"});
-function land(t){
-  if(RM||!t.el.isConnected)return;
-  t.inn.animate([{transform:"scale(1.04,.92)",transformOrigin:"50% 100%"},{transform:"scale(1,1)",transformOrigin:"50% 100%"}],{duration:90,easing:SS});
+const FALL="cubic-bezier(.42,0,.86,.55)";  // gentle acceleration, arrives with some speed for the squash
+function land(t,rows){
+  if(!t.el.isConnected)return;
+  const k=Math.min(1,Math.max(0,rows)/5);
+  sound("land",t.c,t.r,k);
+  if(RM||(t.spinUntil&&performance.now()<t.spinUntil))return;
+  const q=.45+.55*k, O="50% 100%";
+  t.inn.animate([{transform:"scale(1,1)",transformOrigin:O,easing:"ease-out"},
+    {transform:"scale("+(1+.06*q).toFixed(3)+","+(1-.08*q).toFixed(3)+")",transformOrigin:O,offset:.22,easing:SP},
+    {transform:"scale(1,1)",transformOrigin:O}],{duration:210});
 }
 function animateDrops(list){
   if(!list.length)return 0;
@@ -397,11 +736,12 @@ function animateDrops(list){
   let maxT=0;
   for(const o of list){
     const t=o.t, s=t.el.style;
-    if(RM){s.transition="opacity 120ms linear";s.transform=tf(t.r,t.c);s.opacity="";if(!o.spawn)xfade(t);maxT=120;continue;}
-    const rows=t.r-o.from, d=Math.min(40+22*rows,180), delay=(t.c-minC)*12+Math.min(o.order*4,16);
-    s.transition="transform "+d+"ms "+EI+" "+delay+"ms, opacity 60ms linear "+delay+"ms";
+    const rows=t.r-o.from;
+    if(RM){s.transition="opacity 120ms linear";s.transform=tf(t.r,t.c);s.opacity="";if(!o.spawn)xfade(t);setTimeout(()=>land(t,rows),120);maxT=120;continue;}
+    const d=Math.min(40+22*rows,180), delay=(t.c-minC)*12+Math.min(o.order*4,16);
+    s.transition="transform "+d+"ms "+FALL+" "+delay+"ms, opacity 60ms linear "+delay+"ms";
     s.transform=tf(t.r,t.c);s.opacity="";
-    setTimeout(()=>land(t),delay+d);
+    setTimeout(()=>land(t,rows),delay+d);
     maxT=Math.max(maxT,delay+d);
   }
   return maxT;
@@ -475,50 +815,118 @@ function addTime(s){
   const a=d.animate([{opacity:0,transform:"translateY(4px)"},{opacity:1,transform:"translateY(0)",offset:.2},{opacity:0,transform:"translateY(-14px)"}],{duration:700,easing:EO,fill:"forwards"});
   a.onfinish=()=>d.remove();
 }
-function floatText(text,x,y){
-  const d=document.createElement("div");d.className="float";d.textContent=text;d.style.left=x+"px";d.style.top=y+"px";fxEl.appendChild(d);
-  const base="translate(-50%,-50%) ";
-  const kf=RM?[{opacity:0},{opacity:1,offset:.25},{opacity:0}]:
-    [{opacity:0,transform:base+"translateY(4px) scale(.9)"},{opacity:1,transform:base+"translateY(-6px) scale(1)",offset:.25},{opacity:0,transform:base+"translateY(-28px) scale(1)"}];
-  const a=d.animate(kf,{duration:500,easing:EO,fill:"forwards"});a.onfinish=()=>d.remove();
+const tvar=type=>"var(--t-"+COLORS[type]+")";
+/* Step points "+N" in the combo strip (beside the word), tinted by the step's biggest group; grows a
+   little with each cascade step. Same pop/rise/fade as the old on-board float, but never over tiles. */
+let ptsAnim=null;
+function showPts(n,type,step,delay){
+  const el=$("pts");if(ptsAnim)ptsAnim.cancel();
+  el.textContent="+"+fmt(n);el.style.setProperty("--c",type==null?"var(--label)":tvar(type));
+  const sc=Math.min(1+.08*((step||1)-1),1.32);
+  const kf=RM?[{opacity:0},{opacity:1,offset:.25},{opacity:0}]:[
+    {opacity:0,transform:"translateY(6px) scale("+(sc*.6).toFixed(3)+")",easing:SP},
+    {opacity:1,transform:"translateY(0) scale("+sc.toFixed(3)+")",offset:.28,easing:EO},
+    {opacity:1,transform:"translateY(0) scale("+sc.toFixed(3)+")",offset:.7,easing:"ease-in"},
+    {opacity:0,transform:"translateY(-8px) scale("+(sc*.96).toFixed(3)+")"}];
+  ptsAnim=el.animate(kf,{duration:RM?500:640,delay:delay||0,fill:"both"});
 }
 let toastAnim=null;
-function toast(text){
-  const el=$("toast");el.textContent=text;if(toastAnim)toastAnim.cancel();
+const STEP_TINT=["","","","--t-blue","--t-purple","--t-orange"];
+function toast(text,step){
+  const el=$("toast");el.textContent=text;if(toastAnim)toastAnim.cancel();el.hidden=false;
+  const big=step>=3;el.classList.toggle("tinted",big);
+  if(big)el.style.setProperty("--ec","var("+STEP_TINT[Math.min(step,5)]+")");
   const kf=RM?[{opacity:0},{opacity:1,offset:.27},{opacity:1,offset:.75},{opacity:0}]:[
-    {opacity:0,transform:"scale(.6)",easing:SP},{opacity:1,transform:"scale(1)",offset:.274},
+    {opacity:0,transform:"scale("+(big?.5:.6)+")",easing:SP},{opacity:1,transform:"scale("+(big?1.06:1)+")",offset:.274,easing:EO},
     {opacity:1,transform:"translateY(0) scale(1)",offset:.753,easing:EO},{opacity:0,transform:"translateY(-12px) scale(1)"}];
-  toastAnim=el.animate(kf,{duration:730,fill:"forwards"});
+  const a=toastAnim=el.animate(kf,{duration:730,fill:"forwards"});
+  a.onfinish=()=>{if(toastAnim===a)el.hidden=true;};  // collapse so a lone "+N" centers in the strip
 }
+function hideToast(){if(toastAnim){toastAnim.cancel();toastAnim=null;}$("toast").hidden=true;}
 const WORDS=["","","Nice","Great","Amazing","Unreal!"];
-function fxBeam(dir,idx,delay){
-  const b=document.createElement("div");b.className="beam";const p=PAD+idx*PITCH, len=BW-2*PAD;
-  if(dir==="h")b.style.cssText="left:"+PAD+"px;top:"+p+"px;width:"+len+"px;height:"+CELL+"px";
-  else b.style.cssText="top:"+PAD+"px;left:"+p+"px;height:"+len+"px;width:"+CELL+"px;--bdir:180deg";
-  fxEl.appendChild(b);
+/* Line special: tinted band unfurls from the special tile + two bright streak heads sweep to both ends,
+   paced to the 15ms/cell clear stagger so tiles pop as the head passes. */
+function fxBeam(dir,idx,at,delay,type){
+  const b=document.createElement("div");b.className="beam";const p=PAD+idx*PITCH, len=BW-2*PAD, o=at*PITCH+CELL/2;
+  if(dir==="h")b.style.cssText="left:"+PAD+"px;top:"+p+"px;width:"+len+"px;height:"+CELL+"px;transform-origin:"+o+"px 50%";
+  else b.style.cssText="top:"+PAD+"px;left:"+p+"px;height:"+len+"px;width:"+CELL+"px;--bdir:180deg;transform-origin:50% "+o+"px";
+  b.style.setProperty("--c",tvar(type));fxEl.appendChild(b);
   const s=dir==="h"?"scaleX":"scaleY";
-  const a=b.animate(RM?[{opacity:0},{opacity:.8},{opacity:0}]:[{opacity:0,transform:s+"(.1)"},{opacity:.9,transform:s+"(1)",offset:.35},{opacity:0,transform:s+"(1)"}],
-    {duration:RM?120:260,delay,easing:EO,fill:"both"});
+  const a=b.animate(RM?[{opacity:0},{opacity:.8},{opacity:0}]:[{opacity:0,transform:s+"(.05)"},{opacity:.85,transform:s+"(1)",offset:.4},{opacity:0,transform:s+"(1)"}],
+    {duration:RM?120:300,delay,easing:EO,fill:"both"});
   a.onfinish=()=>b.remove();
+  if(RM)return;
+  const x0=dir==="h"?PAD+o:p+CELL/2, y0=dir==="h"?p+CELL/2:PAD+o, w=CELL*1.8, th=CELL*.42;
+  for(const sg of [-1,1]){
+    const cells=sg<0?at:N-1-at;if(!cells)continue;
+    const h=document.createElement("div");h.className="streak";h.style.width=w+"px";h.style.height=th+"px";h.style.setProperty("--c",tvar(type));
+    const ang=dir==="h"?(sg>0?0:180):(sg>0?90:-90), rad=ang*Math.PI/180, dist=cells*PITCH+PAD;
+    const T=f=>"translate3d("+(x0+Math.cos(rad)*dist*f).toFixed(1)+"px,"+(y0+Math.sin(rad)*dist*f).toFixed(1)+"px,0) rotate("+ang+"deg) translate("+(-w*.7).toFixed(1)+"px,"+(-th/2).toFixed(1)+"px)";
+    fxEl.appendChild(h);
+    const ha=h.animate([{opacity:0,transform:T(0)},{opacity:1,transform:T(.12),offset:.12},{opacity:1,transform:T(.88),offset:.8},{opacity:0,transform:T(1)}],
+      {duration:cells*15+110,delay,easing:"cubic-bezier(.3,.2,.6,1)",fill:"both"});
+    ha.onfinish=()=>h.remove();
+  }
 }
-function fxRing(r,c,delay){
-  const d=document.createElement("div");d.className="ring";const sz=PITCH*3;const p=px(r,c);
-  d.style.cssText="width:"+sz+"px;height:"+sz+"px;left:"+(p[0]+CELL/2-sz/2)+"px;top:"+(p[1]+CELL/2-sz/2)+"px";
+/* Burst special: tinted shockwave (thick fast ring + thin trailing ring) */
+function fxRing(r,c,delay,type){
+  const p=px(r,c);
+  [[PITCH*3,1,280,0,""],[PITCH*3.6,.7,360,50,"thin"]].forEach(([sz,op,dur,dl,cls])=>{
+    const d=document.createElement("div");d.className="ring "+cls;
+    d.style.cssText="width:"+sz+"px;height:"+sz+"px;left:"+(p[0]+CELL/2-sz/2)+"px;top:"+(p[1]+CELL/2-sz/2)+"px";
+    d.style.setProperty("--c",tvar(type));fxEl.appendChild(d);
+    if(RM&&cls){d.remove();return;}
+    const a=d.animate(RM?[{opacity:.8},{opacity:0}]:[{opacity:op,transform:"scale(.25)"},{opacity:0,transform:"scale(1.12)"}],{duration:RM?120:dur,delay:delay+dl,easing:EO,fill:"both"});
+    a.onfinish=()=>d.remove();
+  });
+}
+/* Soft radial glow ring in the group's color, expanding from the group center */
+function fxGlow(x,y,type,size,delay){
+  if(RM)return;
+  const d=document.createElement("div");d.className="glow";const sz=PITCH*(2+.3*Math.min(size-3,4));
+  d.style.cssText="width:"+sz+"px;height:"+sz+"px;left:"+(x-sz/2)+"px;top:"+(y-sz/2)+"px";d.style.setProperty("--c",tvar(type));
   fxEl.appendChild(d);
-  const a=d.animate(RM?[{opacity:.8},{opacity:0}]:[{opacity:1,transform:"scale(.3)"},{opacity:0,transform:"scale(1.1)"}],{duration:RM?120:280,delay,easing:EO,fill:"both"});
+  const a=d.animate([{opacity:0,transform:"scale(.3)"},{opacity:.6,transform:"scale(.75)",offset:.25},{opacity:0,transform:"scale(1.3)"}],{duration:360,delay,easing:EO,fill:"both"});
   a.onfinish=()=>d.remove();
 }
+/* Matched tile: quick pop (1.15 + brighten via white wash) then shrink/fade */
 function clearAnim(t,delay){
+  const dur=RM?120:180;
   const kf=RM?[{opacity:1},{opacity:0}]:[
-    {transform:"scale(1)",opacity:1,easing:EO},{transform:"scale(1.18)",opacity:1,offset:.375},{transform:"scale(.6)",opacity:0}];
-  t.inn.animate(kf,{duration:RM?120:160,delay,fill:"both"});
-  setTimeout(()=>t.el.remove(),(RM?120:160)+delay+20);
+    {transform:"scale(1)",opacity:1,easing:EO},{transform:"scale(1.15)",opacity:1,offset:.36,easing:"cubic-bezier(.5,0,.75,0)"},{transform:"scale(.35)",opacity:0}];
+  t.inn.animate(kf,{duration:dur,delay,fill:"both"});
+  if(!RM){
+    const f=document.createElement("div");f.className="flash";t.inn.appendChild(f);
+    f.animate([{opacity:0},{opacity:.32,offset:.36},{opacity:0}],{duration:dur,delay,fill:"both"});
+  }
+  setTimeout(()=>t.el.remove(),dur+delay+20);
 }
+/* Special created: spins in, then a shimmer highlight sweeps across */
 function spawnSpecialAnim(t){
   if(RM){t.inn.animate([{opacity:.4},{opacity:1}],{duration:120});return;}
-  t.inn.animate([{transform:"scale(0)",easing:EO},{transform:"scale(1.25)",offset:.55,easing:SP},{transform:"scale(1)"}],{duration:220});
+  t.spinUntil=performance.now()+330;
+  t.inn.animate([{transform:"rotate(-110deg) scale(.25)",easing:EO},{transform:"rotate(8deg) scale(1.18)",offset:.55,easing:SS},{transform:"rotate(0deg) scale(1)"}],{duration:300});
   const f=document.createElement("div");f.className="flash";t.inn.appendChild(f);
-  const a=f.animate([{opacity:.6},{opacity:0}],{duration:120,fill:"forwards"});a.onfinish=()=>f.remove();
+  const a=f.animate([{opacity:.65},{opacity:0}],{duration:160,fill:"forwards"});a.onfinish=()=>f.remove();
+  const sh=document.createElement("div");sh.className="shim";const i=document.createElement("i");sh.appendChild(i);t.inn.appendChild(sh);
+  const sa=i.animate([{transform:"translateX(-140%) skewX(-18deg)"},{transform:"translateX(340%) skewX(-18deg)"}],
+    {duration:420,delay:150,easing:"cubic-bezier(.45,0,.25,1)",fill:"both"});
+  sa.onfinish=()=>sh.remove();
+}
+/* Combo >= 3: tiny board shake + step-tinted edge glow */
+function comboFx(step){
+  edgeEl.style.setProperty("--ec","var("+STEP_TINT[Math.min(step,5)]+")");
+  edgeEl.animate([{opacity:0},{opacity:1,offset:.22},{opacity:0}],{duration:RM?300:460,easing:"ease-out"});
+  if(RM)return;
+  const A=step>=5?3:2.5;
+  boardEl.animate([{transform:"translate3d(0,0,0)"},{transform:"translate3d("+(-A)+"px,1px,0)"},{transform:"translate3d("+A+"px,-1px,0)"},
+    {transform:"translate3d("+(-A*.6)+"px,0,0)"},{transform:"translate3d("+(A*.3)+"px,0,0)"},{transform:"translate3d(0,0,0)"}],{duration:120,easing:"linear"});
+}
+/* Whole cascade resolved: the set "breathes" and settles into its wells */
+function settleFx(){
+  if(RM)return;
+  const kf=[{transform:"translateY(0) scale(1)"},{transform:"translateY(1.5px) scale(1.008)",offset:.35,easing:"ease-in-out"},{transform:"translateY(0) scale(1)"}];
+  tilesEl.animate(kf,{duration:320,easing:"ease-out"});
 }
 
 /* ---------- Resolve pipeline ---------- */
@@ -532,7 +940,8 @@ async function resolve(groups,swapped){
       const lt=g.runs.some(x=>x.dir==="h")&&g.runs.some(x=>x.dir==="v");
       const longest=g.runs.reduce((a,b)=>b.cells.length>a.cells.length?b:a);
       let kind=null;
-      if(g.keys.size>=5||lt){kind="burst";bonus+=50;}else if(longest.cells.length===4){kind=longest.dir;bonus+=20;}
+      g.bonus=0;
+      if(g.keys.size>=5||lt){kind="burst";bonus+=50;g.bonus=50;}else if(longest.cells.length===4){kind=longest.dir;bonus+=20;g.bonus=20;}
       if(!kind)continue;
       let pos=null;
       if(swapped)for(const t of swapped){const k=t.r*N+t.c;if(g.keys.has(k)&&ok(k)){pos=k;break;}}
@@ -552,9 +961,12 @@ async function resolve(groups,swapped){
     while(queue.length){
       const k=queue.shift();if(fired.has(k))continue;fired.add(k);
       const t=tileAt(k), base=clear.get(k), r=t.r, c=t.c, cells=[];
-      if(t.special==="h"){for(let x=0;x<N;x++)cells.push(r*N+x);fxBeam("h",r,base);}
-      else if(t.special==="v"){for(let y=0;y<N;y++)cells.push(y*N+c);fxBeam("v",c,base);}
-      else{for(let dr=-1;dr<=1;dr++)for(let dc=-1;dc<=1;dc++){const rr=r+dr,cc=c+dc;if(rr>=0&&cc>=0&&rr<N&&cc<N)cells.push(rr*N+cc);}fxRing(r,c,base);}
+      if(t.special==="h"){for(let x=0;x<N;x++)cells.push(r*N+x);fxBeam("h",r,c,base,t.type);}
+      else if(t.special==="v"){for(let y=0;y<N;y++)cells.push(y*N+c);fxBeam("v",c,r,base,t.type);}
+      else{for(let dr=-1;dr<=1;dr++)for(let dc=-1;dc<=1;dc++){const rr=r+dr,cc=c+dc;if(rr>=0&&cc>=0&&rr<N&&cc<N)cells.push(rr*N+cc);}
+        fxRing(r,c,base,t.type);burstP([ctr(k)],t.type,14,base+30,1.45);}
+      {const kind=t.special==="burst"?"burst":"line", col=c;
+        if(base>0)setTimeout(()=>sound("special",kind,col),base);else sound("special",kind,col);}
       for(const kk of cells){
         if(protect.has(kk)||clear.has(kk)||!tileAt(kk))continue;
         clear.set(kk,Math.min(base+dist(kk,[r,c])*15,150));
@@ -564,19 +976,34 @@ async function resolve(groups,swapped){
     // score + time
     const pts=(clear.size+creations.length)*10*mult+bonus;
     addScore(pts);
-    let sx=0,sy=0;for(const k of clear.keys()){const p=px((k/N)|0,k%N);sx+=p[0];sy+=p[1];}
-    floatText("+"+pts,sx/clear.size+CELL/2,sy/clear.size+CELL/2);
+    // per-group feedback: "+N" split by group (sums to pts), glow ring, particles, match hook
+    const inGroup=new Set();let gsum=0;
+    const gi=groups.map(g=>{
+      const keys=[...g.keys], type=tileAt(keys[0]).type;let sx=0,sy=0,scol=0,d0=Infinity;const pts2=[];
+      for(const k of keys){inGroup.add(k);const p=ctr(k);sx+=p[0];sy+=p[1];scol+=k%N;if(clear.has(k)){d0=Math.min(d0,clear.get(k));pts2.push(p);}}
+      const gp=keys.length*10*mult+(g.bonus||0);gsum+=gp;
+      return {type,size:keys.length,col:scol/keys.length,x:sx/keys.length,y:sy/keys.length,d0:isFinite(d0)?d0:0,pts:gp,cpts:pts2.length?pts2:[[sx/keys.length,sy/keys.length]]};
+    });
+    if(gi.length){let bi=0;gi.forEach((g,i)=>{if(g.size>gi[bi].size)bi=i;});gi[bi].pts+=pts-gsum;}
+    if(gi.length){let bi=0,dm=Infinity;gi.forEach((g,i)=>{if(g.size>gi[bi].size)bi=i;dm=Math.min(dm,g.d0);});
+      if(chain<2)hideToast();
+      showPts(pts,gi[bi].type,chain,dm+70);}
+    gi.forEach((g,i)=>{
+      fxGlow(g.x,g.y,g.type,g.size,g.d0);
+      burstP(g.cpts,g.type,6+Math.min(4,g.size-3),g.d0+55,1);
+      sound("match",g.size,chain,g.col);
+    });
+    for(const [k,d] of clear)if(!inGroup.has(k)){const t=tileAt(k);burstP([ctr(k)],t.type,1,d+55,.9);}  // one spark per special-cleared tile
     let tb=0;for(const cr of creations)tb+=cr.kind==="burst"?3:2;if(chain>=3)tb+=1;
     if(tb&&started&&!timeUp)addTime(tb);
     log.push({chain,clear:[...clear.keys()].sort((a,b)=>a-b),fired:[...fired],made:creations.map(c=>[c.t.r*N+c.t.c,c.kind]),pts,tb:started&&!timeUp?tb:0,at:performance.now()|0});if(log.length>40)log.shift();
     const big=fired.size||creations.length;
-    if(big)sfx.special(chain-1);else sfx.clear(chain-1);
     buzz(big||chain>=3?[12,30,12]:10);
-    if(chain>=2){toast(WORDS[Math.min(chain,5)]+" ×"+mult);sfx.combo();}
+    if(chain>=2){toast(WORDS[Math.min(chain,5)]+" ×"+mult,chain);sound("combo",chain);if(chain>=3)comboFx(chain);}
     // animate
     let maxD=0;
     for(const [k,d] of clear){const t=tileAt(k);grid[t.r][t.c]=null;if(t===sel)sel=null;clearAnim(t,d);maxD=Math.max(maxD,d);}
-    for(const cr of creations){setSpecial(cr.t,cr.kind);spawnSpecialAnim(cr.t);}
+    for(const cr of creations){setSpecial(cr.t,cr.kind);spawnSpecialAnim(cr.t);sound("create",cr.kind==="burst"?"burst":"line",cr.t.c);}
     await wait(RM?120:110+maxD);
     await wait(collapse());
     groups=findMatches();swapped=null;
@@ -595,20 +1022,22 @@ function collapse(){
 }
 async function trySwap(a,b){
   if(!canInput())return;
-  busy=true;poke();deselect();started=true;
+  busy=true;poke();deselect();setHover(null);started=true;
   swapGrid(a,b);
   const groups=findMatches();
-  sfx.swap();
+  const mid=(a.c+b.c)/2;  // board columns (a/b positions are swapped here, midpoint is unchanged)
+  sound("swap",mid);
   if(!groups.length){
-    sfx.invalid();buzz(15);
-    await swapMove(a,b,110,EO);swapGrid(a,b);await swapMove(a,b,160,SS);
+    sound("invalid",mid);buzz(15);
+    await swapMove(a,b,110,EO,.7);swapGrid(a,b);await swapMove(a,b,160,SS,.35);
     if(!RM)for(const t of [a,b])t.inn.animate([{transform:"translateX(0)"},{transform:"translateX(3px)"},{transform:"translateX(-3px)"},{transform:"translateX(3px)"},{transform:"translateX(-3px)"},{transform:"translateX(0)"}],{duration:120});
     busy=false;poke();
     if(timeUp)gameOver();
     return;
   }
-  await swapMove(a,b,140,EO);
+  await swapMove(a,b,140,EO,1);
   await resolve(groups,[a,b]);
+  settleFx();sound("settle");
   busy=false;
   await afterSettle();
 }
@@ -618,7 +1047,7 @@ async function afterSettle(){
   if(!allMoves().length){busy=true;await reshuffle();busy=false;poke();}
 }
 async function reshuffle(){
-  shuffling=true;toast("Shuffling…");sfx.swap();
+  shuffling=true;toast("Shuffling…");
   const tiles=[];for(let r=0;r<N;r++)for(let c=0;c<N;c++)tiles.push(grid[r][c]);
   const outs=tiles.map(t=>t.inn.animate(RM?[{opacity:1},{opacity:0}]:[{transform:"scale(1)",opacity:1},{transform:"scale(0)",opacity:0}],{duration:RM?120:150,easing:EI,fill:"forwards"}));
   await wait(RM?120:150);
@@ -630,6 +1059,8 @@ async function reshuffle(){
   }
   if(!ok){const g=genBoard();tiles.forEach(t=>{t.type=g[t.r][t.c];styleType(t);setSpecial(t,null);});}
   tiles.forEach(t=>move(t,0));
+  // soft clatter as the set pops back in: a few light, staggered clacks spread across the board
+  [1,6,3,4,0,7].forEach((col,i)=>setTimeout(()=>sound("land",col,2+(i%3)*2,.12),i*24));
   tiles.forEach(t=>t.inn.animate(RM?[{opacity:0},{opacity:1}]:[{transform:"scale(0)",opacity:0},{transform:"scale(1)",opacity:1}],{duration:RM?120:150,easing:SP}));
   outs.forEach(a=>a.cancel());
   await wait(RM?120:150);
@@ -649,7 +1080,7 @@ function cellFromEvent(e){
   return r<0||c<0||r>=N||c>=N?null:[r,c];
 }
 function release(){if(down){down.t.el.classList.remove("pr");down=null;}}
-function select(t){deselect();sel=t;t.el.classList.add("sel");sfx.select();buzz(8);}
+function select(t){deselect();sel=t;t.el.classList.add("sel");sound("select",t.c);buzz(8);}
 function deselect(){if(sel){sel.el.classList.remove("sel");sel=null;}}
 function tap(t){
   if(!canInput())return;
@@ -679,15 +1110,25 @@ boardEl.addEventListener("pointermove",e=>{
 });
 boardEl.addEventListener("pointerup",e=>{if(!down||e.pointerId!==down.id)return;const t=down.t;release();tap(t);});
 boardEl.addEventListener("pointercancel",release);
+/* Desktop hover lift (tiles are pointer-events:none, so hit-test by cell; CSS gates the look to hover:hover) */
+let hovT=null;
+function setHover(t){if(hovT===t)return;if(hovT)hovT.el.classList.remove("hov");hovT=t;if(t)t.el.classList.add("hov");}
+boardEl.addEventListener("pointermove",e=>{
+  if(e.pointerType!=="mouse")return;
+  let t=null;
+  if(canInput()&&!down&&!e.buttons){const rc=cellFromEvent(e);if(rc)t=grid[rc[0]][rc[1]];}
+  setHover(t);
+});
+boardEl.addEventListener("pointerleave",()=>setHover(null));
 boardEl.addEventListener("touchmove",e=>e.preventDefault(),{passive:false});
 document.addEventListener("dblclick",e=>e.preventDefault());
 document.addEventListener("gesturestart",e=>e.preventDefault());
-window.addEventListener("pointerdown",initAudio,true);
+window.addEventListener("pointerdown",unlockAudio,true);
 
 function showCursor(){curEl.hidden=false;curEl.style.transform=tf(cur[0],cur[1]);}
 const ARROWS={ArrowUp:[-1,0],ArrowDown:[1,0],ArrowLeft:[0,-1],ArrowRight:[0,1]};
 window.addEventListener("keydown",e=>{
-  initAudio();
+  unlockAudio();
   if(state==="paused"&&(e.key==="Escape"||e.key==="p"||e.key==="P")){resume();e.preventDefault();return;}
   if(state!=="play")return;
   if(e.key==="Escape"||e.key==="p"||e.key==="P"){pause();e.preventDefault();return;}
@@ -707,7 +1148,7 @@ let lastInput=performance.now(), lastHint=0, hintAnims=null;
 function clearHint(){if(hintAnims){hintAnims.forEach(a=>a.cancel());hintAnims=null;}}
 function poke(){lastInput=performance.now();clearHint();}
 function showHint(){
-  const ms=allMoves();if(!ms.length)return;const m=ms[ri(ms.length)];clearHint();
+  const ms=allMoves();if(!ms.length)return;const m=ms[ri(ms.length)];clearHint();sound("hint");
   const wig=[0,6,-6,6,-6,6,-6,0].map(a=>({transform:"rotate("+a+"deg)"}));
   hintAnims=m.map(([r,c])=>{const t=grid[r][c];
     return RM?t.inn.animate([{opacity:1},{opacity:.6},{opacity:1}],{duration:1200}):t.inn.animate(wig,{duration:360,easing:"ease-in-out"});});
@@ -737,7 +1178,7 @@ function setMuteUI(){
 }
 $("muteBtn").addEventListener("click",()=>{
   muted=!muted;store.set("m3.mute",muted?"1":"0");setMuteUI();
-  try{if(master)master.gain.setValueAtTime(muted?0:.6,ac.currentTime);}catch(e){}
+  sound("setMuted",muted);
   $("muteBtn").blur();
 });
 
@@ -799,9 +1240,9 @@ function newGame(){
 function gameOver(){
   if(state==="over"||state==="start")return;
   state="over";needNew=true;deselect();release();clearHint();
-  sfx.end();buzz([10,40,10]);
-  tw=null;shown=score;scoreEl.textContent=fmt(score);
   const nb=score>best;
+  sound("end",nb);buzz([10,40,10]);
+  tw=null;shown=score;scoreEl.textContent=fmt(score);
   if(nb){best=score;store.set("m3.best",best);}
   updateBestHud();
   $("endScore").textContent=fmt(score);$("endBest").textContent=fmt(best);$("newBest").hidden=!nb;
@@ -809,12 +1250,13 @@ function gameOver(){
   openSheet();
 }
 $("playBtn").addEventListener("click",()=>{
-  initAudio();hideScreen($("startScr"));
+  unlockAudio();hideScreen($("startScr"));
   if(needNew)newGame();
+  sound("start");
   state="play";poke();$("playBtn").blur();
 });
 $("againBtn").addEventListener("click",()=>{
-  initAudio();closeSheet();newGame();state="play";poke();$("againBtn").blur();
+  unlockAudio();closeSheet();newGame();state="play";sound("start");poke();$("againBtn").blur();
 });
 $("shareBtn").addEventListener("click",async()=>{
   const text="I scored "+fmt(score)+" in Snap Match!";
@@ -831,6 +1273,7 @@ function renderTimer(){
     shownSec=s;timeEl.textContent=s;
     const low=started&&timeLeft<10000&&timeLeft>0;
     hudEl.classList.toggle("low",low);trackEl.classList.toggle("low-bar",low);
+    if(low&&state==="play")sound("tick");
     if(low&&!RM){
       trackEl.animate([{transform:"scale(1)"},{transform:"scale(1.03)"},{transform:"scale(1)"}],{duration:150,easing:EO});
       timeEl.animate([{transform:"scale(1)"},{transform:"scale(1.12)"},{transform:"scale(1)"}],{duration:150,easing:EO});
@@ -857,7 +1300,9 @@ function loop(now){
 function init(){
   const minis=$("minis");
   for(let i=0;i<NT;i++){const t=newTile(i,0,0);minis.appendChild(t.el);}
-  setMuteUI();
+  setMuteUI();sound("setMuted",muted);
+  readColors();
+  try{const cm=window.matchMedia("(prefers-color-scheme: dark)");cm.addEventListener("change",()=>requestAnimationFrame(readColors));}catch(e){}
   computeTileSize();
   window.addEventListener("resize",onResize);
   window.addEventListener("orientationchange",onResize);
@@ -878,7 +1323,8 @@ function init(){
         setSpecial(t,{b:"burst",h:"h",v:"v"}[v[1]]||null);grid[r][c]=t;tilesEl.appendChild(t.el);move(t,0);}
       afterSettle();return true;
     },
-    info:()=>({state,score,timeLeft,busy,shuffling,started,filled:grid.flat().filter(Boolean).length,dom:tilesEl.children.length,pad:PAD,pitch:PITCH,cell:CELL})
+    info:()=>({bw:BW,state,score,timeLeft,busy,shuffling,started,filled:grid.flat().filter(Boolean).length,dom:tilesEl.children.length,pad:PAD,pitch:PITCH,cell:CELL,
+      particles:pool.filter(p=>p.on).length,fxNodes:fxEl.children.length-1})
   };
 }
 init();
