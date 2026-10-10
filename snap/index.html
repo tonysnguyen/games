@@ -1,4 +1,4 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <!doctype html>
 <html lang="en">
 <head>
@@ -44,6 +44,7 @@ button:focus-visible{outline:2px solid var(--tint);outline-offset:3px}
 
 #app{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
   padding:max(12px,env(safe-area-inset-top)) max(8px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left))}
+#app.thumb{justify-content:flex-end}
 #side{width:var(--bw);display:flex;flex-direction:column}
 .top{display:flex;align-items:center;justify-content:space-between;height:44px;margin-bottom:6px}
 .brand{font-size:17px;font-weight:600;letter-spacing:-.2px}
@@ -55,9 +56,12 @@ button:focus-visible{outline:2px solid var(--tint);outline-offset:3px}
 .hud{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);column-gap:8px;align-items:end}
 .stat{display:flex;flex-direction:column;position:relative}
 .stat.mid{align-items:center}.stat.end{align-items:flex-end}
-.cap{font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--label-2);line-height:18px}
+.cap{font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--label-2);line-height:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+#lvl{overflow:visible}
+.tgt{font-variant-numeric:tabular-nums}
 .lt{font-size:min(34px,calc(var(--bw)*.095));white-space:nowrap;font-weight:700;letter-spacing:.37px;line-height:41px;transform-origin:left center}
-.tm{font-size:28px;font-weight:700;line-height:41px;min-width:2ch;text-align:center}
+.tm{font-size:28px;font-weight:700;line-height:41px;min-width:2ch;text-align:center;transition:color 150ms linear}
+.hud.idle .tm{color:var(--label-2)}
 .val{font-size:17px;font-weight:600;line-height:41px;white-space:nowrap}
 .track{height:6px;border-radius:3px;background:var(--fill);margin-top:8px;overflow:hidden}
 #bar{height:100%;width:100%;border-radius:3px;background:var(--tint);transform-origin:left center;will-change:transform}
@@ -69,6 +73,8 @@ button:focus-visible{outline:2px solid var(--tint);outline-offset:3px}
   -webkit-backdrop-filter:blur(20px) saturate(180%);backdrop-filter:blur(20px) saturate(180%);
   box-shadow:0 0 0 .5px var(--separator),var(--shadow);touch-action:none;user-select:none;-webkit-user-select:none;
   -webkit-tap-highlight-color:transparent;contain:layout;outline:none}
+#board{transition:opacity 200ms linear}
+#board.over{opacity:.6}
 #cells,#tiles,#fx{position:absolute;inset:0;pointer-events:none}
 #fx{z-index:5}
 .cell{position:absolute;left:0;top:0;width:var(--cell);height:var(--cell);border-radius:26%;background:var(--fill)}
@@ -90,14 +96,14 @@ button:focus-visible{outline:2px solid var(--tint);outline-offset:3px}
 }
 .tile.pr .in{transform:scale(.94);transition-duration:80ms;transition-timing-function:var(--ease-out)}
 .tile.sel.pr .in{transform:scale(1.02)}
-.line-h .in::before,.line-v .in::before{content:"";position:absolute;opacity:.6;border:0 solid currentColor}
-.line-h .in::before{left:9%;right:9%;top:31%;bottom:31%;border-top-width:2.5px;border-bottom-width:2.5px}
-.line-v .in::before{top:9%;bottom:9%;left:31%;right:31%;border-left-width:2.5px;border-right-width:2.5px}
-.burst .in{box-shadow:inset 0 1px 0 rgba(255,255,255,.45),0 0 12px 1px color-mix(in srgb,var(--c) 75%,transparent),0 2px 4px rgba(0,0,0,var(--tsh))}
-.burst .in::before{content:"";position:absolute;inset:8%;border-radius:22%;border:2px solid rgba(255,255,255,.95);
-  box-shadow:0 0 6px rgba(255,255,255,.9),inset 0 0 6px rgba(255,255,255,.7);animation:glow 1.2s ease-in-out infinite alternate}
+.line-h .in::before,.line-v .in::before{content:"";position:absolute;opacity:.9;border:0 solid currentColor}
+.line-h .in::before{left:9%;right:9%;top:31%;bottom:31%;border-top-width:3px;border-bottom-width:3px}
+.line-v .in::before{top:9%;bottom:9%;left:31%;right:31%;border-left-width:3px;border-right-width:3px}
+/* Burst: dashed inner ring that slowly turns (no outer glow, so it never reads as the .sel ring) */
+.burst .in::before{content:"";position:absolute;inset:8%;border-radius:22%;border:2px dashed rgba(255,255,255,.95);
+  animation:spin 6s linear infinite}
 .dk.burst .in::before{border-color:rgba(92,68,0,.8)}
-@keyframes glow{from{opacity:.55}to{opacity:1}}
+@keyframes spin{to{transform:rotate(360deg)}}
 .flash{position:absolute;inset:0;border-radius:inherit;background:#fff;pointer-events:none;z-index:2}
 .beam{position:absolute;border-radius:12px;--bc:color-mix(in srgb,var(--c,#fff) 30%,#fff);
   background:linear-gradient(var(--bdir,90deg),rgba(255,255,255,0),var(--bc) 18%,var(--bc) 82%,rgba(255,255,255,0));
@@ -122,8 +128,12 @@ button:focus-visible{outline:2px solid var(--tint);outline-offset:3px}
 #toast{padding:7px 16px;border-radius:999px;background:var(--glass);-webkit-backdrop-filter:blur(20px) saturate(180%);backdrop-filter:blur(20px) saturate(180%);
   box-shadow:0 0 0 .5px var(--separator),var(--shadow);font:700 18px/22px var(--round);color:var(--label);white-space:nowrap;opacity:0}
 #toast.tinted{color:var(--ec)}
+#toast.lvl{background:var(--tint);color:#fff;-webkit-backdrop-filter:none;backdrop-filter:none;box-shadow:0 4px 14px color-mix(in srgb,var(--tint) 35%,transparent)}
+#idleMsg{display:none;font-size:15px;line-height:20px;color:var(--label-2);white-space:normal;text-align:center}
+html.land #app.idle #idleMsg{display:block}
 #pts{font:800 22px/26px var(--round);font-variant-numeric:tabular-nums;color:color-mix(in srgb,var(--c,var(--label)) 65%,#000);opacity:0}
-@media (prefers-color-scheme:dark){#pts{color:color-mix(in srgb,var(--c,var(--label)) 75%,#fff)}}
+#pts.y{color:color-mix(in srgb,var(--c) 50%,#000)}
+@media (prefers-color-scheme:dark){#pts,#pts.y{color:color-mix(in srgb,var(--c,var(--label)) 75%,#fff)}}
 .kcur{position:absolute;left:0;top:0;width:var(--cell);height:var(--cell);border-radius:26%;outline:2.5px dashed var(--tint);outline-offset:3px;pointer-events:none}
 .foot{width:var(--bw);margin-top:10px;text-align:center;font-size:13px;color:var(--label-2);min-height:18px}
 
@@ -138,7 +148,9 @@ button:focus-visible{outline:2px solid var(--tint);outline-offset:3px}
 .card{width:100%;max-width:340px;display:flex;flex-direction:column;align-items:center;text-align:center}
 .card h1{font-size:34px;font-weight:700;letter-spacing:.37px;margin:18px 0 6px}
 .card h2{font-size:28px;font-weight:700;margin-bottom:6px}
-.card p{font-size:17px;color:var(--label-2);line-height:1.35;margin-bottom:22px}
+.card p{font-size:17px;color:var(--label-2);line-height:1.35;margin-bottom:22px;text-wrap:balance}
+.sndtxt{height:44px;margin-top:8px;padding:0 18px;border-radius:22px;font-size:15px;font-weight:600;color:var(--tint)}
+.sndtxt:active{opacity:.6}
 .minis{display:flex;gap:6px}
 .minis .tile{position:relative;width:34px;height:34px}
 .bestline{font-size:15px;color:var(--label-2);margin-bottom:18px}
@@ -151,13 +163,15 @@ button:focus-visible{outline:2px solid var(--tint);outline-offset:3px}
 .grab{width:36px;height:5px;border-radius:2.5px;background:var(--separator);margin-bottom:10px}
 #sheet h2{font-size:28px;font-weight:700}
 .esc{font-size:34px;font-weight:700;letter-spacing:.37px;line-height:41px}
+.elvl{font-size:20px;font-weight:600;color:var(--tint);line-height:24px}
+.ecap{margin-bottom:-10px}
 .chip{font-size:13px;font-weight:600;background:var(--t-yellow);color:#000;border-radius:10px;padding:3px 10px}
 .sub{font-size:17px;color:var(--label-2);margin-bottom:8px}
 #sheet .btn{margin-top:2px}
 .acts{width:100%;max-width:340px;display:flex;flex-direction:column;gap:10px}
 @media (max-height:440px){
   #sheet{gap:4px;padding-bottom:calc(14px + env(safe-area-inset-bottom))}
-  .grab{margin-bottom:2px}#sheet h2{font-size:22px}.esc{font-size:30px;line-height:36px}.sub{margin-bottom:4px}
+  .grab{margin-bottom:2px}#sheet h2{font-size:22px}.elvl{font-size:17px;line-height:20px}.ecap{margin-bottom:-4px}.esc{font-size:30px;line-height:36px}.sub{margin-bottom:4px}
   .acts{flex-direction:row;max-width:480px}.acts .btn{flex:1}
 }
 
@@ -213,7 +227,7 @@ html.land .foot{display:none}
 
 <a href="https://tonysnguyen.games/" class="home-badge" id="homeBadge" aria-label="Back to Tony's game library"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABgCAMAAADVRocKAAAAkFBMVEUAAABnLPsAAP9mK/lVVf94O/5/AP9mK/hnKflmK/lmLPluMP9mLPlmLPhVAP//AP9ZKvg/P/8/P79pMPqqVf9VAKp/f/9/AH9vHPF/P79mM8xfH99aHfBVKtRaO/BfP99VVaptJNpvMf8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD6jhZcAAAAMHRSTlMA/AHMAwYCLxmOcP6tTwMBCwQELAMDAgILBAUICAYICAMHhwAAAAAAAAAAAAAAAAC1Tra5AAAE0ElEQVR42u1aiZKsKgyNCSCKa3fPetf3/v8jHwqo4NIqzqu6VTdVs/U4hITk5HB6AE6Z0B+cS/2ZwVdYBW1ZUEJF3ujvrzcGKamkM0XlF8QgIE1GKy+PQdQymVqK4loHD8jU1EFxcZIQ/ACSpAFxbQWlgYOLz/kGZeAgBx6dlpaJigtbo9c7EEN2ZkXal1Fsob4Az4uiyLnxhJx8B1IffNz+y75vlc5Fd5oc8unyKteFG7f/dJJtHQMKOQ2BuIgKAPE7TdPNupAmHiiN7AK/aEzXCmgyk54k47FdxiHz8tEfqF7z3p97CtFdzKBYqBh0hVlhbI/5ESR9BOLGhOBMMH4BCOmiVNMzELbfLhsCiDLANQ2nZRnbXCtl1AUgTJ/l12E0Gzo3YwKZTZnKrwNpPQGyjkKU3bRB12TELktSf6BN38JTLJVQXzfnO8BnXUpq4OOkvC6EvprM19+u8YovInWatPSHQBKvypDwjYHMiPJ3YN1P8Zm5PS3iSBIEIO/3dG7mNRmJpgiveTCAA9PkN8IDCl6oZNt0R79EgET2bP1+jJ6NQcxY6KJlp3mXw9EiW7PIjnMsNF0dRl0BqPMRDMBGJfJP7lsDpcEMVcLHeU7niih7EyHA2iGh6Md54uVwp9/mY/H8FcmoRoB322gFtAEVsGTyZ9xU0H9sSFxQKtZBoY/3LRKMpDnpZQcl8OihU+GGg7yOvjy5O9+KA/iTHai/Dv43B1tlWl5Qpq3B7GUH2QUiQiWXQH8YFdFaEbdj+e5faZymE80f7RGr2UL20qAipRxkPw1a8zAVKN7tb6Loo03Q0m2G2diiztktQvriJMIra2tPJyJJyH7QlFqx2ifddmo24u18gqzG0taQ/qvZS4tz2qSTxKISlFClL5fcCB/eWlZlOFtJyLhLUGXKXiX5N5gUjbB3dPp26sLp9Nce0BDIsXUYV7sZyDtXSY7WEe8WvA0UrEi7n8YkqZOy4CRBL4EkkslBzRFod/HrcJI+TAUpi/i+7pUjVMIl6Vy7Of2YmNlaIJaSK1l0elV67J6DrCFPc50p4sUdrHw3PaoTGPQYOGR4GcyNlPCwLPVQkoYEiWFbfHZd695dqVEHW9NRgXlSQWJZWXP1hBP9xR3XrjHsVZADnpkDRTWOvvXj7UGQfp1saa65J5SZCJHdaJSFD1WQmA7hxhOsi/w+b/pmV5JGkObBfc0TgLsnxZDTA5g0VFDrb8cvoxzkNDz22J0kZJIWBYLgXQP/18Id2/MkLVWQF1lhcfvhLdUOmHQ73GJDKxuwkOYBvdRjZTptT4GGVhQUBEY9h3Biuc/1RnQU2xVU2gR9LOv8uk6E3WvQue6Mtge0Bd95gmzDEq/QjYaATbgkZVv9jFZ1XdkFpr3mzsckvc6jN/DxRIFa1+6712vBkwW6UluOsSUI23Km15VnLLWzScp9QqzB5Kmk7SJoEDcVZqaTpNmF/5BjSXwjAoR/yEoQz1SYO4TP2DIixB1VpLn0U1z06x0/dwls7uqV9cnozX31rWa1/wLA92IP3olPRxGbYzxHljS+TbWZo/uA+Yds978oMB+VO0p9xHb8k0Ubeji2frtr5tPBfScD8d419fVDZUZHV+84xt6bTi+0cukslVtmnuO8B6mFxf4D/gMtmyAS1bQAAAAASUVORK5CYII=" alt="" width="27" height="27" draggable="false"></a>
 
-<div id="app">
+<div id="app" class="idle">
   <div id="side">
     <div class="top">
       <div class="brand">Snap Match</div>
@@ -222,29 +236,30 @@ html.land .foot{display:none}
         <button class="icon" id="pauseBtn" aria-label="Pause"><svg><use href="#i-pause"/></svg></button>
       </div>
     </div>
-    <div class="hud" id="hud">
-      <div class="stat"><div class="cap">Score</div><div class="lt num" id="score">0</div></div>
-      <div class="stat mid" id="timeStat"><div class="cap">Time</div><div class="tm num" id="time">60</div></div>
+    <div class="hud idle" id="hud">
+      <div class="stat"><div class="cap">Score <span class="tgt">/ <span id="target">1,000</span></span></div><div class="lt num" id="score">0</div></div>
+      <div class="stat mid" id="timeStat"><div class="cap" id="lvl">Lv 1</div><div class="tm num" id="time" aria-label="Seconds left">60</div></div>
       <div class="stat end"><div class="cap">Best</div><div class="val num" id="best">0</div></div>
     </div>
     <div class="track" id="track"><div id="bar"></div></div>
-    <div id="combo" aria-hidden="true"><div id="toast" hidden></div><div id="pts"></div></div>
+    <div id="combo" aria-hidden="true"><div id="idleMsg">Clock starts on your first swap</div><div id="toast" hidden></div><div id="pts"></div></div>
   </div>
   <div id="board" role="application" aria-label="Game board, 8 by 8" tabindex="-1">
     <div id="cells"></div>
     <div id="tiles"></div>
     <div id="fx"></div>
   </div>
-  <div class="foot" id="foot">Swipe a tile, or tap two neighbors to swap</div>
+  <div class="foot" id="foot">Clock starts on your first swap</div>
 </div>
 
 <div class="screen" id="startScr">
   <div class="card">
     <div class="minis" id="minis"></div>
     <h1>Snap Match</h1>
-    <p>Match 3 or more. Line up 4 for a Line tile, 5 or an L for a Burst. Beat the 60-second clock.</p>
-    <div class="bestline">Best <b class="num" id="startBest">0</b></div>
+    <p>Match 3 or more. Line up 4 for a Line tile, 5 or an L for a Burst. Hit each score target to level up and refill the clock.</p>
+    <div class="bestline">Best <b class="num" id="startBest">0</b> · Lv <b class="num" id="startLvl">1</b></div>
     <button class="btn pri" id="playBtn">Play</button>
+    <button class="sndtxt" data-snd>Sound On</button>
   </div>
 </div>
 
@@ -253,16 +268,19 @@ html.land .foot{display:none}
     <h2>Paused</h2>
     <p>Take a breath. The clock is stopped.</p>
     <button class="btn pri" id="resumeBtn">Resume</button>
+    <button class="sndtxt" data-snd>Sound On</button>
   </div>
 </div>
 
 <div id="scrim" hidden></div>
 <div id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" hidden>
   <div class="grab"></div>
-  <h2 id="sheetTitle">Time's Up</h2>
-  <div class="esc num" id="endScore">0</div>
+  <h2 id="sheetTitle" aria-live="polite">Time's Up</h2>
+  <div class="elvl num" id="endLevel">Level 1</div>
+  <div class="cap ecap">Score</div>
+  <div class="esc num" id="endScore" aria-live="polite">0</div>
   <div class="chip" id="newBest" hidden>New Best</div>
-  <div class="sub">Best <span class="num" id="endBest">0</span></div>
+  <div class="sub num" id="endSub">Best 0</div>
   <div class="acts"><button class="btn pri" id="againBtn">Play Again</button>
   <button class="btn sec" id="shareBtn">Share</button></div>
 </div>
@@ -470,6 +488,18 @@ html.land .foot{display:none}
     chord.forEach(function (ni) { chime(out(), tf, note(ni + 5) * 0.5, 0.09, 1.0, 0.7); });   // resolving chord
   });
 
+  // Level up: quick rising major arpeggio (root, 3rd, 5th, octave) of triangle plucks + soft airy shimmer.
+  // Plucks 120ms, 55ms apart; shimmer ~6kHz bandpass noise for 250ms. Whole sound ends by ~350ms.
+  S.levelUp = safe(function () {
+    var t = now(), root = 880, steps = [1, 1.2599, 1.4983, 2];          // A5, C#6, E6, A6
+    steps.forEach(function (m, i) {
+      var o = out(undefined, (i / 3 - 0.5) * 0.4), f = root * m * vary(0.003), g = 0.082 + i * 0.008;
+      tone(o, t + i * 0.055, f, 0.12, g, "triangle");
+      tone(o, t + i * 0.055, f * 2.002, 0.07, g * 0.28, "sine");     // glassy top partial
+    });
+    burst(out(), t + 0.08, 6000, 3, 0.25, 0.024, "bandpass", 7500, 0.05);
+  });
+
   /* ---------- Public API ---------- */
   // Resume a suspended/"interrupted" (iOS) context. Cheap no-op when already running.
   var kicked = false;
@@ -507,7 +537,7 @@ html.land .foot{display:none}
     isMuted: function () { return muted; },
     select: S.select, swap: S.swap, invalid: S.invalid, land: S.land, match: S.match,
     special: S.special, create: S.create, combo: S.combo, settle: S.settle,
-    tick: S.tick, hint: S.hint, start: S.start, end: S.end,
+    tick: S.tick, hint: S.hint, start: S.start, end: S.end, levelUp: S.levelUp,
     // Test hook: render into an injected (Offline)AudioContext.
     _renderTest: function (c) { try { test = true; muted = false; build(c); } catch (e) {} }
   };
@@ -579,8 +609,20 @@ function computeTileSize(){
     return {bw,left};
   };
   H.classList.remove("badge-row","badge-col");
+  appEl.classList.remove("thumb");appEl.style.paddingBottom="";
   let f=fit();
   if(f.left<badgeR){H.classList.add(land?"badge-col":"badge-row");f=fit();}
+  // Tall portrait: anchor the column to the bottom (thumb zone) instead of centering it
+  if(!land){
+    const cs=getComputedStyle(appEl), pt=parseFloat(cs.paddingTop)||0, pb=parseFloat(cs.paddingBottom)||0;
+    const fh=footEl.offsetHeight+(parseFloat(getComputedStyle(footEl).marginTop)||0);
+    const spare=vh-pt-pb-sideEl.offsetHeight-f.bw-fh;
+    if(spare>80){
+      appEl.classList.add("thumb");
+      appEl.style.paddingBottom="calc(max(12px, env(safe-area-inset-bottom)) + "+Math.round(Math.min(spare*.35,56))+"px)";
+      f=fit();
+    }
+  }
   const bw=f.bw;
   // compact well spacing on phone-size boards so the tiles themselves get the pixels
   if(bw<440){PAD=6;GAP=4;}else{PAD=10;GAP=6;}
@@ -803,14 +845,47 @@ let score=0, shown=0, tw=null, best=parseInt(store.get("m3.best","0"),10)||0;
 let timeLeft=60000, sel=null, down=null, cur=null;
 const log=[];
 const canInput=()=>state==="play"&&!busy&&!shuffling&&!timeUp;
+const canSelect=()=>state==="play"&&!shuffling&&!timeUp;   // selecting is allowed mid-cascade; swapping is not
+
+/* ---------- Levels ---------- */
+// inc(L)=round50(1000*1.2^(L-1)); target(L)=sum inc(1..L) -> 1000, 2200, 3650, 5400, 7450 ...
+const inc=L=>Math.round(1000*Math.pow(1.2,L-1)/50)*50;
+const targetFor=L=>{let t=0;for(let i=1;i<=L;i++)t+=inc(i);return t;};
+// drain multiplier: 0.6x at Lv1, +0.1 per level, 1.0x at Lv5, capped 1.25x from Lv8
+const rate=L=>Math.min(1.25,Math.round((0.6+0.1*(L-1))*100)/100);
+let level=1, target=1000, lvlPending=0, lvlHoldUntil=0, bestLevel=Math.max(1,parseInt(store.get("m3.bestLevel","1"),10)||1);
+const lvlEl=$("lvl"), targetEl=$("target");
+function renderLevelHud(){lvlEl.textContent="Lv "+level;targetEl.textContent=fmt(target);}
 
 function addScore(p){
   score+=p;
   tw={from:shown,to:score,t0:performance.now(),d:Math.min(400,120+(score-shown)*2)};
   if(!RM)scoreEl.animate([{transform:"scale(1)"},{transform:"scale(1.06)"},{transform:"scale(1)"}],{duration:120,easing:EO});
+  let n=0;
+  while(!timeUp&&score>=target){level++;target+=inc(level);n++;}
+  // The celebration (refill, toast, sound) waits for the board to settle, like gameOver does.
+  // The drain is frozen while it is pending, so a level reached mid-cascade can't time out.
+  if(n){lvlPending+=n;if(!busy)levelUp();}
+}
+function levelUp(){
+  if(!lvlPending||timeUp||state!=="play")return;
+  const n=lvlPending;lvlPending=0;
+  const before=timeLeft;
+  timeLeft=Math.max(timeLeft,Math.min(60000,timeLeft+15000*n));
+  const added=timeLeft-before;
+  if(!RM){barEl.style.transition="transform 300ms ease-out";clearTimeout(levelUp.bt);levelUp.bt=setTimeout(()=>{barEl.style.transition="";},320);}
+  const secs=Math.round(added/1000);if(secs>0)showTBonus(secs);
+  renderLevelHud();
+  if(!RM)lvlEl.animate([{transform:"scale(1)"},{transform:"scale(1.15)",offset:.4},{transform:"scale(1)"}],{duration:200,easing:EO});
+  toast("Level "+level,0,"lvl");
+  sound("levelUp");buzz([8,30,8]);
+  log.push({levelUp:level,added,at:performance.now()|0});if(log.length>40)log.shift();
 }
 function addTime(s){
   timeLeft=Math.min(99000,timeLeft+s*1000);
+  showTBonus(s);
+}
+function showTBonus(s){
   const d=document.createElement("div");d.className="tbonus";d.textContent="+"+s+"s";$("timeStat").appendChild(d);
   const a=d.animate([{opacity:0,transform:"translateY(4px)"},{opacity:1,transform:"translateY(0)",offset:.2},{opacity:0,transform:"translateY(-14px)"}],{duration:700,easing:EO,fill:"forwards"});
   a.onfinish=()=>d.remove();
@@ -820,8 +895,8 @@ const tvar=type=>"var(--t-"+COLORS[type]+")";
    little with each cascade step. Same pop/rise/fade as the old on-board float, but never over tiles. */
 let ptsAnim=null;
 function showPts(n,type,step,delay){
-  const el=$("pts");if(ptsAnim)ptsAnim.cancel();
-  el.textContent="+"+fmt(n);el.style.setProperty("--c",type==null?"var(--label)":tvar(type));
+  const el=$("pts");if(ptsAnim)ptsAnim.cancel();el.hidden=false;
+  el.textContent="+"+fmt(n);el.style.setProperty("--c",type==null?"var(--label)":tvar(type));el.classList.toggle("y",type===0);
   const sc=Math.min(1+.08*((step||1)-1),1.32);
   const kf=RM?[{opacity:0},{opacity:1,offset:.25},{opacity:0}]:[
     {opacity:0,transform:"translateY(6px) scale("+(sc*.6).toFixed(3)+")",easing:SP},
@@ -832,17 +907,32 @@ function showPts(n,type,step,delay){
 }
 let toastAnim=null;
 const STEP_TINT=["","","","--t-blue","--t-purple","--t-orange"];
-function toast(text,step){
+/* opt: "lvl" = Level-up pill (tint fill, holds 700ms, fades 200ms; combo words are skipped meanwhile),
+   "force" = always shows (Time's up, Shuffling). */
+function toast(text,step,opt){
+  if(!opt&&performance.now()<lvlHoldUntil)return;
   const el=$("toast");el.textContent=text;if(toastAnim)toastAnim.cancel();el.hidden=false;
-  const big=step>=3;el.classList.toggle("tinted",big);
+  const lv=opt==="lvl";
+  // spent "+N" shouldn't push the toast off-center; the Level pill takes over the strip outright (it arrives
+  // after the board settles, when the last "+N" is already on its way out)
+  if(lv||!ptsAnim||ptsAnim.playState!=="running"){if(lv&&ptsAnim)ptsAnim.cancel();$("pts").hidden=true;}el.classList.toggle("lvl",lv);
+  lvlHoldUntil=lv?performance.now()+900:0;
+  const big=!lv&&step>=3;el.classList.toggle("tinted",big);
   if(big)el.style.setProperty("--ec","var("+STEP_TINT[Math.min(step,5)]+")");
+  if(lv){
+    const a=toastAnim=el.animate(RM?[{opacity:0},{opacity:1,offset:.12},{opacity:1,offset:.78},{opacity:0}]:[
+      {opacity:0,transform:"scale(.6)",easing:SP},{opacity:1,transform:"scale(1.06)",offset:.2,easing:EO},
+      {opacity:1,transform:"scale(1)",offset:.78,easing:"ease-in"},{opacity:0,transform:"translateY(-8px) scale(1)"}],{duration:900,fill:"forwards"});
+    a.onfinish=()=>{if(toastAnim===a){el.hidden=true;el.classList.remove("lvl");}};
+    return;
+  }
   const kf=RM?[{opacity:0},{opacity:1,offset:.27},{opacity:1,offset:.75},{opacity:0}]:[
     {opacity:0,transform:"scale("+(big?.5:.6)+")",easing:SP},{opacity:1,transform:"scale("+(big?1.06:1)+")",offset:.274,easing:EO},
     {opacity:1,transform:"translateY(0) scale(1)",offset:.753,easing:EO},{opacity:0,transform:"translateY(-12px) scale(1)"}];
   const a=toastAnim=el.animate(kf,{duration:730,fill:"forwards"});
   a.onfinish=()=>{if(toastAnim===a)el.hidden=true;};  // collapse so a lone "+N" centers in the strip
 }
-function hideToast(){if(toastAnim){toastAnim.cancel();toastAnim=null;}$("toast").hidden=true;}
+function hideToast(){if(performance.now()<lvlHoldUntil)return;if(toastAnim){toastAnim.cancel();toastAnim=null;}$("toast").hidden=true;}
 const WORDS=["","","Nice","Great","Amazing","Unreal!"];
 /* Line special: tinted band unfurls from the special tile + two bright streak heads sweep to both ends,
    paced to the 15ms/cell clear stagger so tiles pop as the head passes. */
@@ -1020,9 +1110,16 @@ function collapse(){
   }
   return animateDrops(list);
 }
+/* Before the first swap the clock is idle: time in --label-2 + "Clock starts on your first swap"
+   (footer in portrait, combo strip in landscape). */
+const FOOT_TXT="Swipe a tile, or tap two neighbors to swap", IDLE_TXT="Clock starts on your first swap";
+function setStarted(v){
+  started=v;hudEl.classList.toggle("idle",!v);appEl.classList.toggle("idle",!v);
+  footEl.textContent=v?FOOT_TXT:IDLE_TXT;
+}
 async function trySwap(a,b){
   if(!canInput())return;
-  busy=true;poke();deselect();setHover(null);started=true;
+  busy=true;poke();deselect();setHover(null);setStarted(true);
   swapGrid(a,b);
   const groups=findMatches();
   const mid=(a.c+b.c)/2;  // board columns (a/b positions are swapped here, midpoint is unchanged)
@@ -1044,10 +1141,11 @@ async function trySwap(a,b){
 async function afterSettle(){
   poke();
   if(timeUp){gameOver();return;}
+  if(lvlPending)levelUp();
   if(!allMoves().length){busy=true;await reshuffle();busy=false;poke();}
 }
 async function reshuffle(){
-  shuffling=true;toast("Shuffling…");
+  shuffling=true;toast("Shuffling…",0,"force");
   const tiles=[];for(let r=0;r<N;r++)for(let c=0;c<N;c++)tiles.push(grid[r][c]);
   const outs=tiles.map(t=>t.inn.animate(RM?[{opacity:1},{opacity:0}]:[{transform:"scale(1)",opacity:1},{transform:"scale(0)",opacity:0}],{duration:RM?120:150,easing:EI,fill:"forwards"}));
   await wait(RM?120:150);
@@ -1083,15 +1181,15 @@ function release(){if(down){down.t.el.classList.remove("pr");down=null;}}
 function select(t){deselect();sel=t;t.el.classList.add("sel");sound("select",t.c);buzz(8);}
 function deselect(){if(sel){sel.el.classList.remove("sel");sel=null;}}
 function tap(t){
-  if(!canInput())return;
+  if(!canSelect())return;
   if(!sel){select(t);return;}
   if(sel===t){deselect();return;}
-  if(Math.abs(sel.r-t.r)+Math.abs(sel.c-t.c)===1){const a=sel;deselect();trySwap(a,t);}
+  if(Math.abs(sel.r-t.r)+Math.abs(sel.c-t.c)===1){if(!canInput())return;const a=sel;deselect();trySwap(a,t);}
   else select(t);
 }
 boardEl.addEventListener("pointerdown",e=>{
   if(e.button>0)return;poke();
-  if(!canInput())return;
+  if(!canSelect())return;
   const rc=cellFromEvent(e);if(!rc)return;const t=grid[rc[0]][rc[1]];if(!t)return;
   e.preventDefault();
   try{boardEl.setPointerCapture(e.pointerId);}catch(_){}
@@ -1110,6 +1208,8 @@ boardEl.addEventListener("pointermove",e=>{
 });
 boardEl.addEventListener("pointerup",e=>{if(!down||e.pointerId!==down.id)return;const t=down.t;release();tap(t);});
 boardEl.addEventListener("pointercancel",release);
+// tapping anywhere outside the board clears the selection
+appEl.addEventListener("pointerdown",e=>{if(sel&&!boardEl.contains(e.target))deselect();});
 /* Desktop hover lift (tiles are pointer-events:none, so hit-test by cell; CSS gates the look to hover:hover) */
 let hovT=null;
 function setHover(t){if(hovT===t)return;if(hovT)hovT.el.classList.remove("hov");hovT=t;if(t)t.el.classList.add("hov");}
@@ -1144,14 +1244,14 @@ window.addEventListener("keydown",e=>{
 },true);
 
 /* ---------- Hint ---------- */
-let lastInput=performance.now(), lastHint=0, hintAnims=null;
+let lastInput=performance.now(), lastHint=0, hintAnims=null, hintSeen=false;
 function clearHint(){if(hintAnims){hintAnims.forEach(a=>a.cancel());hintAnims=null;}}
 function poke(){lastInput=performance.now();clearHint();}
 function showHint(){
-  const ms=allMoves();if(!ms.length)return;const m=ms[ri(ms.length)];clearHint();sound("hint");
-  const wig=[0,6,-6,6,-6,6,-6,0].map(a=>({transform:"rotate("+a+"deg)"}));
+  const ms=allMoves();if(!ms.length)return;const m=ms[ri(ms.length)];clearHint();sound("hint");hintSeen=true;
+  const wig=[0,9,-9,9,-9,9,-9,0].map(a=>({transform:"rotate("+a+"deg)"}));
   hintAnims=m.map(([r,c])=>{const t=grid[r][c];
-    return RM?t.inn.animate([{opacity:1},{opacity:.6},{opacity:1}],{duration:1200}):t.inn.animate(wig,{duration:360,easing:"ease-in-out"});});
+    return RM?t.inn.animate([{opacity:1},{opacity:.6},{opacity:1}],{duration:1200}):t.inn.animate(wig,{duration:520,iterations:2,easing:"ease-in-out"});});
 }
 
 /* ---------- Screens, pause, sheet ---------- */
@@ -1165,22 +1265,26 @@ function hideScreen(el){
   const a=el.animate([{opacity:1},{opacity:0}],{duration:120,fill:"forwards"});
   a.onfinish=()=>{if(el._tok===tok)el.hidden=true;a.cancel();};
 }
-function pause(){if(state!=="play")return;state="paused";release();clearHint();showScreen($("pauseScr"));}
-function resume(){if(state!=="paused")return;state="play";hideScreen($("pauseScr"));poke();}
+const focusEl=el=>{try{el.focus({preventScroll:true});}catch(e){}};
+// #app is inert whenever a screen or the sheet covers it (no Tab into Mute/Pause/board underneath)
+const setInert=on=>{appEl.inert=on;appEl.toggleAttribute("inert",on);};
+function pause(){if(state!=="play")return;state="paused";release();clearHint();setInert(true);showScreen($("pauseScr"));focusEl($("resumeBtn"));}
+function resume(){if(state!=="paused")return;state="play";setInert(false);hideScreen($("pauseScr"));poke();focusEl(boardEl);
+  if(lvlPending&&!busy)levelUp();}
 document.addEventListener("visibilitychange",()=>{if(document.hidden)pause();});
 window.addEventListener("blur",pause);
 $("pauseBtn").addEventListener("click",pause);
-$("resumeBtn").addEventListener("click",()=>{resume();$("resumeBtn").blur();});
+$("resumeBtn").addEventListener("click",()=>{resume();});
 
 function setMuteUI(){
   $("muteBtn").querySelector("use").setAttribute("href",muted?"#i-mute":"#i-snd");
   $("muteBtn").setAttribute("aria-label",muted?"Unmute sound":"Mute sound");
+  document.querySelectorAll("[data-snd]").forEach(b=>{b.textContent=muted?"Sound Off":"Sound On";b.setAttribute("aria-pressed",String(!muted));});
 }
-$("muteBtn").addEventListener("click",()=>{
-  muted=!muted;store.set("m3.mute",muted?"1":"0");setMuteUI();
-  sound("setMuted",muted);
-  $("muteBtn").blur();
-});
+function toggleMute(){muted=!muted;store.set("m3.mute",muted?"1":"0");setMuteUI();sound("setMuted",muted);}
+$("muteBtn").addEventListener("click",()=>{toggleMute();$("muteBtn").blur();});
+// text toggle on the start + pause screens, so sound can be muted before the Play chime
+document.querySelectorAll("[data-snd]").forEach(b=>b.addEventListener("click",toggleMute));
 
 const sheet=$("sheet"), scrim=$("scrim");
 let sy=0, sv=0, sRaf=0, drag=null;
@@ -1209,8 +1313,9 @@ function closeSheet(cb){
   a.onfinish=()=>{sheet.hidden=true;scrim.hidden=true;a.cancel();setSY(0);};
   if(cb)cb();
 }
+const armed=()=>sheet.dataset.armed==="1";
 sheet.addEventListener("pointerdown",e=>{
-  if(e.target.closest("button")||RM)return;
+  if(e.target.closest("button")||RM||!armed())return;
   cancelAnimationFrame(sRaf);drag={y0:e.clientY-sy,id:e.pointerId,pts:[[performance.now(),e.clientY]]};
   try{sheet.setPointerCapture(e.pointerId);}catch(_){}
 });
@@ -1226,42 +1331,82 @@ function endDrag(e){
 }
 sheet.addEventListener("pointerup",endDrag);
 sheet.addEventListener("pointercancel",endDrag);
-scrim.addEventListener("click",()=>closeSheet(showStart));
+scrim.addEventListener("click",()=>{if(armed())closeSheet(showStart);});
 
 function updateBestHud(){bestEl.textContent=fmt(Math.max(best,shown));}
-function showStart(){
-  state="start";$("startBest").textContent=fmt(best);showScreen($("startScr"));
+function showStart(first){
+  state="start";$("startBest").textContent=fmt(best);$("startLvl").textContent=bestLevel;
+  setInert(true);showScreen($("startScr"));
+  if(!first)focusEl($("playBtn"));  // not on page load: avoids a focus ring before any input
 }
+let endTok=0, run={score:0,level:1};
 function newGame(){
+  endTok++;sheet.dataset.armed="";boardEl.classList.remove("over");
   score=0;shown=0;tw=null;scoreEl.textContent="0";updateBestHud();
-  timeLeft=60000;started=false;timeUp=false;needNew=false;cur=null;curEl.hidden=true;
+  level=1;target=1000;lvlPending=0;lvlHoldUntil=0;renderLevelHud();hideToast();
+  timeLeft=60000;setStarted(false);timeUp=false;needNew=false;cur=null;curEl.hidden=true;
+  shareBtn.textContent="Share";
   busy=true;const d=buildBoard();setTimeout(()=>{busy=false;poke();},d);
 }
+/* Time-up guard: "Time's up" in the combo strip + board dims, the sheet opens 550ms later, and its
+   buttons (and scrim/drag dismiss) stay disarmed for another 400ms so a late swipe/tap can't restart. */
 function gameOver(){
   if(state==="over"||state==="start")return;
-  state="over";needNew=true;deselect();release();clearHint();
-  const nb=score>best;
-  sound("end",nb);buzz([10,40,10]);
+  state="over";needNew=true;deselect();release();clearHint();setHover(null);
+  const tok=++endTok;sheet.dataset.armed="";lvlPending=0;
+  const nb=score>best, prevBest=best, nlb=level>bestLevel;
+  run={score,level};
   tw=null;shown=score;scoreEl.textContent=fmt(score);
   if(nb){best=score;store.set("m3.best",best);}
+  if(nlb){bestLevel=level;store.set("m3.bestLevel",bestLevel);}
   updateBestHud();
-  $("endScore").textContent=fmt(score);$("endBest").textContent=fmt(best);$("newBest").hidden=!nb;
-  hideScreen($("pauseScr"));
-  openSheet();
+  hideScreen($("pauseScr"));setInert(true);
+  toast("Time's up",3,"force");buzz([10,40,10]);
+  boardEl.classList.add("over");
+  $("endLevel").textContent="Level "+level;
+  const chip=$("newBest");chip.hidden=!(nb||nlb);chip.textContent=nb?"New Best":"New Level Best";
+  const lv=" · Lv "+bestLevel, gap=best-score;
+  $("endSub").textContent=nb?(prevBest>0?"Previous best "+fmt(prevBest):"Best "+fmt(best)+lv)
+    :"Best "+fmt(best)+lv+(gap>0?" · "+fmt(gap)+" to beat":"");
+  $("endScore").textContent="0";
+  setTimeout(()=>{
+    if(tok!==endTok||state!=="over")return;
+    openSheet();sound("end",nb||nlb);focusEl($("againBtn"));
+    countUp($("endScore"),score,700,()=>{
+      if(!chip.hidden&&!RM)chip.animate([{transform:"scale(1)"},{transform:"scale(1.15)",offset:.45},{transform:"scale(1)"}],{duration:320,easing:EO});
+    },tok);
+    setTimeout(()=>{if(tok===endTok)sheet.dataset.armed="1";},400);
+  },550);
+}
+function countUp(el,to,ms,done,tok){
+  if(RM||to<=0){el.textContent=fmt(to);if(done)done();return;}
+  const t0=performance.now();el.setAttribute("aria-busy","true");
+  const st=now=>{
+    if(tok!==endTok){el.removeAttribute("aria-busy");return;}
+    const p=Math.min(1,(now-t0)/ms), e=1-Math.pow(1-p,3);el.textContent=fmt(to*e);
+    if(p<1)requestAnimationFrame(st);else{el.removeAttribute("aria-busy");if(done)done();}
+  };
+  requestAnimationFrame(st);
 }
 $("playBtn").addEventListener("click",()=>{
-  unlockAudio();hideScreen($("startScr"));
+  unlockAudio();hideScreen($("startScr"));setInert(false);
   if(needNew)newGame();
   sound("start");
-  state="play";poke();$("playBtn").blur();
+  state="play";poke();focusEl(boardEl);
 });
+const shareBtn=$("shareBtn");
 $("againBtn").addEventListener("click",()=>{
-  unlockAudio();closeSheet();newGame();state="play";sound("start");poke();$("againBtn").blur();
+  if(!armed())return;
+  unlockAudio();closeSheet();setInert(false);newGame();state="play";sound("start");poke();focusEl(boardEl);
 });
-$("shareBtn").addEventListener("click",async()=>{
-  const text="I scored "+fmt(score)+" in Snap Match!";
+let shareT=0;
+shareBtn.addEventListener("click",async()=>{
+  if(!armed())return;
+  const text="I reached Level "+run.level+" with "+fmt(run.score)+" in Snap Match!";
   try{if(navigator.share){await navigator.share({title:"Snap Match",text});return;}}catch(e){return;}
-  try{await navigator.clipboard.writeText(text);toast("Copied");}catch(e){toast(text);}
+  let ok=false;try{await navigator.clipboard.writeText(text);ok=true;}catch(e){}
+  shareBtn.textContent=ok?"Copied ✓":"Couldn't copy";
+  clearTimeout(shareT);shareT=setTimeout(()=>{shareBtn.textContent="Share";},1500);
 });
 
 /* ---------- Main loop ---------- */
@@ -1282,8 +1427,11 @@ function renderTimer(){
 }
 function loop(now){
   const dt=Math.min(now-lastT,100);lastT=now;
-  if(state==="play"&&started&&!shuffling&&!timeUp){
-    timeLeft-=dt;
+  // safety net: a level reached mid-cascade whose celebration was skipped (paused, then resumed during a reshuffle)
+  // must not leave the drain frozen until the next swap
+  if(lvlPending&&state==="play"&&!busy&&!shuffling)levelUp();
+  if(state==="play"&&started&&!shuffling&&!timeUp&&!lvlPending){
+    timeLeft-=dt*rate(level);
     if(timeLeft<=0){timeLeft=0;timeUp=true;deselect();release();if(!busy)gameOver();}
   }
   renderTimer();
@@ -1292,7 +1440,7 @@ function loop(now){
     if(v!==shown){shown=v;scoreEl.textContent=fmt(v);updateBestHud();}
     if(p>=1)tw=null;
   }
-  if(state==="play"&&!busy&&!shuffling&&!timeUp&&now-lastInput>5000&&now-lastHint>4000){lastHint=now;showHint();}
+  if(state==="play"&&!busy&&!shuffling&&!timeUp&&now-lastInput>(hintSeen?5000:3000)&&now-lastHint>4000){lastHint=now;showHint();}
   requestAnimationFrame(loop);
 }
 
@@ -1306,13 +1454,15 @@ function init(){
   computeTileSize();
   window.addEventListener("resize",onResize);
   window.addEventListener("orientationchange",onResize);
-  updateBestHud();
+  updateBestHud();renderLevelHud();setStarted(false);
   busy=true;const d=buildBoard();setTimeout(()=>{busy=false;},d);
-  showStart();
+  showStart(true);
   requestAnimationFrame(loop);
   window.SnapMatch={
     moves:allMoves,
     setTime:ms=>{timeLeft=ms;},
+    setLevel:n=>{level=Math.max(1,n|0);target=targetFor(level);renderLevelHud();return {level,target,rate:rate(level)};},
+    addPoints:p=>{if(state!=="play")return false;addScore(+p||0);return {level,target,score};},
     board:()=>grid.map(row=>row.map(t=>t?t.type+(t.special?t.special[0]:""):".")),
     log:()=>log.slice(),
     swap:(r1,c1,r2,c2)=>{const a=grid[r1]&&grid[r1][c1],b=grid[r2]&&grid[r2][c2];return a&&b&&Math.abs(r1-r2)+Math.abs(c1-c2)===1?trySwap(a,b):false;},
@@ -1323,7 +1473,7 @@ function init(){
         setSpecial(t,{b:"burst",h:"h",v:"v"}[v[1]]||null);grid[r][c]=t;tilesEl.appendChild(t.el);move(t,0);}
       afterSettle();return true;
     },
-    info:()=>({bw:BW,state,score,timeLeft,busy,shuffling,started,filled:grid.flat().filter(Boolean).length,dom:tilesEl.children.length,pad:PAD,pitch:PITCH,cell:CELL,
+    info:()=>({bw:BW,state,score,level,target,rate:rate(level),bestLevel,lvlPending,armed:armed(),timeLeft,busy,shuffling,started,filled:grid.flat().filter(Boolean).length,dom:tilesEl.children.length,pad:PAD,pitch:PITCH,cell:CELL,
       particles:pool.filter(p=>p.on).length,fxNodes:fxEl.children.length-1})
   };
 }
