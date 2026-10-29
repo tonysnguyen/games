@@ -1,10 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+
 <meta name="theme-color" content="#160A33">
 <title>Alphaburst</title>
+<meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Andika:wght@700&family=Baloo+2:wght@600;700;800&family=Lilita+One&display=swap" rel="stylesheet">
@@ -101,10 +99,10 @@ button:focus-visible,a:focus-visible{outline:3px solid var(--gold);outline-offse
 .sheet .deck{--cw:170px;margin:12px 0 10px}
 .sheet .fcard{animation:cardFlip .7s cubic-bezier(.3,1.3,.5,1) .1s both}
 .hero-info{display:flex;flex-direction:column;align-items:center;margin-top:24px;gap:8px}
-.pips{display:flex;gap:6px;align-items:center}
-.pip{width:22px;height:10px;border-radius:99px;background:rgba(255,255,255,.14);transition:background .3s,transform .3s}
+.pips{display:flex;gap:6px;align-items:center;min-width:0;flex:0 1 auto;height:20px}
+.pip{flex:0 1 auto;min-width:6px;width:22px;height:10px;border-radius:99px;background:rgba(255,255,255,.14);transition:background .3s,transform .3s}
 .pip.on{background:var(--acc);box-shadow:0 0 12px color-mix(in srgb,var(--acc) 60%,transparent);animation:pipIn .4s cubic-bezier(.3,1.8,.5,1)}
-.bonus-count{font-family:var(--disp);font-size:16px;color:var(--gold);margin-left:4px}
+.bonus-count{font-family:var(--disp);font-size:16px;line-height:1;color:var(--gold);margin-left:4px}
 .status-line{display:flex;align-items:center;gap:10px;min-height:30px;font-weight:800;font-size:16px;color:var(--lav2)}
 .streak{background:var(--gold);color:var(--ink);font-family:var(--disp);font-size:16px;padding:3px 12px;border-radius:99px;box-shadow:0 4px 0 var(--gold-d);animation:pop .4s cubic-bezier(.3,1.8,.5,1)}
 .next-btn{background:var(--gold);color:var(--ink);font-family:var(--disp);font-size:17px;height:34px;padding:0 16px;border-radius:99px;box-shadow:0 4px 0 var(--gold-d),0 0 20px rgba(255,201,60,.45);display:flex;align-items:center;gap:6px;animation:pop .45s cubic-bezier(.3,1.8,.5,1),breathe 1.6s ease-in-out .5s infinite}
@@ -145,7 +143,7 @@ button:focus-visible,a:focus-visible{outline:3px solid var(--gold);outline-offse
 .placeholder{flex:none;font-weight:700;font-size:17px;color:var(--mute);margin-left:8px;white-space:nowrap}
 .entry input{position:absolute;inset:0;width:100%;height:100%;opacity:0;font-size:16px;border:0;padding:0;margin:0;color:transparent;caret-color:transparent;background:transparent;z-index:2}
 .feedback-row{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:34px;margin-top:8px}
-.feedback{font-weight:800;font-size:16px;color:var(--lav2);min-width:0}
+.feedback{font-weight:800;font-size:16px;color:var(--lav2);min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .feedback.err{color:#FFC4E0}
 .feedback.ok{color:var(--gold)}
 .feedback.hintline{color:#7DF0C8;letter-spacing:1px}
@@ -169,6 +167,10 @@ button:focus-visible,a:focus-visible{outline:3px solid var(--gold);outline-offse
 .chip.landed{animation:chipLand .3s cubic-bezier(.3,1.8,.5,1)}
 .chip.flash{animation:wobble .45s ease;box-shadow:0 3px 0 #C23A7C,0 0 0 3px #FF6FB1}
 .chip.hidden{opacity:0}
+.chips.d1{gap:6px}.chips.d1 .chip{height:28px;font-size:14px;padding:0 9px;border-radius:9px}
+.chips.d2{gap:5px}.chips.d2 .chip{height:24px;font-size:12.5px;padding:0 7px;border-radius:8px;box-shadow:0 2px 0 var(--lav)}
+.chips.d3{gap:4px}.chips.d3 .chip{height:21px;font-size:11px;padding:0 6px;border-radius:7px;box-shadow:0 2px 0 var(--lav)}
+.chips.d2 .chip.long::after,.chips.d2 .chip.rare::after,.chips.d3 .chip.long::after,.chips.d3 .chip.rare::after{margin-left:4px;width:5px;height:5px}
 .empty{width:100%;padding:10px 4px;font-weight:700;font-size:15px;color:var(--mute);line-height:1.4}
 .empty b{color:var(--lav2)}
 
@@ -182,6 +184,8 @@ button:focus-visible,a:focus-visible{outline:3px solid var(--gold);outline-offse
 .floater.tag{font-size:15px;color:var(--ink);background:var(--gold);padding:3px 12px;border-radius:99px;box-shadow:0 3px 0 var(--gold-d)}
 .floater.tag.rare{background:#7DF0C8;box-shadow:0 3px 0 #14907B}
 .floater.tag.long{background:#D9CCFF;box-shadow:0 3px 0 #8B5CFF}
+.floater.streakt{font-size:17px;color:var(--ink);background:var(--gold);padding:4px 14px;border-radius:99px;box-shadow:0 4px 0 var(--gold-d),0 0 22px rgba(255,201,60,.55)}
+.floater.streakt.up{font-size:20px;padding:5px 16px}
 
 /* ---------- sheets / overlays ---------- */
 .overlay{position:fixed;inset:0;z-index:50;display:flex;align-items:flex-end;justify-content:center;background:rgba(14,6,34,.6);animation:fadeIn .25s ease both}
@@ -359,6 +363,45 @@ button:focus-visible,a:focus-visible{outline:3px solid var(--gold);outline-offse
   .chips{gap:10px}
 }
 
+
+/* ---------- phone & tablet portrait: card on the left, collected words beside it,
+   then the word box, then the timer and progress ---------- */
+@media (max-width:919px), (max-height:559px){
+  /* the card + words row has a fixed height so nothing below it moves while you play */
+  .game{--top-h:clamp(132px,calc(var(--vh) - 430px),250px);display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto auto var(--top-h) auto auto auto auto 1fr;
+    grid-template-areas:"track track" "cap cap" "card chips" "info info" "entry entry" "timer timer" "fb fb" ". .";column-gap:16px}
+  .hero,.entry{display:contents}
+  .track{grid-area:track}
+  .track-cap{grid-area:cap}
+  .hero .deck{grid-area:card;align-self:start;margin:16px 0 0 6px;--cw:clamp(124px,36vw,156px)}
+  .collect{grid-area:chips;margin-top:12px;min-height:0;height:calc(100% - 12px)}
+  .chips{height:100%}
+  .collect-head{display:none}
+  .chips{gap:7px;padding:4px 2px 14px;align-content:flex-start}
+  .chip{height:32px;font-size:15px;padding:0 11px;border-radius:10px}
+  .empty{padding:2px 0;font-size:15px}
+  .entry-row{grid-area:entry;margin-top:8px}
+  .feedback-row{grid-area:fb;margin-top:8px;min-height:34px}
+  .timer-row{grid-area:timer;margin-top:12px}
+  .hero-info{grid-area:info;flex-direction:row;flex-wrap:nowrap;justify-content:flex-start;align-items:center;gap:12px;margin-top:12px}
+  .hero-info .status-line{flex:none;white-space:nowrap}
+  .pips{gap:5px}
+  .pip{width:16px}
+  .status-line{height:36px;min-height:36px;gap:8px}
+  .app.compact .hero .deck{--cw:108px;margin-top:10px}
+  .app.compact .game{--top-h:clamp(86px,calc(var(--vh) - 318px),150px)}
+  .app.compact .collect{margin-top:8px;height:calc(100% - 8px)}
+  .app.compact .entry-row{margin-top:6px}
+  .app.compact .feedback-row{margin-top:4px;min-height:30px}
+  .app.compact .timer-row{margin-top:8px}
+  .app.compact .hero-info{margin-top:8px;align-items:center}
+  .app.compact .pip{width:12px}
+}
+@media (min-width:600px) and (max-width:919px){
+  .hero .deck{--cw:210px}
+  .chip{height:38px;font-size:17px;padding:0 14px}
+  .pip{width:22px}
+}
 @keyframes pop{0%{transform:scale(.3);opacity:0}70%{transform:scale(1.08);opacity:1}100%{transform:scale(1);opacity:1}}
 @keyframes bump{0%{transform:scale(1)}40%{transform:scale(1.18)}100%{transform:scale(1)}}
 @keyframes bob{0%,100%{translate:0 0}50%{translate:0 -6px}}
@@ -398,8 +441,7 @@ button:focus-visible,a:focus-visible{outline:3px solid var(--gold);outline-offse
   .conf,.particle{display:none}
 }
 </style>
-</head>
-<body>
+
 <div class="app" id="app">
   <div class="stage">
     <div class="topbar">
@@ -572,7 +614,6 @@ function scoreWord(word, tier, streak, viaHint) {
   if (n >= 7) tags.push({ t: n >= 9 ? 'AMAZING WORD!' : 'LONG WORD!', k: 'long' });
   if (tier === 2) { base += RARE_BONUS; tags.push({ t: 'RARE FIND!', k: 'rare' }); }
   const mult = viaHint ? 0.5 : streakMult(streak);
-  if (!viaHint && mult > 1) tags.push({ t: `x${mult} STREAK`, k: '' });
   return { pts: Math.round(base * mult / 5) * 5, tags };
 }
 function letterBonus(i) { return 100 + i * 10 + (TOUGH.has(LETTERS[i]) ? 100 : 0); }
@@ -679,7 +720,6 @@ function renderStatus() {
   if (isComplete(L) && run.idx < 25) h += `<button class="next-btn" id="nextBtn" type="button">Next: ${LETTERS[run.idx + 1]} <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg></button>`;
   else if (isComplete(L)) h += `<button class="next-btn" id="nextBtn" type="button">See results</button>`;
   else h += `<span>${found.length} of ${need} words</span>`;
-  if (run.streak >= 3) h += `<span class="streak" title="${run.streak} words in a row">${run.streak} streak ×${streakMult(run.streak)}</span>`;
   el.status.innerHTML = h;
   const nb = $('nextBtn'); if (nb) nb.onclick = () => { if (run.idx === 25) showSummary(); else advance(); };
 }
@@ -699,6 +739,16 @@ function renderChips() {
     return;
   }
   el.chips.innerHTML = found.slice().reverse().map((w, i) => chipHTML(w, i === 0)).join('');
+  fitChips();
+}
+// Shrink the word chips step by step so they fit their area; scroll only as a last resort.
+function fitChips() {
+  const c = el.chips, steps = ['d1', 'd2', 'd3'];
+  c.classList.remove(...steps);
+  for (const d of steps) {
+    if (c.scrollHeight <= c.clientHeight + 1) break;
+    c.classList.remove(...steps); c.classList.add(d);
+  }
 }
 function renderEntry() {
   const L = curLetter(), v = el.word.value.toLowerCase().replace(/[^a-z]/g, '');
@@ -933,6 +983,11 @@ function accept(word, tier) {
   burst(c.x, c.y, [getComputedStyle(el.app).getPropertyValue('--acc').trim() || '#FFC93C', '#FFC93C', '#FFFFFF', '#8B5CFF'], tier === 2 || word.length >= 7 ? 20 : 12);
   floater('+' + sc.pts, 'pts', c.x, fromRect.top - 4, 60);
   sc.tags.forEach((tg, i) => floater(tg.t, 'tag ' + tg.k, c.x, fromRect.top - 40 - i * 30, 140 + i * 90));
+  // streak: a quick toast over the goal row that pops in and fades away
+  if (!viaHint && run.streak >= 3) {
+    const r = el.pips.parentNode.getBoundingClientRect(), m = streakMult(run.streak), tierUp = [3, 6, 10].includes(run.streak);
+    floater(`${run.streak} streak ×${m}${tierUp ? '!' : ''}`, 'streakt' + (tierUp ? ' up' : ''), r.left + r.width * 0.72, r.top + r.height / 2, 380);
+  }
   feedback(`${word.toUpperCase()}!`, 'ok');
   sfx.correct(Math.max(1, run.streak)); if (tier === 2 || word.length >= 8) setTimeout(sfx.rare, 180);
   buzz(15);
@@ -1239,7 +1294,7 @@ function fitViewport() {
   el.app.classList.toggle('compact', h < 640 && window.innerWidth < 920);
   el.app.classList.toggle('tiny', h < 470);
   if (document.activeElement === el.word) window.scrollTo(0, 0);
-  renderEntry();
+  renderEntry(); fitChips();
 }
 // Title screen: shows "Start at A" for a fresh run, or "Continue at G" for a saved one.
 function updateTitle() {
@@ -1281,5 +1336,5 @@ function boot() {
 }
 boot();
 </script>
-</body>
-</html>
+
+</body></html>
