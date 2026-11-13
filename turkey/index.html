@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Pacifico&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  html,body{margin:0;height:100%;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;
+  html,body{margin:0;height:100%;overflow:hidden;user-select:none;-webkit-user-select:none;
     font-family:'Fredoka',system-ui,sans-serif;color:#4a2a14;
     background:radial-gradient(120% 80% at 50% 20%,#7a3a1f 0%,#4a2015 60%,#2c120c 100%)}
   #stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
@@ -81,7 +81,6 @@
   @keyframes stamp{0%{opacity:0;scale:1.6}100%{opacity:var(--o,.42);scale:1}}
   .from{font-size:13px;font-weight:600;opacity:.75;margin-top:4px;display:flex;align-items:center;justify-content:center;gap:4px}
   .from .paw{width:15px;height:15px;fill:#8a4a1f}
-  #card:not(.open) .cover:hover{transform:rotateY(-12deg)}
   .cover{transition:transform 1.3s cubic-bezier(.55,.05,.25,1), opacity .5s 1s}
 
   /* ---------------- In-game overlays ---------------- */
@@ -127,7 +126,8 @@
 
 #cardScene{padding:16px; padding-top:max(16px,env(safe-area-inset-top));padding-bottom:max(16px,env(safe-area-inset-bottom));touch-action:pan-y}
 #card{width:min(86vw,380px,calc((100dvh - 40px) * .7142857));flex-shrink:0;--tilt-x:0deg;--tilt-y:0deg;--drift-x:0px;--drift-y:0px}
-#card:not(.open){transform:rotateX(var(--tilt-x)) rotateY(var(--tilt-y));transition:transform .16s ease-out}
+#card:not(.open){transform:translate(calc(var(--drift-x) * 3),calc(var(--drift-y) * 3)) rotateX(var(--tilt-x)) rotateY(var(--tilt-y));transition:transform .22s ease-out}
+#card:not(.open).dragging{transition:none}
 #card:not(.open) .celebration{translate:var(--drift-x) var(--drift-y);transition:translate .16s ease-out}
 #card:not(.open) .coverText{translate:calc(var(--drift-x) * .35) calc(var(--drift-y) * .35);transition:translate .16s ease-out}
 #card .inside{overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;justify-content:flex-start;padding:9% 8%}
@@ -163,10 +163,20 @@ button{touch-action:manipulation}
 #ready .howto i{font-size:29px;flex:0 0 36px;text-align:center}
 #roundComplete .panel{width:90%}
 #roundComplete p{font-size:18px;line-height:1.45;color:#532d19}
-.harvestParty{font-size:35px;line-height:1.6}
-#roundComplete.show .harvestParty{animation:harvestCheer .65s ease-in-out 3}
-@keyframes harvestCheer{50%{transform:translateY(-12px) rotate(-3deg) scale(1.08)}}
-@media(prefers-reduced-motion:reduce){#roundComplete.show .harvestParty{animation:none}}
+ .harvestParty{position:relative;width:min(100%,225px);height:80px;margin:0 auto 5px;font-size:30px;line-height:1}
+.harvestParty span{position:absolute;left:var(--x);bottom:var(--y);transform:translateX(-50%) rotate(var(--angle));opacity:0}
+.harvestParty span:nth-child(1){--x:11%;--y:23px;--angle:-19deg;--delay:.12s;font-size:.85em}
+.harvestParty span:nth-child(2){--x:29%;--y:6px;--angle:-9deg;--delay:.23s}
+.harvestParty span:nth-child(3){--x:50%;--y:31px;--angle:0deg;--delay:.34s;font-size:1.28em}
+.harvestParty span:nth-child(4){--x:71%;--y:6px;--angle:9deg;--delay:.45s}
+.harvestParty span:nth-child(5){--x:89%;--y:22px;--angle:20deg;--delay:.56s;font-size:.85em}
+#roundComplete.show .harvestParty span{animation:harvestPopIcon .52s cubic-bezier(.2,.75,.25,1) var(--delay) both}
+@keyframes harvestPopIcon{
+  from{opacity:0;transform:translate(-50%,15px) rotate(var(--angle)) scale(.55)}
+  65%{opacity:1;transform:translate(-50%,-3px) rotate(var(--angle)) scale(1.08)}
+  to{opacity:1;transform:translateX(-50%) rotate(var(--angle)) scale(1)}
+}
+@media(prefers-reduced-motion:reduce){#roundComplete.show .harvestParty span{animation:none;opacity:1}}
  .playerEntry{text-align:left;margin:18px 0 4px}
 .playerEntry label{display:block;font-size:17px;font-weight:600;color:#462710;margin-bottom:7px}
 .playerEntry label span{font-size:14px;font-weight:500}
@@ -174,7 +184,10 @@ button{touch-action:manipulation}
 .playerEntry input:focus{outline:3px solid #eaa246;outline-offset:2px}
 .playerEntry small{display:block;margin-top:6px;font-size:13px;color:#694728}
 #resultPlayer{font-size:18px;font-weight:600;color:#653617;margin:0 0 8px;overflow-wrap:anywhere}
-#over .panel{max-height:calc(100% - 24px);overflow-y:auto;touch-action:pan-y}
+#over .panel{max-height:calc(100% - 24px);display:flex;flex-direction:column;overflow:hidden}
+#over .panel > :not(.leaderboardStage){flex-shrink:0}
+#over .leaderboardStage,#leaderboard,.leaderTableStage{display:flex;flex-direction:column;min-height:0}
+#leaderboard > :not(.leaderTableStage){flex-shrink:0}
 #scoreSync,#leaderStatus{font-size:14px;line-height:1.4}
 #retryScore[hidden]{display:none}
 #over .panel{position:relative;z-index:1;width:90%}
@@ -185,10 +198,12 @@ button{touch-action:manipulation}
 #leaderTitle{font-size:20px;margin:0 0 6px}
 #scoreSync,#leaderStatus{margin:4px 0;font-size:14px}
 #scoreSync:empty,#leaderStatus:empty{display:none}
-.leaderScroll{max-height:min(239px,36dvh);overflow:auto;overscroll-behavior:contain;touch-action:pan-y;margin-top:8px}
-#leaderboard table{width:100%;table-layout:fixed;border-collapse:collapse;font-size:15px;font-variant-numeric:tabular-nums}
+.leaderScroll{display:block;min-height:0;max-height:min(207px,36dvh);overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;scrollbar-width:none}
+#leaderboard table{display:flex;flex-direction:column;min-height:0;width:100%;border-collapse:collapse;font-size:15px;font-variant-numeric:tabular-nums}
 #leaderboard th,#leaderboard td{padding:7px 5px;border-bottom:1px solid #e7cfa8;overflow-wrap:anywhere}
-#leaderboard th{position:sticky;top:0;background:#f6e6c9;font-size:13px}
+#leaderboard thead{display:block;flex:none;background:#f6e6c9}
+#leaderboard tr{display:grid;grid-template-columns:48px minmax(0,1fr) 73px}
+#leaderboard th{font-size:13px}
 #leaderboard th:last-child,#leaderboard td:last-child{text-align:right}
 #leaderboard td:first-child{text-align:center}
 #leaderboard .yourScore{background:#fae4b9;font-weight:600}
@@ -220,7 +235,7 @@ button{touch-action:manipulation}
 #leaderboard .podium3{background:#ecc1a4;color:#592d1d}
 #leaderboard .podium1 td:first-child,#leaderboard .podium2 td:first-child,#leaderboard .podium3 td:first-child{border-radius:9px 0 0 9px}
 #leaderboard .podium1 td:last-child,#leaderboard .podium2 td:last-child,#leaderboard .podium3 td:last-child{border-radius:0 9px 9px 0}
-#leaderboard table{border-collapse:separate;border-spacing:0 2px}
+#leaderboard tbody tr + tr{margin-top:2px}
 @media(pointer:coarse) and (orientation:portrait){
   #stage{height:100dvh;bottom:auto}
 }
@@ -264,7 +279,7 @@ button{touch-action:manipulation}
 
     <div id="roundComplete" class="overlay">
       <div class="panel">
-        <div class="harvestParty" aria-hidden="true">🍁 🥧 🦃 🎃 🍂</div>
+        <div class="harvestParty" aria-hidden="true"><span>🍁</span><span>🥧</span><span>🦃</span><span>🎃</span><span>🍂</span></div>
         <h2 id="roundTitle"></h2><p id="roundCopy"></p><p id="roundNext"></p>
         <div class="scorePeek" aria-hidden="true"><canvas id="scoreTurkey" width="184" height="144"></canvas></div>
         <dl class="resultStats">
@@ -289,12 +304,10 @@ button{touch-action:manipulation}
           <p id="leaderStatus" role="status"></p>
           <div class="leaderTableStage">
           <canvas id="leaderTurkey" width="320" height="314" aria-hidden="true"></canvas>
-          <div class="leaderScroll" tabindex="0" role="region" aria-label="Leaderboard rankings">
-            <table aria-labelledby="leaderTitle">
-              <thead><tr><th scope="col">Place</th><th scope="col">Player</th><th scope="col">Score</th></tr></thead>
-              <tbody id="leaderList"></tbody>
+            <table role="table" aria-labelledby="leaderTitle">
+              <thead role="rowgroup"><tr role="row"><th role="columnheader" scope="col">Place</th><th role="columnheader" scope="col">Player</th><th role="columnheader" scope="col">Score</th></tr></thead>
+              <tbody id="leaderList" class="leaderScroll" role="rowgroup" tabindex="0" aria-label="Leaderboard rankings"></tbody>
             </table>
-          </div>
           </div>
         </section>
         </div>
@@ -465,23 +478,30 @@ function neutralTilt(){
 let coverTouch=null;
 let coverDragged=false;
 cardScene.addEventListener('pointerdown',event=>{
-  if(cardOpen||event.pointerType==='mouse'||!event.isPrimary) return;
+  if(cardOpen||!event.isPrimary) return;
   coverDragged=false;
+  if(event.pointerType==='mouse'||motionPreference.matches) return;
   coverTouch={id:event.pointerId,x:event.clientX,y:event.clientY};
 });
 cardScene.addEventListener('pointermove',event=>{
   if(cardOpen||coverTouch?.id!==event.pointerId) return;
   const dx=event.clientX-coverTouch.x,dy=event.clientY-coverTouch.y;
-  if(Math.hypot(dx,dy)>8) coverDragged=true;
+  if(!coverDragged&&Math.hypot(dx,dy)>8){
+    coverDragged=true;
+    card.classList.add('dragging');
+    cardScene.setPointerCapture(event.pointerId);
+  }
   if(coverDragged) tiltCard(dx/65,dy/65);
 },{passive:true});
 function releaseCover(event){
   if(coverTouch?.id!==event.pointerId) return;
   coverTouch=null;
+  card.classList.remove('dragging');
   neutralTilt();
 }
 cardScene.addEventListener('pointerup',releaseCover);
 cardScene.addEventListener('pointercancel',releaseCover);
+cardScene.addEventListener('lostpointercapture',releaseCover);
 motionPreference.addEventListener('change',neutralTilt);
 let coverStarted=performance.now();
 function drawPeekingHead(c,w,h){
@@ -855,7 +875,7 @@ function newGame(){
   level=1; goalHit=0; levelBanner=null; laneDir=[-1,1,-1]; turkeyT=rand(2,3.2);
   setTheme('snowy'); initialTheme=themeKey; configureLanes(); hitstop=0;
   spawnT=[.3,1.1,1.8]; lastTick=Math.ceil(GAME_TIME); shake=0; flashRed=0; stats.byKind={};
-  for(let l=0;l<LANES;l++) for(let k=0;k<2;k++){ const t=spawn(l); t.x=rand(80,340); }
+
 }
 function pickItem(){
   const c=cfg(); if(Math.random()<c.bomb) return 'bomb';
@@ -877,6 +897,11 @@ function spawn(l, kind){
   const tg={id:++seq,lane:l,kind,dir,face:dir,x:dir>0?-60:W+60,speed,t:rand(0,6),phase:rand(0,6),hit:0,dead:false,
     mode:'cruise',modeT:rand(.4,1),factor:1,frame:0};
   if(def.turkey){ tg.turnsLeft=randi(1,c.turns); planTurn(tg); }
+  if(level===1&&!def.turkey&&!def.bomb){
+    tg.popup={age:0,hold:rand(.78,1.22)};
+    tg.x=rand(106,W-106);
+    tg.face=1;
+  }
   targets.push(tg); return tg;
 }
 function spawnTurkey(){
@@ -919,14 +944,22 @@ document.getElementById('nextLevel').addEventListener('click',()=>{
   state='play';
 });
 // where a target is drawn right now (shared by drawing AND hit detection)
+const POP_RISE=.24, POP_FALL=.25;
+function popupOffset(popup){
+  const rise=clamp(popup.age/POP_RISE,0,1);
+  const fall=clamp((popup.age-POP_RISE-popup.hold)/POP_FALL,0,1);
+  const height=rise-fall;
+  return SPR*(1-height*height*(3-2*height));
+}
 function pose(tg){
   const def=TARGETS[tg.kind];
   let lift=0, sx=1, sy=1, rot=0, sink=0;
   if(def.turkey){ lift=Math.abs(Math.sin(tg.phase))*5*(tg.hit?0:1); }
   else { lift=def.lift+Math.sin(tg.t*3.2+tg.id)*3; }
+  if(tg.popup) sink=popupOffset(tg.popup);
   if(tg.hit){ const k=tg.hit;
     if(def.bomb){ sx=sy=1+k*.4; }
-    else { const up=Math.sin(Math.min(1,k*1.6)*Math.PI)*16; lift+=up; sink=Math.max(0,k-.45)*150; rot=-Math.sign(tg.face||1)*k*.5; sy=1-.12*Math.sin(Math.min(1,k*3)*Math.PI); sx=1+.08*Math.sin(Math.min(1,k*3)*Math.PI); }
+    else { const up=Math.sin(Math.min(1,k*1.6)*Math.PI)*16; lift+=up; sink+=Math.max(0,k-.45)*150; rot=-Math.sign(tg.face||1)*k*.5; sy=1-.12*Math.sin(Math.min(1,k*3)*Math.PI); sx=1+.08*Math.sin(Math.min(1,k*3)*Math.PI); }
   }
   return {x:tg.x, ay:railY(tg.lane)+3-lift+sink, sx, sy, rot};
 }
@@ -1148,12 +1181,17 @@ function update(dt){
       if(timeLeft<=0){ timeLeft=0; endGame(); return; }
     }
     const c=cfg();
-    for(let l=0;l<LANES;l++){ spawnT[l]-=dt; if(spawnT[l]<=0){ spawn(l); spawnT[l]=rand(1.15,1.9)*c.gap; } }
+    for(let l=0;l<LANES;l++){ spawnT[l]-=dt; if(spawnT[l]<=0){ spawn(l); spawnT[l]=level===1?rand(1.68,2.05):rand(1.15,1.9)*c.gap; } }
     turkeyT-=dt;
     if(turkeyT<=0){ const n=targets.filter(t=>TARGETS[t.kind].turkey&&!t.hit).length; if(n<c.maxTurkeys) spawnTurkey(); turkeyT=rand(c.turkeyEvery[0],c.turkeyEvery[1]); }
     if(levelBanner){ levelBanner.t+=dt; if(levelBanner.t>2.2) levelBanner=null; }
     for(const tg of targets){
       const def=TARGETS[tg.kind]; tg.t+=dt;
+      if(tg.popup&&!tg.hit){
+        tg.popup.age+=dt;
+        tg.dead=tg.popup.age>=POP_RISE+tg.popup.hold+POP_FALL;
+        continue;
+      }
       if(!tg.hit){
         if(def.turkey){   // runs back and forth: cruise / burst / skid, then turns around at turnX
           if(tg.t>14) tg.turnsLeft=0;
@@ -1246,7 +1284,16 @@ function drawLanes(time){
     if(IMG['fg-lane-recess']) ctx.drawImage(IMG['fg-lane-recess'],LANE_X,top,LANE_W,LANE_H);
     drawAmbient(backParts);
     // 3. targets
-    for(const tg of drawOrder()) if(tg.lane===l) drawTarget(tg);
+    for(const tg of drawOrder()){
+      if(tg.lane!==l) continue;
+      if(!tg.popup){ drawTarget(tg); continue; }
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(LANE_X,top,LANE_W,railY(l)-top);
+      ctx.clip();
+      drawTarget(tg);
+      ctx.restore();
+    }
     ctx.restore();
     // 4a. rail in front of the lane
     if(IMG['fg-rail']) ctx.drawImage(IMG['fg-rail'],LANE_X,railY(l),LANE_W,40);
@@ -1449,7 +1496,9 @@ fontsReady.then(()=>{
       const entry=doc?.data(),row=document.createElement('tr');
       if(index<3) row.classList.add('podium'+(index+1));
       if(doc?.id===uid) row.classList.add('yourScore');
+      row.setAttribute('role','row');
       const place=row.insertCell();
+      place.setAttribute('role','cell');
       const medal=['🦃','🎃','🥧'][index];
       if(medal){
         const icon=document.createElement('span');
@@ -1464,6 +1513,7 @@ fontsReady.then(()=>{
       if(!entry) row.classList.add('emptyRank');
       for(const value of values){
         const cell=document.createElement('td');
+        cell.setAttribute('role','cell');
         cell.textContent=value;
         row.append(cell);
       }
