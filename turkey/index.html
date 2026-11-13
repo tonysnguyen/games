@@ -183,9 +183,9 @@ button{touch-action:manipulation}
 #resultLeaves{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 #leaderboard{margin:16px 0 0;padding:12px;text-align:left;border:1px solid #c89251;border-radius:15px;background:#fff8e9;color:#4a2a14}
 #leaderTitle{font-size:20px;margin:0 0 6px}
-#roundSummary,#scoreSync,#leaderStatus{margin:4px 0;font-size:14px}
+#scoreSync,#leaderStatus{margin:4px 0;font-size:14px}
 #scoreSync:empty,#leaderStatus:empty{display:none}
-.leaderScroll{max-height:239px;overflow:auto;overscroll-behavior:contain;touch-action:pan-y;margin-top:8px}
+.leaderScroll{max-height:min(239px,36dvh);overflow:auto;overscroll-behavior:contain;touch-action:pan-y;margin-top:8px}
 #leaderboard table{width:100%;table-layout:fixed;border-collapse:collapse;font-size:15px;font-variant-numeric:tabular-nums}
 #leaderboard th,#leaderboard td{padding:7px 5px;border-bottom:1px solid #e7cfa8;overflow-wrap:anywhere}
 #leaderboard th{position:sticky;top:0;background:#f6e6c9;font-size:13px}
@@ -196,6 +196,7 @@ button{touch-action:manipulation}
 #leaderboard td{height:39px;padding-block:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #leaderboard th:first-child{width:48px}
 #leaderboard th:last-child{width:73px}
+#leaderboard .emptyRank td:not(:first-child){color:#896b51}
 .rankIcon{font-size:24px;line-height:1;vertical-align:middle}
 #over .row .ghostBtn{min-height:46px;gap:8px}
 #over .row .ghostBtn svg{width:28px;height:28px;flex:none}
@@ -212,8 +213,8 @@ button{touch-action:manipulation}
 #card:not(.open),#cardScene:not(.gone):has(#card:not(.open)){touch-action:none}
 .leaderboardStage{position:relative;margin-top:16px}
 #leaderboard{position:relative;margin-top:0}
-.leaderTableStage{position:relative}
-#leaderTurkey{position:absolute;z-index:1;bottom:calc(100% - 2px);right:-2px;width:min(36%,136px);height:auto;pointer-events:none}
+.leaderTableStage{position:relative;overflow:visible}
+#leaderTurkey{position:absolute;z-index:1;bottom:calc(100% - 2px);right:-12px;width:min(36%,136px);height:auto;pointer-events:none}
 #leaderboard .podium1{background:#f5d17b;color:#543409}
 #leaderboard .podium2{background:#dfe6ee;color:#26394a}
 #leaderboard .podium3{background:#ecc1a4;color:#592d1d}
@@ -223,6 +224,11 @@ button{touch-action:manipulation}
 @media(pointer:coarse) and (orientation:portrait){
   #stage{height:100dvh;bottom:auto}
 }
+ .playerNameRow{display:flex;gap:8px;align-items:center}
+.playerNameRow input{flex:1;min-width:0}
+.playerNameRow .ghostBtn{flex:0 0 auto;min-height:44px;padding:8px 14px}
+#editPlayerName[hidden],#playerError[hidden]{display:none}
+#playerError{color:#9b2d1d;font-weight:600}
 </style>
 </head>
 <body>
@@ -248,7 +254,8 @@ button{touch-action:manipulation}
         </div>
         <div class="playerEntry">
           <label for="playerName">Player name <span>· Play for 1st place!</span></label>
-          <input id="playerName" name="nickname" type="text" maxlength="24" autocomplete="nickname" autocapitalize="words" enterkeyhint="go" placeholder="Your name" aria-describedby="playerHint">
+          <div class="playerNameRow"><input id="playerName" name="nickname" type="text" maxlength="24" autocomplete="nickname" autocapitalize="words" enterkeyhint="go" placeholder="Your name" aria-describedby="playerHint playerError"><button id="editPlayerName" class="ghostBtn" type="button" hidden>Edit</button></div>
+          <small id="playerError" role="alert" hidden></small>
           <small id="playerHint">Your name and best score appear on the leaderboard.</small>
         </div>
         <button class="playBtn" id="goBtn">START!</button>
@@ -277,7 +284,6 @@ button{touch-action:manipulation}
         <div class="leaderboardStage">
         <section id="leaderboard" aria-labelledby="leaderTitle">
           <h3 id="leaderTitle">Top 10 leaderboard</h3>
-          <p id="roundSummary"></p>
           <p id="scoreSync" role="status"></p>
           <button class="ghostBtn" id="retryScore" hidden>Retry score upload</button>
           <p id="leaderStatus" role="status"></p>
@@ -1052,7 +1058,6 @@ function endGame(){
   if(state!=='play') return;
   state='over'; sfx.end();
   recordLevelBest();
-  document.getElementById('roundSummary').textContent='This round · '+score.toLocaleString()+' points';
   // A local record keeps the player and round together for a future leaderboard.
   const result={playerName:playerName||'Guest',score,level,turkeyHits:hits,completedAt:new Date().toISOString()};
   try{localStorage.setItem('turkeyLastResult',JSON.stringify(result));}catch{}
@@ -1069,17 +1074,63 @@ function endGame(){
 }
 function showReady(){ state='ready'; newGame(); document.getElementById('over').classList.remove('show'); document.getElementById('ready').classList.add('show'); }
 const playerInput=document.getElementById('playerName');
+const editPlayerName=document.getElementById('editPlayerName');
+const playerError=document.getElementById('playerError');
 let playerName='';
-try{playerInput.value=(localStorage.getItem('turkeyPlayerName')||'').slice(0,24);}catch{}
-function rememberPlayer(){
-  playerName=playerInput.value.trim().replace(/\s+/g,' ').slice(0,24);
-  playerInput.value=playerName;
-  try{localStorage.setItem('turkeyPlayerName',playerName);}catch{}
+function normalizePlayerName(name){
+  return name.normalize('NFKC').trim().replace(/\s+/gu,' ');
 }
+function allowedPlayerName(name){
+  if(!name||name.length>24||!/^[\p{L}\p{M}\p{N} ._'’\-]+$/u.test(name))return false;
+  const plain=name.normalize('NFKD').toLowerCase().replace(/\p{M}/gu,'')
+    .replace(/[013457]/g,char=>({'0':'o','1':'i','3':'e','4':'a','5':'s','7':'t'})[char]);
+  const parts=plain.split(/[^\p{L}\p{N}]+/u);
+  const compact=parts.join('').replace(/(.)\1{2,}/gu,'$1$1');
+  const compressed=compact.replace(/(.)\1+/gu,'$1');
+  return !/(?:fuck|sh[i1]t|bitch|cunt|whore|slut|d[i1]ckhead|asshole|motherf|n[i1]gg[ae]|faggot|bastard|bullsh)/i.test(compact)
+    && !/fuk|fuck|shit|bitch|cunt/.test(compressed)
+    && !parts.some(part=>/^(ass|dick|piss|cock|damn|fag|twat|wank|b[cs]h|stfu)$/i.test(part))
+    && !/^(ass|dick|piss|cock|damn|fag|twat|wank|stfu)$/i.test(compact);
+}
+try{
+  const saved=normalizePlayerName(localStorage.getItem('turkeyPlayerName')||'');
+  if(allowedPlayerName(saved))playerName=saved;
+}catch{}
+function setNameLocked(locked){
+  playerInput.readOnly=locked;
+  editPlayerName.hidden=!locked;
+}
+playerInput.value=playerName;
+setNameLocked(Boolean(playerName));
+editPlayerName.addEventListener('click',()=>{
+  setNameLocked(false);
+  playerInput.focus();
+  playerInput.select();
+});
+playerInput.addEventListener('input',()=>{
+  playerError.hidden=true;
+  playerInput.removeAttribute('aria-invalid');
+});
+function rememberPlayer(){
+  const name=normalizePlayerName(playerInput.value)||playerName;
+  if(name&&!allowedPlayerName(name)){
+    playerError.textContent='Choose a clean name using letters, numbers, spaces, or simple punctuation.';
+    playerError.hidden=false;
+    playerInput.setAttribute('aria-invalid','true');
+    playerInput.focus();
+    return false;
+  }
+  playerName=name;
+  playerInput.value=name;
+  setNameLocked(Boolean(name));
+  try{localStorage.setItem('turkeyPlayerName',name);}catch{}
+  return true;
+}
+window.turkeyNameAllowed=allowedPlayerName;
 playerInput.addEventListener('keydown',event=>{
   if(event.key==='Enter'&&!event.isComposing){event.preventDefault();startPlay();}
 });
-function startPlay(){ if(state!=='ready')return; rememberPlayer(); playerInput.blur(); ensureAudio(); document.getElementById('ready').classList.remove('show'); newGame(); state='play'; }
+function startPlay(){ if(state!=='ready'||!rememberPlayer())return; playerInput.blur(); ensureAudio(); document.getElementById('ready').classList.remove('show'); newGame(); state='play'; }
 document.getElementById('goBtn').addEventListener('click',startPlay);
 document.getElementById('againBtn').addEventListener('click',()=>{ document.getElementById('over').classList.remove('show'); showReady(); });
 
@@ -1390,55 +1441,69 @@ fontsReady.then(()=>{
     if(error.code==='auth/admin-restricted-operation'||error.code==='auth/operation-not-allowed')return 'Score saved on this device. Anonymous sign-in needs to be enabled.';
     return 'Score saved on this device. Could not reach the leaderboard. Please retry.';
   }
+  function renderLeaderboard(docs=[],uid=null){
+    const list=document.getElementById('leaderList');
+    list.replaceChildren();
+    for(let index=0;index<10;index++){
+      const doc=docs[index];
+      const entry=doc?.data(),row=document.createElement('tr');
+      if(index<3) row.classList.add('podium'+(index+1));
+      if(doc?.id===uid) row.classList.add('yourScore');
+      const place=row.insertCell();
+      const medal=['🦃','🎃','🥧'][index];
+      if(medal){
+        const icon=document.createElement('span');
+        icon.className='rankIcon';
+        icon.setAttribute('role','img');
+        icon.setAttribute('aria-label',['1st place','2nd place','3rd place'][index]);
+        icon.textContent=medal;
+        place.append(icon);
+      }else place.textContent=index+1;
+      const displayName=entry&&typeof entry.playerName==='string'&&window.turkeyNameAllowed(entry.playerName)?entry.playerName:'Player';
+      const values=entry?[displayName+(doc.id===uid?' (you)':''),entry.score.toLocaleString()]:['—','—'];
+      if(!entry) row.classList.add('emptyRank');
+      for(const value of values){
+        const cell=document.createElement('td');
+        cell.textContent=value;
+        row.append(cell);
+      }
+      list.append(row);
+    }
+  }
   async function loadLeaderboard(){
-    const message=document.getElementById('leaderStatus'),list=document.getElementById('leaderList');
+    const message=document.getElementById('leaderStatus');
     message.textContent='Loading scores…';
     try{
       const {user,db,sdk}=await connect();
       const snapshot=await sdk.getDocs(sdk.query(sdk.collection(db,'turkeyShootScores'),sdk.orderBy('score','desc'),sdk.limit(10)));
-      list.replaceChildren();
-      snapshot.docs.forEach((doc,index)=>{
-        const entry=doc.data(),row=document.createElement('tr');
-        if(index<3) row.classList.add('podium'+(index+1));
-        if(doc.id===user.uid) row.classList.add('yourScore');
-        const place=row.insertCell();
-        const medal=['🦃','🎃','🥧'][index];
-        if(medal){
-          const icon=document.createElement('span');
-          icon.className='rankIcon';
-          icon.setAttribute('role','img');
-          icon.setAttribute('aria-label',['1st place','2nd place','3rd place'][index]);
-          icon.textContent=medal;
-          place.append(icon);
-        }else place.textContent=index+1;
-        for(const value of [entry.playerName+(doc.id===user.uid?' (you)':''),entry.score.toLocaleString()]){
-          const cell=document.createElement('td');
-          cell.textContent=value;
-          row.append(cell);
-        }
-        list.append(row);
-      });
-      message.textContent=snapshot.empty?'Be the first on the leaderboard!':'';
+      renderLeaderboard(snapshot.docs,user.uid);
+      message.textContent='';
     }catch(error){message.textContent='Leaderboard unavailable. Try again after your next round.';}
   }
   async function upload(){
     if(uploading||!currentResult)return;
     uploading=true;retry.hidden=true;
     const result=currentResult;
-    status.textContent='Saving your score…';
+    status.textContent='';
     try{
       const {user,db,sdk}=await connect();
       const reference=sdk.doc(db,'turkeyShootScores',user.uid);
       await sdk.runTransaction(db,async transaction=>{
         const old=await transaction.get(reference);
-        if(old.exists()&&old.data().score>=result.score)return;
+        const saved=old.exists()?old.data():null;
+        if(saved&&saved.score>=result.score){
+          if(saved.playerName!==result.playerName)transaction.update(reference,{
+            playerName:result.playerName,updatedAt:sdk.serverTimestamp()
+          });
+          return;
+        }
         transaction.set(reference,{
           playerName:result.playerName,score:result.score,level:result.level,
           turkeyHits:result.turkeyHits,updatedAt:sdk.serverTimestamp()
         });
       });
       if(currentResult===result){
-        status.textContent='Your best score is saved to the leaderboard.';
+        status.textContent='';
         try{localStorage.removeItem('turkeyPendingScore');}catch{}
       }
     }catch(error){
@@ -1451,7 +1516,7 @@ fontsReady.then(()=>{
   }
   window.addEventListener('turkey-round-ended',event=>{
     currentResult={...event.detail};
-    document.getElementById('leaderList').replaceChildren();
+    renderLeaderboard();
     document.getElementById('leaderStatus').textContent='Loading scores…';
     try{localStorage.setItem('turkeyPendingScore',JSON.stringify(currentResult));}catch{}
     upload();
