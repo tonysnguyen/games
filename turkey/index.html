@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#3a1d14">
 <title>Happy Thanksgiving — Turkey Shoot</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -218,6 +220,9 @@ button{touch-action:manipulation}
 #leaderboard .podium1 td:first-child,#leaderboard .podium2 td:first-child,#leaderboard .podium3 td:first-child{border-radius:9px 0 0 9px}
 #leaderboard .podium1 td:last-child,#leaderboard .podium2 td:last-child,#leaderboard .podium3 td:last-child{border-radius:0 9px 9px 0}
 #leaderboard table{border-collapse:separate;border-spacing:0 2px}
+@media(pointer:coarse) and (orientation:portrait){
+  #stage{height:100dvh;bottom:auto}
+}
 </style>
 </head>
 <body>
@@ -443,8 +448,8 @@ const motionPreference=matchMedia('(prefers-reduced-motion: reduce)');
 function tiltCard(x,y){
   if(cardOpen||motionPreference.matches)return;
   x=clamp(x,-1,1); y=clamp(y,-1,1);
-  card.style.setProperty('--tilt-x',(-y*3)+'deg');
-  card.style.setProperty('--tilt-y',(x*4)+'deg');
+  card.style.setProperty('--tilt-x',(-y*8)+'deg');
+  card.style.setProperty('--tilt-y',(x*10)+'deg');
   card.style.setProperty('--drift-x',(x*5)+'px');
   card.style.setProperty('--drift-y',(y*4)+'px');
 }
@@ -462,7 +467,7 @@ cardScene.addEventListener('pointermove',event=>{
   if(cardOpen||coverTouch?.id!==event.pointerId) return;
   const dx=event.clientX-coverTouch.x,dy=event.clientY-coverTouch.y;
   if(Math.hypot(dx,dy)>8) coverDragged=true;
-  if(coverDragged) tiltCard(dx/85,dy/85);
+  if(coverDragged) tiltCard(dx/65,dy/65);
 },{passive:true});
 function releaseCover(event){
   if(coverTouch?.id!==event.pointerId) return;
@@ -684,7 +689,9 @@ const buzz=ms=>{ try{ navigator.vibrate&&navigator.vibrate(ms); }catch(e){} };
 // =====================================================================
 // Game (v2 — painted shadow-box booth, sprite targets, themes)
 // =====================================================================
-const W=420, H=780;
+const W=420, BASE_HEIGHT=780;
+let H=BASE_HEIGHT;
+const boothExtension=()=>H-BASE_HEIGHT;
 const HUD_H=48;                 // HUD band at the top; the booth art sits below it
 const OY=HUD_H;                 // booth offset (art coords /3 + OY)
 const S3=1/3;                   // 3x art -> logical
@@ -697,11 +704,19 @@ let SPR=150;                  // 300px sprites at 1/3
 const cv=document.getElementById('game'), ctx=cv.getContext('2d'), wrap=document.getElementById('wrap');
 let scale=1;
 function resize(){
-  const stageStyle=getComputedStyle(document.getElementById('stage')); const vw=innerWidth-parseFloat(stageStyle.paddingLeft)-parseFloat(stageStyle.paddingRight), vh=innerHeight-parseFloat(stageStyle.paddingTop)-parseFloat(stageStyle.paddingBottom); scale=Math.min(vw/W, vh/H); const d=Math.min(devicePixelRatio||1,3);
-  const cw=Math.floor(W*scale), ch=Math.floor(H*scale);
-  wrap.style.width=cw+'px'; wrap.style.height=ch+'px'; wrap.style.borderRadius=(vw<=cw+2?0:20)+'px';
-  cv.style.width=cw+'px'; cv.style.height=ch+'px'; cv.width=Math.floor(cw*d); cv.height=Math.floor(ch*d);
-  ctx.setTransform(scale*d,0,0,scale*d,0,0); ctx.imageSmoothingQuality='high';
+  const stage=document.getElementById('stage');
+  const bounds=stage.getBoundingClientRect(), style=getComputedStyle(stage);
+  const vw=bounds.width-parseFloat(style.paddingLeft)-parseFloat(style.paddingRight);
+  const vh=bounds.height-parseFloat(style.paddingTop)-parseFloat(style.paddingBottom);
+  if(vw<=0||vh<=0) return;
+  const mobilePortrait=matchMedia('(pointer:coarse) and (orientation:portrait)').matches;
+  scale=mobilePortrait?Math.min(vw/W,vh/610):Math.min(vw/W,vh/BASE_HEIGHT);
+  H=mobilePortrait?vh/scale:BASE_HEIGHT;
+  configureLanes();
+  const cw=W*scale,ch=H*scale,d=Math.min(devicePixelRatio||1,3);
+  wrap.style.width=cw+'px'; wrap.style.height=ch+'px'; wrap.style.borderRadius=mobilePortrait||vw<=cw+2?'0':'20px';
+  cv.style.width=cw+'px'; cv.style.height=ch+'px'; cv.width=Math.round(cw*d); cv.height=Math.round(ch*d);
+  ctx.setTransform(cv.width/W,0,0,cv.height/H,0,0); ctx.imageSmoothingQuality='high';
   sizeLeafCanvas(); if(!cardOpen) drawCover();
 }
 
@@ -723,7 +738,7 @@ function decodeBits(b64){ const s=atob(b64), out=new Uint8Array(s.length*8); for
 const occBits=decodeBits(OCC.b);
 const SPR_BITS={}; for(const k in SPRITE_MASKS) SPR_BITS[k]=decodeBits(SPRITE_MASKS[k]);
 function occluded(px,py){                       // booth frame pieces drawn in front of the targets
-  if(LANES<3){
+  if(LANES<3||H!==BASE_HEIGHT){
     if(px<38||px>382||py<laneTop(0)+12||py>railY(LANES-1))return true;
     for(let l=0;l<LANES;l++)if(py>=railY(l)&&py<laneTop(l+1))return true;
     return false;
@@ -822,7 +837,7 @@ const GAME_TIME=60;
 const stats={byKind:{}};
 
 function configureLanes(){
-  LANES=cfg().lanes; LANE_STEP=520/LANES; LANE_H=LANE_STEP-13.3333;
+  LANES=cfg().lanes; LANE_STEP=(520+boothExtension())/LANES; LANE_H=LANE_STEP-13.3333;
   SPR=LANES===1?150:LANES===2?120:100;
 }
 let initialTheme=null;
@@ -1165,8 +1180,8 @@ function drawLanes(time){
     const sky=IMG[LANES===1?'bg-lane-sky-tall':'bg-lane-sky'];
     if(sky){
       const skyHeight=LANE_W*sky.height/sky.width;
-      // Fill any space above the proportional artwork with a clean color.
-      ctx.fillStyle='#172439';
+      // Extend the distant hills color below the proportional artwork.
+      ctx.fillStyle=LANES===1?'#4b7b80':'#416772';
       ctx.fillRect(LANE_X,top,LANE_W,LANE_STEP);
       ctx.drawImage(sky,LANE_X,top,LANE_W,skyHeight);
     }
@@ -1188,14 +1203,20 @@ function drawLanes(time){
 }
 function drawBooth(){
   // 4b. posts + front-depth columns overlap the rail ends
-  if(IMG['fg-post-left']) ctx.drawImage(IMG['fg-post-left'],0,OY+250*S3,30,520);
-  if(IMG['fg-post-right']) ctx.drawImage(IMG['fg-post-right'],390,OY+250*S3,30,520);
-  if(IMG['fg-front-depth']) ctx.drawImage(IMG['fg-front-depth'],0,OY,420,780);
+  if(IMG['fg-post-left']) ctx.drawImage(IMG['fg-post-left'],0,OY+250*S3,30,520+boothExtension());
+  if(IMG['fg-post-right']) ctx.drawImage(IMG['fg-post-right'],390,OY+250*S3,30,520+boothExtension()+boothExtension());
+  const frame=IMG['fg-front-depth'];
+  if(frame){
+    // Resize the columns while keeping the top and bottom trim at their original scale.
+    ctx.drawImage(frame,0,0,1260,300,0,OY,W,100);
+    ctx.drawImage(frame,0,300,1260,1440,0,OY+100,W,480+boothExtension());
+    ctx.drawImage(frame,0,1740,1260,600,0,OY+580+boothExtension(),W,200);
+  }
   // 5. awning, sign, counter props, banner
   if(IMG['fg-awning']) ctx.drawImage(IMG['fg-awning'],0,OY,420,80);
   if(IMG['fg-sign']) ctx.drawImage(IMG['fg-sign'],285*S3,OY+112*S3,230,130*S3);
-  if(IMG['fg-counter-props']) ctx.drawImage(IMG['fg-counter-props'],0,OY+1800*S3,420,70);
-  if(IMG['fg-banner-bottom']) ctx.drawImage(IMG['fg-banner-bottom'],0,OY+2010*S3,420,110);
+  if(IMG['fg-counter-props']) ctx.drawImage(IMG['fg-counter-props'],0,OY+1800*S3+boothExtension(),420,70);
+  if(IMG['fg-banner-bottom']) ctx.drawImage(IMG['fg-banner-bottom'],0,OY+2010*S3+boothExtension(),420,110);
 }
 function drawLettering(){
   // sign + banner lettering (live UI text, drawn after the lighting so it stays crisp)
@@ -1249,7 +1270,7 @@ function drawHud(){
   const sw=ctx.measureText(score??0).width;
   if(mult>1){ const bx=22+sw, by=22; rr(ctx,bx,by,34,20,6); fs(ctx,'#3fae4a',2); ctx.font='14px "Lilita One"'; ctx.fillStyle='#fff'; ctx.textAlign='center'; ctx.fillText('x'+mult,bx+17,by+15); }
   // Overlap the shooting frame with the timer and keep the meter on the counter.
-  const counterTop=OY+1800*S3;
+  const counterTop=OY+1800*S3+boothExtension();
   const tx=W/2, ty=counterTop-12, tr=23;
   const frac=clamp((timeLeft??GAME_TIME)/(cfg().seconds??GAME_TIME),0,1);
   ctx.fillStyle='#311b16'; ctx.beginPath(); ctx.arc(tx,ty,tr+4,0,Math.PI*2); ctx.fill();
@@ -1330,7 +1351,7 @@ setTheme(themeKey);
 newGame();
 const fontsReady = document.fonts ? Promise.race([Promise.all([document.fonts.load('30px "Lilita One"'),document.fonts.load('30px Pacifico'),document.fonts.load('600 14px Fredoka')]), new Promise(r=>setTimeout(r,1500))]) : Promise.resolve();
 fontsReady.then(()=>{
-  resize(); addEventListener('resize',resize); leafLoop(); animateCover();
+  resize(); addEventListener('resize',resize); window.visualViewport?.addEventListener('resize',resize); leafLoop(); animateCover();
   let last=performance.now();
   const loop=t=>{ const dt=Math.min(.05,(t-last)/1000); last=t; if(!window.__turkeyPaused) update(dt); render(t/1000); requestAnimationFrame(loop); };
   requestAnimationFrame(loop);
