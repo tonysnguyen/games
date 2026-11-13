@@ -183,7 +183,7 @@ button{touch-action:manipulation}
 #leaderTitle{font-size:20px;margin:0 0 6px}
 #roundSummary,#scoreSync,#leaderStatus{margin:4px 0;font-size:14px}
 #scoreSync:empty,#leaderStatus:empty{display:none}
-.leaderScroll{max-height:227px;overflow:auto;overscroll-behavior:contain;touch-action:pan-y;margin-top:8px}
+.leaderScroll{max-height:239px;overflow:auto;overscroll-behavior:contain;touch-action:pan-y;margin-top:8px}
 #leaderboard table{width:100%;table-layout:fixed;border-collapse:collapse;font-size:15px;font-variant-numeric:tabular-nums}
 #leaderboard th,#leaderboard td{padding:7px 5px;border-bottom:1px solid #e7cfa8;overflow-wrap:anywhere}
 #leaderboard th{position:sticky;top:0;background:#f6e6c9;font-size:13px}
@@ -207,6 +207,16 @@ button{touch-action:manipulation}
 .resultStats.allTimeBest{display:block;width:fit-content;min-width:132px;margin:8px auto;padding:5px 12px;background:#743c24;border-color:#743c24;color:#fff4dc}
 .resultStats dt{font-size:12px;font-weight:600}
 .resultStats dd{margin:2px 0 0;font:400 20px 'Lilita One',sans-serif;overflow-wrap:anywhere}
+#card:not(.open),#cardScene:not(.gone):has(#card:not(.open)){touch-action:none}
+.leaderboardStage{position:relative;margin-top:16px}
+#leaderboard{position:relative;margin-top:0}
+#leaderTurkey{position:absolute;bottom:100%;right:5%;width:min(44%,155px);height:auto;pointer-events:none}
+#leaderboard .podium1{background:#f5d17b;color:#543409}
+#leaderboard .podium2{background:#dfe6ee;color:#26394a}
+#leaderboard .podium3{background:#ecc1a4;color:#592d1d}
+#leaderboard .podium1 td:first-child,#leaderboard .podium2 td:first-child,#leaderboard .podium3 td:first-child{border-radius:9px 0 0 9px}
+#leaderboard .podium1 td:last-child,#leaderboard .podium2 td:last-child,#leaderboard .podium3 td:last-child{border-radius:0 9px 9px 0}
+#leaderboard table{border-collapse:separate;border-spacing:0 2px}
 </style>
 </head>
 <body>
@@ -258,6 +268,8 @@ button{touch-action:manipulation}
         <h2 class="thanksgivingTitle">Happy Thanksgiving!</h2>
         <p id="overTitle"></p>
         <div class="from">from Tony, Amy &amp; Major <svg class="paw" viewBox="0 0 32 32"><ellipse cx="16" cy="21" rx="7.5" ry="6.5"/><ellipse cx="7" cy="13" rx="3.2" ry="4"/><ellipse cx="12.5" cy="7.5" rx="3.2" ry="4"/><ellipse cx="19.5" cy="7.5" rx="3.2" ry="4"/><ellipse cx="25" cy="13" rx="3.2" ry="4"/></svg></div>
+        <div class="leaderboardStage">
+          <canvas id="leaderTurkey" width="320" height="270" aria-hidden="true"></canvas>
         <section id="leaderboard" aria-labelledby="leaderTitle">
           <h3 id="leaderTitle">Top 10 leaderboard</h3>
           <p id="roundSummary"></p>
@@ -271,6 +283,7 @@ button{touch-action:manipulation}
             </table>
           </div>
         </section>
+        </div>
         <button class="playBtn" id="againBtn">PLAY AGAIN</button>
         <div class="row">
           <button class="ghostBtn" id="cardBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="3" fill="#fff7dd"/><path d="m3.5 7 8.5 6 8.5-6"/><path d="M12 16c-5-3-2.4-6.3 0-4 2.4-2.3 5 1 0 4Z" fill="#c95134" stroke="#c95134"/></svg>Card</button>
@@ -424,7 +437,6 @@ function drawStick(c,len){ rr(c,-3.5,0,7,len,3); fs(c,'#b07a45',2.5); }
 // =====================================================================
 const cardScene=document.getElementById('cardScene'), card=document.getElementById('card');
 const motionPreference=matchMedia('(prefers-reduced-motion: reduce)');
-let motionBaseline=null;
 function tiltCard(x,y){
   if(cardOpen||motionPreference.matches)return;
   x=clamp(x,-1,1); y=clamp(y,-1,1);
@@ -434,47 +446,29 @@ function tiltCard(x,y){
   card.style.setProperty('--drift-y',(y*4)+'px');
 }
 function neutralTilt(){
-  motionBaseline=null;
   for(const [key,value] of [['--tilt-x','0deg'],['--tilt-y','0deg'],['--drift-x','0px'],['--drift-y','0px']])card.style.setProperty(key,value);
 }
-function deviceTilt(event){
-  if(event.beta===null||event.gamma===null||cardOpen)return;
-  if(!motionBaseline)motionBaseline={beta:event.beta,gamma:event.gamma};
-  const dx=(event.gamma-motionBaseline.gamma)/22,dy=(event.beta-motionBaseline.beta)/22;
-  const angle=(screen.orientation?.angle||window.orientation||0)*Math.PI/180;
-  tiltCard(dx*Math.cos(angle)+dy*Math.sin(angle),dy*Math.cos(angle)-dx*Math.sin(angle));
-}
-const orientationAPI=window.DeviceOrientationEvent;
-let motionRequested=false;
-let motionListening=false;
-function listenForMotion(){
-  if(motionListening)return;
-  motionListening=true;
-  addEventListener('deviceorientation',deviceTilt,{passive:true});
-}
-async function enableMotion(){
-  if(!orientationAPI||motionPreference.matches||motionRequested)return;
-  motionRequested=true;
-  try{
-    if(typeof orientationAPI.requestPermission==='function'){
-      const permission=await orientationAPI.requestPermission();
-      if(permission==='granted')listenForMotion();
-    }else listenForMotion();
-  }catch{
-    // Pointer movement remains available when motion access is unavailable.
-  }
-}
-if(orientationAPI&&typeof orientationAPI.requestPermission!=='function')enableMotion();
-// Permission-based browsers require this request to originate from a gesture.
-cardScene.addEventListener('click',enableMotion,{capture:true});
-card.addEventListener('pointermove',event=>{
-  const rect=card.getBoundingClientRect();
-  tiltCard((event.clientX-rect.left)/rect.width*2-1,(event.clientY-rect.top)/rect.height*2-1);
+let coverTouch=null;
+let coverDragged=false;
+cardScene.addEventListener('pointerdown',event=>{
+  if(cardOpen||event.pointerType==='mouse'||!event.isPrimary) return;
+  coverDragged=false;
+  coverTouch={id:event.pointerId,x:event.clientX,y:event.clientY};
+});
+cardScene.addEventListener('pointermove',event=>{
+  if(cardOpen||coverTouch?.id!==event.pointerId) return;
+  const dx=event.clientX-coverTouch.x,dy=event.clientY-coverTouch.y;
+  if(Math.hypot(dx,dy)>8) coverDragged=true;
+  if(coverDragged) tiltCard(dx/85,dy/85);
 },{passive:true});
-card.addEventListener('pointerleave',neutralTilt);
-card.addEventListener('pointerup',neutralTilt);
-addEventListener('orientationchange',neutralTilt);
-motionPreference.addEventListener('change',()=>{neutralTilt(); if(!motionPreference.matches&&orientationAPI&&typeof orientationAPI.requestPermission!=='function')enableMotion();});
+function releaseCover(event){
+  if(coverTouch?.id!==event.pointerId) return;
+  coverTouch=null;
+  neutralTilt();
+}
+cardScene.addEventListener('pointerup',releaseCover);
+cardScene.addEventListener('pointercancel',releaseCover);
+motionPreference.addEventListener('change',neutralTilt);
 let coverStarted=performance.now();
 function drawPeekingHead(c,w,h){
   const still=matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -648,7 +642,7 @@ function runInsideSequence(){
 }
 // tap the card while it types to skip ahead
 insideEl.addEventListener('click',e=>{ if(typing && !e.target.closest('button')) typing.finish(); });
-document.getElementById('cover').addEventListener('click',()=>{ ensureAudio(); if(cardOpen) return; cardOpen=true; neutralTilt(); card.classList.add('open'); runInsideSequence(); chime(); });
+document.getElementById('cover').addEventListener('click',()=>{ if(coverDragged){coverDragged=false;return;} ensureAudio(); if(cardOpen) return; cardOpen=true; neutralTilt(); card.classList.add('open'); runInsideSequence(); chime(); });
 document.getElementById('openGame').addEventListener('click',()=>{ ensureAudio(); cardScene.classList.add('gone'); showReady(); });
 function goHomeCard(){
   state='card'; crosshair.show=false;
@@ -982,6 +976,30 @@ const rings=[];
 function ring(x,y){ rings.push({x,y,t:0}); }
 function floatText(x,y,text,col,size=24){ floaters.push({x,y,text,col,size,life:1}); }
 
+let leaderboardPeekFrame;
+function peekAtLeaderboard(){
+  cancelAnimationFrame(leaderboardPeekFrame);
+  const canvas=document.getElementById('leaderTurkey');
+  const c=canvas.getContext('2d');
+  c.clearRect(0,0,canvas.width,canvas.height);
+  if(motionPreference.matches) return;
+  const start=performance.now();
+  function frame(now){
+    c.clearRect(0,0,canvas.width,canvas.height);
+    if(state!=='over') return;
+    const time=(now-start)/1000;
+    const rise=clamp((time-.9)/.65,0,1);
+    const eased=rise*rise*(3-2*rise);
+    const gaze=8*Math.sin(Math.max(0,time-1.55)*3.2);
+    c.save();
+    c.translate(160,490-eased*287);
+    c.scale(2.6,2.6);
+    drawTurkeyHead(c,gaze,8);
+    c.restore();
+    leaderboardPeekFrame=requestAnimationFrame(frame);
+  }
+  leaderboardPeekFrame=requestAnimationFrame(frame);
+}
 function celebrateResults(){
   if(matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   const canvas=document.getElementById('resultLeaves');
@@ -1024,6 +1042,7 @@ function endGame(){
     if(state!=='over') return;
     document.getElementById('over').classList.add('show');
     celebrateResults();
+    peekAtLeaderboard();
   },600);
 }
 function showReady(){ state='ready'; newGame(); document.getElementById('over').classList.remove('show'); document.getElementById('ready').classList.add('show'); }
@@ -1334,7 +1353,8 @@ fontsReady.then(()=>{
       list.replaceChildren();
       snapshot.docs.forEach((doc,index)=>{
         const entry=doc.data(),row=document.createElement('tr');
-        if(doc.id===user.uid) row.className='yourScore';
+        if(index<3) row.classList.add('podium'+(index+1));
+        if(doc.id===user.uid) row.classList.add('yourScore');
         const place=row.insertCell();
         const medal=['🦃','🎃','🥧'][index];
         if(medal){
