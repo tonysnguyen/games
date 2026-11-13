@@ -54,6 +54,7 @@
   .inside{position:absolute;isolation:isolate}
   .cover{z-index:2}
   .inside > *:not(.trackLayer){position:relative;z-index:1}
+  .inside #openGame{z-index:3}
   .major{position:relative;white-space:nowrap}
   .paws{display:inline-flex;gap:2px;margin-left:6px;vertical-align:middle;transform:translateY(-2px)}
   .paws .paw{width:18px;height:18px;fill:#8a4a1f}
@@ -70,10 +71,10 @@
   .inside .playBtn.popper{opacity:0;transform:scale(.3)}
   .inside .playBtn.popper.in{animation:btnPop .55s cubic-bezier(.3,1.9,.5,1) forwards}
   @keyframes btnPop{0%{opacity:0;transform:scale(.3)}100%{opacity:1;transform:scale(1)}}
-  .trackLayer{position:absolute;inset:0;pointer-events:none;overflow:hidden;border-radius:18px;z-index:0}
+  .trackLayer{position:absolute;inset:0;pointer-events:none;overflow:hidden;border-radius:18px;z-index:2}
   .track{position:absolute;width:7%;aspect-ratio:1;margin:-3.5% 0 0 -3.5%;opacity:0}
   .track svg{width:100%;height:100%;display:block}
-  .track path{fill:none;stroke:#a8743f;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+  .track path{fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
   #card.open .track{animation:stamp .28s cubic-bezier(.3,1.7,.5,1) forwards}
   @keyframes stamp{0%{opacity:0;scale:1.6}100%{opacity:var(--o,.42);scale:1}}
   .from{font-size:13px;font-weight:600;opacity:.75;margin-top:4px;display:flex;align-items:center;justify-content:center;gap:4px}
@@ -173,10 +174,39 @@ button{touch-action:manipulation}
 #resultPlayer{font-size:18px;font-weight:600;color:#653617;margin:0 0 8px;overflow-wrap:anywhere}
 #over .panel{max-height:calc(100% - 24px);overflow-y:auto;touch-action:pan-y}
 #scoreSync,#leaderStatus{font-size:14px;line-height:1.4}
-#leaderboard{text-align:left;margin:12px 0;font-size:16px}
-#leaderboard summary{cursor:pointer;padding:10px 0;font-weight:600}
-#leaderList{padding-left:26px}#leaderList li{padding:5px 0;overflow-wrap:anywhere}
 #retryScore[hidden]{display:none}
+#over .panel{position:relative;z-index:1;width:90%}
+#over .thanksgivingTitle{font:400 clamp(30px,10vw,45px)/1.18 'Pacifico',Georgia,serif;color:#863c1d;letter-spacing:0;text-shadow:none;margin:4px 0 9px}
+#overTitle{margin:0 0 4px;color:#9c411f;font-weight:700}
+#resultLeaves{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+#leaderboard{margin:16px 0 0;padding:12px;text-align:left;border:1px solid #c89251;border-radius:15px;background:#fff8e9;color:#4a2a14}
+#leaderTitle{font-size:20px;margin:0 0 6px}
+#roundSummary,#scoreSync,#leaderStatus{margin:4px 0;font-size:14px}
+#scoreSync:empty,#leaderStatus:empty{display:none}
+.leaderScroll{max-height:227px;overflow:auto;overscroll-behavior:contain;touch-action:pan-y;margin-top:8px}
+#leaderboard table{width:100%;table-layout:fixed;border-collapse:collapse;font-size:15px;font-variant-numeric:tabular-nums}
+#leaderboard th,#leaderboard td{padding:7px 5px;border-bottom:1px solid #e7cfa8;overflow-wrap:anywhere}
+#leaderboard th{position:sticky;top:0;background:#f6e6c9;font-size:13px}
+#leaderboard th:last-child,#leaderboard td:last-child{text-align:right}
+#leaderboard td:first-child{text-align:center}
+#leaderboard .yourScore{background:#fae4b9;font-weight:600}
+#leaderboard th{height:32px}
+#leaderboard td{height:39px;padding-block:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#leaderboard th:first-child{width:48px}
+#leaderboard th:last-child{width:73px}
+.rankIcon{font-size:24px;line-height:1;vertical-align:middle}
+#over .row .ghostBtn{min-height:46px;gap:8px}
+#over .row .ghostBtn svg{width:28px;height:28px;flex:none}
+#homeCard svg,#mute svg{width:26px;height:26px}
+.resultStats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:10px 0;padding:9px;border-radius:12px;background:#e8b878;border:1px solid #aa6b35;color:#49240f;text-align:center}
+.scorePeek{position:relative;height:62px;margin-bottom:-10px;overflow:hidden}
+.scorePeek canvas{position:absolute;bottom:0;left:calc(25% - 40px);width:80px;height:62px}
+.scorePeek + .resultStats{position:relative;margin-top:10px}
+@media(prefers-reduced-motion:reduce){.scorePeek{display:none}}
+.resultStats div{padding:4px 3px}
+.resultStats.allTimeBest{display:block;width:fit-content;min-width:132px;margin:8px auto;padding:5px 12px;background:#743c24;border-color:#743c24;color:#fff4dc}
+.resultStats dt{font-size:12px;font-weight:600}
+.resultStats dd{margin:2px 0 0;font:400 20px 'Lilita One',sans-serif;overflow-wrap:anywhere}
 </style>
 </head>
 <body>
@@ -201,7 +231,7 @@ button{touch-action:manipulation}
           <div><i>💣</i>Bombs cost a ❤</div>
         </div>
         <div class="playerEntry">
-          <label for="playerName">Player name <span>(optional)</span></label>
+          <label for="playerName">Player name <span>· Play for 1st place!</span></label>
           <input id="playerName" name="nickname" type="text" maxlength="24" autocomplete="nickname" autocapitalize="words" enterkeyhint="go" placeholder="Your name" aria-describedby="playerHint">
           <small id="playerHint">Your name and best score appear on the leaderboard.</small>
         </div>
@@ -213,23 +243,37 @@ button{touch-action:manipulation}
       <div class="panel">
         <div class="harvestParty" aria-hidden="true">🍁 🥧 🦃 🎃 🍂</div>
         <h2 id="roundTitle"></h2><p id="roundCopy"></p><p id="roundNext"></p>
+        <div class="scorePeek" aria-hidden="true"><canvas id="scoreTurkey" width="184" height="144"></canvas></div>
+        <dl class="resultStats">
+          <div><dt>Level score</dt><dd id="clearScore"></dd></div>
+          <div><dt>Turkeys hit</dt><dd id="clearTurkeys"></dd></div>
+        </dl>
+        <dl class="resultStats allTimeBest"><div><dt>Best for this level</dt><dd id="clearBest"></dd></div></dl>
         <button class="playBtn" id="nextLevel">NEXT HELPING!</button>
       </div>
     </div>
     <div id="over" class="overlay">
+      <canvas id="resultLeaves" aria-hidden="true"></canvas>
       <div class="panel">
-        <p id="resultPlayer"></p><h2 id="overTitle">GOBBLE GOBBLE!</h2>
-        <div class="sub">Happy Thanksgiving!</div>
+        <h2 class="thanksgivingTitle">Happy Thanksgiving!</h2>
+        <p id="overTitle"></p>
         <div class="from">from Tony, Amy &amp; Major <svg class="paw" viewBox="0 0 32 32"><ellipse cx="16" cy="21" rx="7.5" ry="6.5"/><ellipse cx="7" cy="13" rx="3.2" ry="4"/><ellipse cx="12.5" cy="7.5" rx="3.2" ry="4"/><ellipse cx="19.5" cy="7.5" rx="3.2" ry="4"/><ellipse cx="25" cy="13" rx="3.2" ry="4"/></svg></div>
-        <p id="scoreSync" role="status"></p><button class="ghostBtn" id="retryScore" hidden>Retry score upload</button><details id="leaderboard"><summary>Top 10 leaderboard</summary><p id="leaderStatus" role="status"></p><ol id="leaderList"></ol></details><div class="stats">
-          <div class="stat"><b id="oScore">0</b><span>SCORE</span></div>
-          <div class="stat"><b id="oLevel">1</b><span>LEVEL</span></div>
-          <div class="stat"><b id="oHits">0</b><span>TURKEYS</span></div>
-          <div class="stat"><b id="oBest">0</b><span>BEST</span></div>
-        </div>
+        <section id="leaderboard" aria-labelledby="leaderTitle">
+          <h3 id="leaderTitle">Top 10 leaderboard</h3>
+          <p id="roundSummary"></p>
+          <p id="scoreSync" role="status"></p>
+          <button class="ghostBtn" id="retryScore" hidden>Retry score upload</button>
+          <p id="leaderStatus" role="status"></p>
+          <div class="leaderScroll" tabindex="0" role="region" aria-label="Leaderboard rankings">
+            <table aria-labelledby="leaderTitle">
+              <thead><tr><th scope="col">Place</th><th scope="col">Player</th><th scope="col">Score</th></tr></thead>
+              <tbody id="leaderList"></tbody>
+            </table>
+          </div>
+        </section>
         <button class="playBtn" id="againBtn">PLAY AGAIN</button>
         <div class="row">
-          <button class="ghostBtn" id="cardBtn">💌 Card</button>
+          <button class="ghostBtn" id="cardBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="3" fill="#fff7dd"/><path d="m3.5 7 8.5 6 8.5-6"/><path d="M12 16c-5-3-2.4-6.3 0-4 2.4-2.3 5 1 0 4Z" fill="#c95134" stroke="#c95134"/></svg>Card</button>
           <a class="ghostBtn" href="https://tonysnguyen.games/" target="_top">
             <svg viewBox="0 0 24 24" fill="none" stroke="#4a2a14" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3"/><path d="M7.5 15h9" stroke="#5cbf3f"/></svg>More games</a>
         </div>
@@ -243,7 +287,7 @@ button{touch-action:manipulation}
   <canvas id="leafFall"></canvas>
   <div id="card">
     <div class="page inside">
-      <div class="trackLayer" id="tracks"></div>
+      <div class="trackLayer" id="tracks" aria-hidden="true"></div>
       <div class="leaves seq">🍂🥧🍁</div>
       <h2 class="seq">So thankful for you</h2>
       <p>Wishing you a warm table, full plates, and people you love all around you.</p>
@@ -442,19 +486,48 @@ function drawPeekingHead(c,w,h){
   c.beginPath();c.rect(0,0,w,h*.82);c.clip();
   c.translate(w*.54,h*.79+88-rise*178);
   c.rotate(gaze*.004);
-  // Warm flat shapes with a long neck hidden behind the front hill.
+  drawTurkeyHead(c,gaze,0);
+  c.restore();
+}
+function drawTurkeyHead(c,gaze,lookDown){
   c.fillStyle='#d97624';c.beginPath();c.roundRect(-28,-24,56,145,27);c.fill();
   c.fillStyle='#f39a30';c.beginPath();c.ellipse(-3,-16,37,38,0,0,7);c.fill();
   c.fillStyle='#ef8222';c.beginPath();c.ellipse(-14,-57,10,24,-.45,0,7);c.fill();
   c.fillStyle='#b83d24';c.beginPath();c.ellipse(8,-56,8,21,.16,0,7);c.fill();
   for(const x of [-18,18]){
     c.fillStyle='#fff0c9';c.beginPath();c.ellipse(x,-20,20,24,0,0,7);c.fill();
-    c.fillStyle='#49232b';c.beginPath();c.ellipse(x+gaze,-16,9,12,0,0,7);c.fill();
-    c.fillStyle='#fff8e7';c.beginPath();c.arc(x+gaze-3,-21,3,0,7);c.fill();
+    c.fillStyle='#49232b';c.beginPath();c.ellipse(x+gaze,-16+lookDown,9,12,0,0,7);c.fill();
+    c.fillStyle='#fff8e7';c.beginPath();c.arc(x+gaze-3,-21+lookDown,3,0,7);c.fill();
   }
   c.fillStyle='#ffd05d';c.beginPath();c.moveTo(-13,4);c.quadraticCurveTo(0,-2,14,5);c.lineTo(1,21);c.closePath();c.fill();
   c.fillStyle='#ba432a';c.beginPath();c.ellipse(12,29,7,24,-.16,0,7);c.fill();
-  c.restore();
+}
+
+let scorePeekFrame;
+function playScorePeek(){
+  cancelAnimationFrame(scorePeekFrame);
+  const canvas=document.getElementById('scoreTurkey');
+  const c=canvas.getContext('2d');
+  c.clearRect(0,0,canvas.width,canvas.height);
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const start=performance.now();
+  function frame(now){
+    c.clearRect(0,0,canvas.width,canvas.height);
+    if(state!=='celebrate') return;
+    const time=(now-start)/1000;
+    if(time>=2.5) return;
+    const rise=clamp((time-.2)/.45,0,1);
+    const fall=clamp((time-1.95)/.45,0,1);
+    const peek=(rise-fall);
+    const eased=peek*peek*(3-2*peek);
+    c.save();
+    c.translate(92,218-eased*138);
+    c.scale(.94,.94);
+    drawTurkeyHead(c,0,7*clamp((time-.75)/.3,0,1));
+    c.restore();
+    scorePeekFrame=requestAnimationFrame(frame);
+  }
+  scorePeekFrame=requestAnimationFrame(frame);
 }
 function animateCover(){
   if(!cardOpen&&!cardScene.classList.contains('gone')) drawCover();
@@ -525,7 +598,7 @@ function makeTracks(){
       footprint.style.left=x+'%';
       footprint.style.top=y+'%';
       footprint.style.transform='rotate('+(Math.atan2(dy,dx)*180/Math.PI+90)+'deg)';
-      footprint.style.setProperty('--o',String(.30+route*.055));
+      footprint.style.setProperty('--o',String(.36+route*.055));
       const delay=route*.75+step*.13;
       footprint.style.animationDelay=delay+'s';
       lastStamp=Math.max(lastStamp,delay);
@@ -756,7 +829,10 @@ function configureLanes(){
   SPR=LANES===1?150:LANES===2?120:100;
 }
 let initialTheme=null;
+let levelStartScore=0;
+const levelBests=new Map();
 function newGame(){
+  levelStartScore=0;
   score=0; combo=0; mult=1; hearts=3; timeLeft=GAME_TIME; targets=[]; parts=[]; floaters=[]; hits=0; elapsed=0; shots=0;
   level=1; goalHit=0; levelBanner=null; laneDir=[-1,1,-1]; turkeyT=rand(2,3.2);
   setTheme('snowy'); initialTheme=themeKey; configureLanes(); hitstop=0;
@@ -791,18 +867,31 @@ function spawnTurkey(){
   const free=lanes.filter(l=>!busy.has(l)); const choices=free.length?free:lanes; const l=choices[randi(0,choices.length-1)];
   const t=spawn(l,pickTurkey()); sfx.gobble(); return t;
 }
+function recordLevelBest(){
+  const key='turkeyShootBestLevel:'+level;
+  let savedBest=levelBests.get(level)||0;
+  try{savedBest=Math.max(savedBest,Number(localStorage.getItem(key))||0);}catch{}
+  const levelBest=Math.max(savedBest,score-levelStartScore);
+  levelBests.set(level,levelBest);
+  try{localStorage.setItem(key,String(levelBest));}catch{}
+  return levelBest;
+}
 function levelUp(){
   if(state!=='play')return;
   state='celebrate'; crosshair.show=false;
+  document.getElementById('clearScore').textContent=(score-levelStartScore).toLocaleString();
+  document.getElementById('clearTurkeys').textContent=hits.toLocaleString();
+  document.getElementById('clearBest').textContent=recordLevelBest().toLocaleString();
   document.getElementById('roundTitle').textContent='Level '+level+' complete!';
   document.getElementById('roundCopy').textContent=['A harvest worth celebrating!','That’s something to gobble about!','You’ve earned another helping!'][(level-1)%3];
   document.getElementById('roundNext').textContent='Next up • '+levelCfg(level+1).lanes+' '+(levelCfg(level+1).lanes===1?'lane':'lanes')+' • '+levelCfg(level+1).seconds+' seconds';
   document.getElementById('roundComplete').classList.add('show');
+  playScorePeek();
   [523,659,784,1046,1318].forEach((f,i)=>tone(f,.16,'triangle',.09,1,i*.08));
 }
 document.getElementById('nextLevel').addEventListener('click',()=>{
   if(state!=='celebrate')return;
-  level++; goalHit=0; timeLeft=cfg().seconds; lastTick=Math.ceil(timeLeft);
+  level++; levelStartScore=score; goalHit=0; timeLeft=cfg().seconds; lastTick=Math.ceil(timeLeft);
   configureLanes(); targets=[]; parts=[]; floaters=[]; rings.length=0;
   laneDir=laneDir.map(d=>-d); spawnT=[.3,.8,1.3]; turkeyT=2; hitstop=0;
   const keys=['snowy','harvest','cranberry'];
@@ -893,19 +982,49 @@ const rings=[];
 function ring(x,y){ rings.push({x,y,t:0}); }
 function floatText(x,y,text,col,size=24){ floaters.push({x,y,text,col,size,life:1}); }
 
+function celebrateResults(){
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const canvas=document.getElementById('resultLeaves');
+  const context=canvas.getContext('2d');
+  canvas.width=W;
+  canvas.height=H;
+  const colors=['#ed9e42','#bd4326','#f7c968','#a76a29','#c96433'];
+  const leaves=Array.from({length:46},(_,i)=>({
+    x:rand(0,W), y:rand(-H*.65,0), speed:rand(120,260), size:rand(5,13),
+    spin:rand(-3,3), phase:rand(0,Math.PI*2), color:colors[i%colors.length]
+  }));
+  const start=performance.now();
+  function frame(now){
+    const seconds=(now-start)/1000;
+    context.clearRect(0,0,W,H);
+    if(state!=='over'||seconds>=5) return;
+    context.globalAlpha=Math.min(1,5-seconds);
+    for(const leaf of leaves){
+      drawLeaf(context,leaf.x+Math.sin(leaf.phase+seconds*2)*26,
+        leaf.y+leaf.speed*seconds,leaf.size,leaf.phase+seconds*leaf.spin,leaf.color,false);
+    }
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+}
+
 function endGame(){
   if(state!=='play') return;
   state='over'; sfx.end();
-  document.getElementById('resultPlayer').textContent=playerName?playerName+'’s results':'Your results';
+  recordLevelBest();
+  document.getElementById('roundSummary').textContent='This round · '+score.toLocaleString()+' points';
   // A local record keeps the player and round together for a future leaderboard.
   const result={playerName:playerName||'Guest',score,level,turkeyHits:hits,completedAt:new Date().toISOString()};
   try{localStorage.setItem('turkeyLastResult',JSON.stringify(result));}catch{}
   window.dispatchEvent(new CustomEvent('turkey-round-ended',{detail:result}));
 
   if(score>best){ best=score; try{ localStorage.setItem('turkeyShootBest',best); }catch(e){} }
-  document.getElementById('oScore').textContent=score; document.getElementById('oHits').textContent=hits; document.getElementById('oLevel').textContent=level; document.getElementById('oBest').textContent=best;
   document.getElementById('overTitle').textContent = hearts<=0 ? 'KA-BOOM!' : (score>=best&&score>0 ? 'NEW RECORD!' : 'GOBBLE GOBBLE!');
-  setTimeout(()=>document.getElementById('over').classList.add('show'),600);
+  setTimeout(()=>{
+    if(state!=='over') return;
+    document.getElementById('over').classList.add('show');
+    celebrateResults();
+  },600);
 }
 function showReady(){ state='ready'; newGame(); document.getElementById('over').classList.remove('show'); document.getElementById('ready').classList.add('show'); }
 const playerInput=document.getElementById('playerName');
@@ -1000,8 +1119,9 @@ function drawTarget(tg){
   drawSpriteImg(spriteFor(tg), tg.kind==='plain'&&tg.hit ? 0 : fl);
   // fuse spark (sprite space; follows the mirror)
   if(def.bomb && !tg.hit && IMG['bomb-spark']){
-    const s=13+Math.sin(tg.t*24)*3+Math.random()*2;
-    ctx.save(); ctx.translate(75-50,15.8-100); ctx.rotate(tg.t*7); ctx.globalAlpha=.8+Math.random()*.2;
+    const flicker=state==='play'?Math.random():.5;
+    const s=13+Math.sin(tg.t*24)*3+flicker*2;
+    ctx.save(); ctx.translate(75-50,15.8-100); ctx.rotate(tg.t*7); ctx.globalAlpha=.8+flicker*.2;
     ctx.drawImage(IMG['bomb-spark'],-s/2,-s/2,s,s); ctx.restore();
   }
   ctx.restore();
@@ -1127,7 +1247,7 @@ function render(time){
     drawHud(); return;
   }
   ctx.save();
-  if(shake) ctx.translate(rand(-shake,shake)*.5,rand(-shake,shake)*.5);
+  if(state==='play' && shake) ctx.translate(rand(-shake,shake)*.5,rand(-shake,shake)*.5);
   drawLanes(time);
   drawBooth();
   drawLighting();
@@ -1209,16 +1329,31 @@ fontsReady.then(()=>{
     const message=document.getElementById('leaderStatus'),list=document.getElementById('leaderList');
     message.textContent='Loading scores…';
     try{
-      const {db,sdk}=await connect();
+      const {user,db,sdk}=await connect();
       const snapshot=await sdk.getDocs(sdk.query(sdk.collection(db,'turkeyShootScores'),sdk.orderBy('score','desc'),sdk.limit(10)));
       list.replaceChildren();
-      snapshot.forEach(doc=>{
-        const entry=doc.data(),row=document.createElement('li');
-        row.textContent=entry.playerName+' — '+entry.score.toLocaleString()+' points · Level '+entry.level;
+      snapshot.docs.forEach((doc,index)=>{
+        const entry=doc.data(),row=document.createElement('tr');
+        if(doc.id===user.uid) row.className='yourScore';
+        const place=row.insertCell();
+        const medal=['🦃','🎃','🥧'][index];
+        if(medal){
+          const icon=document.createElement('span');
+          icon.className='rankIcon';
+          icon.setAttribute('role','img');
+          icon.setAttribute('aria-label',['1st place','2nd place','3rd place'][index]);
+          icon.textContent=medal;
+          place.append(icon);
+        }else place.textContent=index+1;
+        for(const value of [entry.playerName+(doc.id===user.uid?' (you)':''),entry.score.toLocaleString()]){
+          const cell=document.createElement('td');
+          cell.textContent=value;
+          row.append(cell);
+        }
         list.append(row);
       });
       message.textContent=snapshot.empty?'Be the first on the leaderboard!':'';
-    }catch(error){message.textContent='Leaderboard unavailable. Please reopen to retry.';}
+    }catch(error){message.textContent='Leaderboard unavailable. Try again after your next round.';}
   }
   async function upload(){
     if(uploading||!currentResult)return;
@@ -1240,23 +1375,22 @@ fontsReady.then(()=>{
         status.textContent='Your best score is saved to the leaderboard.';
         try{localStorage.removeItem('turkeyPendingScore');}catch{}
       }
-      if(document.getElementById('leaderboard').open)loadLeaderboard();
     }catch(error){
       if(currentResult===result){status.textContent=errorText(error);retry.hidden=false;}
     }finally{
       uploading=false;
       if(currentResult!==result)upload();
+      else loadLeaderboard();
     }
   }
   window.addEventListener('turkey-round-ended',event=>{
     currentResult={...event.detail};
+    document.getElementById('leaderList').replaceChildren();
+    document.getElementById('leaderStatus').textContent='Loading scores…';
     try{localStorage.setItem('turkeyPendingScore',JSON.stringify(currentResult));}catch{}
     upload();
   });
   retry.addEventListener('click',upload);
-  document.getElementById('leaderboard').addEventListener('toggle',event=>{
-    if(event.target.open)loadLeaderboard();
-  });
 })();
 
 </script>
