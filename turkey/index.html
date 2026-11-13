@@ -28,7 +28,7 @@
   .page{position:absolute;inset:0;border-radius:18px;backface-visibility:hidden;-webkit-backface-visibility:hidden;overflow:hidden}
   .inside{background:linear-gradient(160deg,#fff8ec,#f7e6c8);box-shadow:0 18px 50px rgba(0,0,0,.45), inset 0 0 0 10px #fff8ec, inset 0 0 0 12px #d9a35a;
     display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:12% 10%}
-  .inside .leaves{font-size:30px;letter-spacing:6px;margin-bottom:4px}
+  .inside .leaves{font-size:36px;letter-spacing:7px;margin-bottom:6px}
   .inside h2{font-family:'Pacifico',cursive;font-weight:400;font-size:clamp(26px,8vw,34px);margin:0;color:#b5401f;line-height:1.2}
   .inside p{font-size:clamp(14px,4.2vw,17px);line-height:1.45;margin:14px 0 0;font-weight:500}
   .inside .sig{font-family:'Pacifico',cursive;font-size:clamp(18px,5.5vw,22px);color:#8a4a1f;margin-top:14px}
@@ -101,13 +101,6 @@
   .ghostBtn:active{transform:translateY(3px);box-shadow:0 1px 0 #c9a774}
   .ghostBtn svg{width:18px;height:18px}
   .panel .playBtn{width:100%;margin-top:14px}
-  .themeLabel{margin-top:12px;font-size:11px;font-weight:700;letter-spacing:1.5px;opacity:.6}
-  .themes{display:flex;gap:7px;margin-top:6px}
-  .themeChip{flex:1;border:none;cursor:pointer;font-family:inherit;font-weight:700;font-size:12px;color:#4a2a14;padding:7px 4px 8px;border-radius:14px;
-    background:#f3e2c2;box-shadow:0 3px 0 #cfa970, inset 0 0 0 2px transparent;display:flex;flex-direction:column;align-items:center;gap:5px;line-height:1.1;transition:transform .1s, box-shadow .15s}
-  .themeChip i{display:block;width:100%;height:30px;border-radius:9px;box-shadow:inset 0 0 0 2px rgba(255,255,255,.35)}
-  .themeChip.on{background:#fff;box-shadow:0 3px 0 #e2591f, inset 0 0 0 2.5px #e2591f;transform:translateY(-2px)}
-  .themeChip:active{transform:translateY(1px)}
   .howto{display:flex;justify-content:space-around;margin:14px 0 2px;font-size:12px;font-weight:700;opacity:.8}
   .howto div{width:31%}
   .howto i{display:block;font-style:normal;font-size:24px}
@@ -151,6 +144,39 @@ button{touch-action:manipulation}
  #card:not(.open) .celebration,#card:not(.open) .coverText{translate:none!important}
  #motionButton{display:none}
 }
+#card{container-type:inline-size}
+.coverText{top:17%;left:3%;right:3%}
+.coverText .happy{font-size:clamp(30px,15cqw,57px);line-height:1.12}
+.coverText .tg{font-size:clamp(22px,10.2cqw,39px);letter-spacing:.5px;line-height:1.15;margin-top:6px}
+@media(max-height:500px) and (orientation:landscape){
+ .coverText{top:14%}
+ .coverText .happy{font-size:13cqw}
+ .coverText .tg{font-size:9.5cqw}
+}
+#ready .panel{width:90%;max-height:calc(100% - 24px);overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;padding:24px 20px}
+#ready .sub{font-family:'Fredoka',system-ui,sans-serif;font-size:19px;line-height:1.4;font-weight:600;color:#653617}
+#ready .howto{display:flex;flex-direction:column;gap:12px;font-size:17px;line-height:1.4;opacity:1;text-align:left;color:#462710;margin:20px 0 8px}
+#ready .howto div{width:100%;display:flex;align-items:center;gap:12px}
+#ready .howto i{font-size:29px;flex:0 0 36px;text-align:center}
+#roundComplete .panel{width:90%}
+#roundComplete p{font-size:18px;line-height:1.45;color:#532d19}
+.harvestParty{font-size:35px;line-height:1.6}
+#roundComplete.show .harvestParty{animation:harvestCheer .65s ease-in-out 3}
+@keyframes harvestCheer{50%{transform:translateY(-12px) rotate(-3deg) scale(1.08)}}
+@media(prefers-reduced-motion:reduce){#roundComplete.show .harvestParty{animation:none}}
+ .playerEntry{text-align:left;margin:18px 0 4px}
+.playerEntry label{display:block;font-size:17px;font-weight:600;color:#462710;margin-bottom:7px}
+.playerEntry label span{font-size:14px;font-weight:500}
+.playerEntry input{display:block;width:100%;min-height:48px;padding:10px 12px;border:2px solid #ac7842;border-radius:12px;background:#fffdf5;color:#462710;font:500 18px 'Fredoka',system-ui,sans-serif;user-select:text;-webkit-user-select:text;touch-action:manipulation}
+.playerEntry input:focus{outline:3px solid #eaa246;outline-offset:2px}
+.playerEntry small{display:block;margin-top:6px;font-size:13px;color:#694728}
+#resultPlayer{font-size:18px;font-weight:600;color:#653617;margin:0 0 8px;overflow-wrap:anywhere}
+#over .panel{max-height:calc(100% - 24px);overflow-y:auto;touch-action:pan-y}
+#scoreSync,#leaderStatus{font-size:14px;line-height:1.4}
+#leaderboard{text-align:left;margin:12px 0;font-size:16px}
+#leaderboard summary{cursor:pointer;padding:10px 0;font-weight:600}
+#leaderList{padding-left:26px}#leaderList li{padding:5px 0;overflow-wrap:anywhere}
+#retryScore[hidden]{display:none}
 </style>
 </head>
 <body>
@@ -169,27 +195,33 @@ button{touch-action:manipulation}
       <div class="panel">
         <h2>STEP RIGHT UP!</h2>
         <div class="sub">The Thanksgiving Turkey Shoot</div>
-        <div class="themeLabel">PICK YOUR BOOTH</div>
-        <div class="themes">
-          <button class="themeChip" data-theme="snowy"><i style="background:linear-gradient(160deg,#cfe8ff,#5b86b8 60%,#1d3557)"></i>Snowy Pines</button>
-          <button class="themeChip" data-theme="harvest"><i style="background:linear-gradient(160deg,#ffe2a8,#f19a3e 55%,#8a3a12)"></i>Harvest Fair</button>
-          <button class="themeChip" data-theme="cranberry"><i style="background:linear-gradient(160deg,#ffc2e2,#b0457f 55%,#3a1240)"></i>Cranberry Night</button>
-        </div>
         <div class="howto">
           <div><i>🥧</i>Clear the harvest to level up</div>
           <div><i>🦃</i>Runaway turkeys = big points</div>
           <div><i>💣</i>Bombs cost a ❤</div>
         </div>
+        <div class="playerEntry">
+          <label for="playerName">Player name <span>(optional)</span></label>
+          <input id="playerName" name="nickname" type="text" maxlength="24" autocomplete="nickname" autocapitalize="words" enterkeyhint="go" placeholder="Your name" aria-describedby="playerHint">
+          <small id="playerHint">Your name and best score appear on the leaderboard.</small>
+        </div>
         <button class="playBtn" id="goBtn">START!</button>
       </div>
     </div>
 
+    <div id="roundComplete" class="overlay">
+      <div class="panel">
+        <div class="harvestParty" aria-hidden="true">🍁 🥧 🦃 🎃 🍂</div>
+        <h2 id="roundTitle"></h2><p id="roundCopy"></p><p id="roundNext"></p>
+        <button class="playBtn" id="nextLevel">NEXT HELPING!</button>
+      </div>
+    </div>
     <div id="over" class="overlay">
       <div class="panel">
-        <h2 id="overTitle">GOBBLE GOBBLE!</h2>
+        <p id="resultPlayer"></p><h2 id="overTitle">GOBBLE GOBBLE!</h2>
         <div class="sub">Happy Thanksgiving!</div>
         <div class="from">from Tony, Amy &amp; Major <svg class="paw" viewBox="0 0 32 32"><ellipse cx="16" cy="21" rx="7.5" ry="6.5"/><ellipse cx="7" cy="13" rx="3.2" ry="4"/><ellipse cx="12.5" cy="7.5" rx="3.2" ry="4"/><ellipse cx="19.5" cy="7.5" rx="3.2" ry="4"/><ellipse cx="25" cy="13" rx="3.2" ry="4"/></svg></div>
-        <div class="stats">
+        <p id="scoreSync" role="status"></p><button class="ghostBtn" id="retryScore" hidden>Retry score upload</button><details id="leaderboard"><summary>Top 10 leaderboard</summary><p id="leaderStatus" role="status"></p><ol id="leaderList"></ol></details><div class="stats">
           <div class="stat"><b id="oScore">0</b><span>SCORE</span></div>
           <div class="stat"><b id="oLevel">1</b><span>LEVEL</span></div>
           <div class="stat"><b id="oHits">0</b><span>TURKEYS</span></div>
@@ -408,7 +440,7 @@ function drawPeekingHead(c,w,h){
   const gaze=still?0:t<2.6?0:t<3.5?-6:t<4.5?6:0;
   c.save();
   c.beginPath();c.rect(0,0,w,h*.82);c.clip();
-  c.translate(w*.54,h*.79+88-rise*143);
+  c.translate(w*.54,h*.79+88-rise*178);
   c.rotate(gaze*.004);
   // Warm flat shapes with a long neck hidden behind the front hill.
   c.fillStyle='#d97624';c.beginPath();c.roundRect(-28,-24,56,145,27);c.fill();
@@ -455,7 +487,7 @@ function drawCover(){
   wheat(W2*.06,H2*.86,-.25); wheat(W2*.1,H2*.88,-.05); wheat(W2*.93,H2*.82,.25);
   // leaf garland around title
   const cols=['#f39c12','#e74c3c','#f1c40f','#d35400','#c0392b'];
-  for(let i=0;i<16;i++){ const a=Math.PI*(1.08+i*.84/15); drawLeaf(c, W2/2+Math.cos(a)*190, H2*.29+Math.sin(a)*120, 11+i%6, a+Math.PI/2+Math.sin(i)*.3, cols[i%5]); }
+  for(let i=0;i<16;i++){ const a=Math.PI*(1.08+i*.84/15); drawLeaf(c, W2/2+Math.cos(a)*174, H2*.32+Math.sin(a)*120, 16+i%7, a+Math.PI/2+Math.sin(i)*.3, cols[i%5]); }
   c.restore();
 }
 // falling leaves behind card
@@ -493,7 +525,7 @@ function makeTracks(){
       footprint.style.left=x+'%';
       footprint.style.top=y+'%';
       footprint.style.transform='rotate('+(Math.atan2(dy,dx)*180/Math.PI+90)+'deg)';
-      footprint.style.setProperty('--o',String(.18+route*.055));
+      footprint.style.setProperty('--o',String(.30+route*.055));
       const delay=route*.75+step*.13;
       footprint.style.animationDelay=delay+'s';
       lastStamp=Math.max(lastStamp,delay);
@@ -547,7 +579,7 @@ document.getElementById('cover').addEventListener('click',()=>{ ensureAudio(); i
 document.getElementById('openGame').addEventListener('click',()=>{ ensureAudio(); cardScene.classList.add('gone'); showReady(); });
 function goHomeCard(){
   state='card'; crosshair.show=false;
-  ['ready','over'].forEach(id=>document.getElementById(id).classList.remove('show'));
+  ['ready','over','roundComplete'].forEach(id=>document.getElementById(id).classList.remove('show'));
   card.classList.remove('open'); cardOpen=false; coverStarted=performance.now(); resetInside();
   document.querySelectorAll('.celebration img').forEach(img=>{img.style.animation='none';void img.offsetWidth;img.style.animation='';});
   cardScene.classList.remove('gone');
@@ -586,11 +618,12 @@ const W=420, H=780;
 const HUD_H=48;                 // HUD band at the top; the booth art sits below it
 const OY=HUD_H;                 // booth offset (art coords /3 + OY)
 const S3=1/3;                   // 3x art -> logical
-const LANES=3, LANE_X=30, LANE_W=360, LANE_H=160, LANE_STEP=520*S3;
+const LANE_X=30, LANE_W=360;
+let LANES=1, LANE_STEP=520, LANE_H=506.6667;
 const laneTop=l=>OY+260*S3+l*LANE_STEP;          // sky / recess top
-const hillsY =l=>OY+420*S3+l*LANE_STEP;          // hills top
-const railY  =l=>OY+700*S3+l*LANE_STEP;          // rail top = the rail plane targets stand on
-const SPR=100;                  // 300px sprites at 1/3
+const hillsY =l=>railY(l)-94;          // hills top
+const railY  =l=>laneTop(l)+LANE_STEP-40;          // rail top = the rail plane targets stand on
+let SPR=150;                  // 300px sprites at 1/3
 const cv=document.getElementById('game'), ctx=cv.getContext('2d'), wrap=document.getElementById('wrap');
 let scale=1;
 function resize(){
@@ -620,6 +653,11 @@ function decodeBits(b64){ const s=atob(b64), out=new Uint8Array(s.length*8); for
 const occBits=decodeBits(OCC.b);
 const SPR_BITS={}; for(const k in SPRITE_MASKS) SPR_BITS[k]=decodeBits(SPRITE_MASKS[k]);
 function occluded(px,py){                       // booth frame pieces drawn in front of the targets
+  if(LANES<3){
+    if(px<38||px>382||py<laneTop(0)+12||py>railY(LANES-1))return true;
+    for(let l=0;l<LANES;l++)if(py>=railY(l)&&py<laneTop(l+1))return true;
+    return false;
+  }
   if(py<OY) return true;
   const cx=Math.floor(px/OCC.cell), cy=Math.floor((py-OY)/OCC.cell);
   if(cx<0||cy<0||cx>=OCC.w||cy>=OCC.h) return true;
@@ -640,10 +678,9 @@ const THEMES={
   cranberry:{ name:'Cranberry Night', tint:'rgba(150,70,140,.62)', glow:'rgba(255,120,190,.24)', light:'rgba(255,120,200,.14)', vignette:'rgba(40,5,40,.5)',
           hud:['#2e1230','#1a081c'], accent:'#ff9fd0', parts:'specks' },
 };
-let themeKey='snowy'; try{ const t=localStorage.getItem('turkeyTheme'); if(THEMES[t]) themeKey=t; }catch(e){}
+let themeKey='snowy';
 const theme=()=>THEMES[themeKey];
-function setTheme(k){ if(!THEMES[k]) return; themeKey=k; try{ localStorage.setItem('turkeyTheme',k); }catch(e){}
-  document.querySelectorAll('.themeChip').forEach(c=>c.classList.toggle('on',c.dataset.theme===k)); makeAmbient(); }
+function setTheme(k){ if(!THEMES[k]) return; themeKey=k; makeAmbient(); }
 
 // ambient particles: small ones behind targets (per lane), larger ones in front of the booth
 let backParts=[], frontParts=[];
@@ -690,9 +727,13 @@ let laneDir=[-1,1,-1];          // harvest items + bombs follow the lane (flips 
 // Level progression: the lanes are stocked with Thanksgiving items; hit enough of them to clear the level.
 function levelCfg(L){
   return {
+    lanes:L===1?1:L<=3?2:3,
+    seconds:L<=3?60:Math.max(35,55-(L-4)*3),
+    speedSpread:L<4?0:Math.min(.28,.12+(L-4)*.025),
+    burstChance:L<4?.38:Math.min(.58,.42+(L-4)*.02),
     kinds: L<=1 ? ['pie','pumpkin'] : ['pie','pumpkin','corn'],
     bomb:  L<=1 ? 0 : Math.min(.22, .05+.035*L),
-    speed: Math.min(2.1, 1+.13*(L-1)),
+    speed: Math.min(2.4, 1+.13*(L-1)),
     gap:   Math.max(.55, 1-.07*(L-1)),
     goal:  6+4*L,
     turkeyEvery:[Math.max(2.2,5.5-.5*L), Math.max(3.5,8.5-.6*L)],
@@ -710,9 +751,15 @@ let hitstop=0, shake=0, flashRed=0, hillScroll=0, seq=0;
 const GAME_TIME=60;
 const stats={byKind:{}};
 
+function configureLanes(){
+  LANES=cfg().lanes; LANE_STEP=520/LANES; LANE_H=LANE_STEP-13.3333;
+  SPR=LANES===1?150:LANES===2?120:100;
+}
+let initialTheme=null;
 function newGame(){
   score=0; combo=0; mult=1; hearts=3; timeLeft=GAME_TIME; targets=[]; parts=[]; floaters=[]; hits=0; elapsed=0; shots=0;
   level=1; goalHit=0; levelBanner=null; laneDir=[-1,1,-1]; turkeyT=rand(2,3.2);
+  setTheme('snowy'); initialTheme=themeKey; configureLanes(); hitstop=0;
   spawnT=[.3,1.1,1.8]; lastTick=Math.ceil(GAME_TIME); shake=0; flashRed=0; stats.byKind={};
   for(let l=0;l<LANES;l++) for(let k=0;k<2;k++){ const t=spawn(l); t.x=rand(80,340); }
 }
@@ -732,7 +779,7 @@ function planTurn(tg){                       // next spot where this turkey skid
 function spawn(l, kind){
   kind=kind||pickItem(); const def=TARGETS[kind], c=cfg();
   const dir=def.turkey ? (Math.random()<.5?-1:1) : laneDir[l];
-  const speed=rand(def.base[0],def.base[1])*(def.turkey ? 1+.07*(level-1) : c.speed);
+  const speed=rand(def.base[0],def.base[1])*(def.turkey ? Math.min(2.2,1+.09*(level-1)) : c.speed)*rand(1-c.speedSpread,1+c.speedSpread);
   const tg={id:++seq,lane:l,kind,dir,face:dir,x:dir>0?-60:W+60,speed,t:rand(0,6),phase:rand(0,6),hit:0,dead:false,
     mode:'cruise',modeT:rand(.4,1),factor:1,frame:0};
   if(def.turkey){ tg.turnsLeft=randi(1,c.turns); planTurn(tg); }
@@ -740,16 +787,30 @@ function spawn(l, kind){
 }
 function spawnTurkey(){
   const busy=new Set(targets.filter(t=>TARGETS[t.kind].turkey&&!t.hit).map(t=>t.lane));
-  const free=[0,1,2].filter(l=>!busy.has(l)); const l=(free.length?free:[0,1,2])[randi(0,(free.length||3)-1)];
+  const lanes=Array.from({length:LANES},(_,i)=>i);
+  const free=lanes.filter(l=>!busy.has(l)); const choices=free.length?free:lanes; const l=choices[randi(0,choices.length-1)];
   const t=spawn(l,pickTurkey()); sfx.gobble(); return t;
 }
 function levelUp(){
-  level++; goalHit=0; timeLeft+=8;
-  laneDir=laneDir.map(d=>-d);
-  levelBanner={t:0,level};
+  if(state!=='play')return;
+  state='celebrate'; crosshair.show=false;
+  document.getElementById('roundTitle').textContent='Level '+level+' complete!';
+  document.getElementById('roundCopy').textContent=['A harvest worth celebrating!','That’s something to gobble about!','You’ve earned another helping!'][(level-1)%3];
+  document.getElementById('roundNext').textContent='Next up • '+levelCfg(level+1).lanes+' '+(levelCfg(level+1).lanes===1?'lane':'lanes')+' • '+levelCfg(level+1).seconds+' seconds';
+  document.getElementById('roundComplete').classList.add('show');
   [523,659,784,1046,1318].forEach((f,i)=>tone(f,.16,'triangle',.09,1,i*.08));
-  turkeyT=Math.min(turkeyT,1.2);           // celebrate with a turkey dash
 }
+document.getElementById('nextLevel').addEventListener('click',()=>{
+  if(state!=='celebrate')return;
+  level++; goalHit=0; timeLeft=cfg().seconds; lastTick=Math.ceil(timeLeft);
+  configureLanes(); targets=[]; parts=[]; floaters=[]; rings.length=0;
+  laneDir=laneDir.map(d=>-d); spawnT=[.3,.8,1.3]; turkeyT=2; hitstop=0;
+  const keys=['snowy','harvest','cranberry'];
+  setTheme(keys[(Math.max(0,keys.indexOf(initialTheme))+level-1)%keys.length]);
+  for(let l=0;l<LANES;l++){const target=spawn(l);target.x=rand(90,330);}
+  document.getElementById('roundComplete').classList.remove('show');
+  state='play';
+});
 // where a target is drawn right now (shared by drawing AND hit detection)
 function pose(tg){
   const def=TARGETS[tg.kind];
@@ -777,7 +838,7 @@ function targetAt(px,py){
     let lx=px-p.x, ly=py-p.ay;                 // relative to bottom-centre anchor
     const fs=tg.face, w=Math.max(.15,Math.abs(fs));
     lx = (fs<0 ? -lx : lx)/w;                  // mirror for leftward travel (and squash mid-turn)
-    if(spriteHit(spriteFor(tg), lx+SPR/2, ly+SPR)) found=tg;   // later in draw order = on top
+    if(spriteHit(spriteFor(tg), (lx+SPR/2)*100/SPR, (ly+SPR)*100/SPR)) found=tg;   // later in draw order = on top
   }
   return {target:found};
 }
@@ -805,7 +866,7 @@ function shoot(px,py){
     else { sfx.hit(mult); if(Math.random()<.6) sfx.gobble(); }
     buzz(15); hitstop=.045; shake=Math.max(shake,4);
   } else {
-    if(state==='play'){ goalHit++; if(goalHit>=cfg().goal) setTimeout(()=>{ if(state==='play') levelUp(); },250); }
+    if(state==='play'){ goalHit++; if(goalHit>=cfg().goal) levelUp(); }
     burst(tg.x,cy+12,def.crumbs,20,4,'crumb'); burst(tg.x,cy+6,['#fff8ec','#f3e3c3','#ffffff'],8,3.2,'paper');
     sfx.hit(mult*.5); buzz(8); shake=Math.max(shake,2);
   }
@@ -835,28 +896,45 @@ function floatText(x,y,text,col,size=24){ floaters.push({x,y,text,col,size,life:
 function endGame(){
   if(state!=='play') return;
   state='over'; sfx.end();
+  document.getElementById('resultPlayer').textContent=playerName?playerName+'’s results':'Your results';
+  // A local record keeps the player and round together for a future leaderboard.
+  const result={playerName:playerName||'Guest',score,level,turkeyHits:hits,completedAt:new Date().toISOString()};
+  try{localStorage.setItem('turkeyLastResult',JSON.stringify(result));}catch{}
+  window.dispatchEvent(new CustomEvent('turkey-round-ended',{detail:result}));
+
   if(score>best){ best=score; try{ localStorage.setItem('turkeyShootBest',best); }catch(e){} }
   document.getElementById('oScore').textContent=score; document.getElementById('oHits').textContent=hits; document.getElementById('oLevel').textContent=level; document.getElementById('oBest').textContent=best;
   document.getElementById('overTitle').textContent = hearts<=0 ? 'KA-BOOM!' : (score>=best&&score>0 ? 'NEW RECORD!' : 'GOBBLE GOBBLE!');
   setTimeout(()=>document.getElementById('over').classList.add('show'),600);
 }
 function showReady(){ state='ready'; newGame(); document.getElementById('over').classList.remove('show'); document.getElementById('ready').classList.add('show'); }
-function startPlay(){ ensureAudio(); document.getElementById('ready').classList.remove('show'); newGame(); state='play'; }
+const playerInput=document.getElementById('playerName');
+let playerName='';
+try{playerInput.value=(localStorage.getItem('turkeyPlayerName')||'').slice(0,24);}catch{}
+function rememberPlayer(){
+  playerName=playerInput.value.trim().replace(/\s+/g,' ').slice(0,24);
+  playerInput.value=playerName;
+  try{localStorage.setItem('turkeyPlayerName',playerName);}catch{}
+}
+playerInput.addEventListener('keydown',event=>{
+  if(event.key==='Enter'&&!event.isComposing){event.preventDefault();startPlay();}
+});
+function startPlay(){ if(state!=='ready')return; rememberPlayer(); playerInput.blur(); ensureAudio(); document.getElementById('ready').classList.remove('show'); newGame(); state='play'; }
 document.getElementById('goBtn').addEventListener('click',startPlay);
 document.getElementById('againBtn').addEventListener('click',()=>{ document.getElementById('over').classList.remove('show'); showReady(); });
-document.querySelectorAll('.themeChip').forEach(c=>c.addEventListener('click',()=>{ ensureAudio(); setTheme(c.dataset.theme); tone(700,.06,'triangle',.06,1.4); }));
 
 function update(dt){
+  if(state!=='play') return;
   const f=dt*60;
   shake=Math.max(0,shake-dt*40); flashRed=Math.max(0,flashRed-dt*2.5); crosshair.flash=Math.max(0,crosshair.flash-dt*5);
   hillScroll=(hillScroll+dt*7)%LANE_W;
   stepAmbient(backParts,f); stepAmbient(frontParts,f);
-  if(state==='play' || state==='ready'){
+  if(state==='play'){
     if(state==='play'){
       if(hitstop>0){ hitstop-=dt; return; }
       elapsed+=dt; timeLeft-=dt;
       const sec=Math.ceil(timeLeft); if(sec<lastTick){ lastTick=sec; if(sec<=5&&sec>0) sfx.tick(); }
-      if(timeLeft<=0){ timeLeft=0; endGame(); }
+      if(timeLeft<=0){ timeLeft=0; endGame(); return; }
     }
     const c=cfg();
     for(let l=0;l<LANES;l++){ spawnT[l]-=dt; if(spawnT[l]<=0){ spawn(l); spawnT[l]=rand(1.15,1.9)*c.gap; } }
@@ -875,7 +953,7 @@ function update(dt){
             if(tg.factor<.08){ tg.dir=-tg.dir; tg.turnsLeft--; planTurn(tg); tg.mode='burst'; tg.modeT=rand(.35,.6); tg.factor=.3; }
           } else {
             tg.modeT-=dt;
-            if(tg.modeT<=0){ const r=Math.random(); tg.mode=r<.38?'burst':r<.55?'skid':'cruise'; tg.modeT=tg.mode==='burst'?rand(.35,.55):tg.mode==='skid'?rand(.25,.4):rand(.5,1.2); }
+            if(tg.modeT<=0){ const r=Math.random(); tg.mode=r<c.burstChance?'burst':r<c.burstChance+.17?'skid':'cruise'; tg.modeT=tg.mode==='burst'?rand(.35,.55):tg.mode==='skid'?rand(.25,.4):rand(.5,1.2); }
             const target=tg.mode==='burst'?1.9:tg.mode==='skid'?.5:1+Math.sin(tg.t*2.3)*.12;
             tg.factor+=(target-tg.factor)*Math.min(1,dt*7);
           }
@@ -1040,6 +1118,7 @@ function drawHud(){
     ctx.restore(); }
 }
 function render(time){
+  if(state!=='play') time=0;
   ctx.fillStyle='#2a160e'; ctx.fillRect(0,0,W,H);
   if(!IMG['fg-front-depth']){
     ctx.fillStyle='#fff3dc'; ctx.font='600 15px Fredoka'; ctx.textAlign='center'; ctx.textBaseline='middle';
@@ -1093,6 +1172,93 @@ fontsReady.then(()=>{
   requestAnimationFrame(loop);
 });
 })();
+</script>
+<script>
+(() => {
+  const config={
+    apiKey:"AIzaSyCFW1U5NURzx9zNa0EQAjIJijTGwx4no7E",
+    authDomain:"tony-arcade.firebaseapp.com",
+    projectId:"tony-arcade",
+    storageBucket:"tony-arcade.firebasestorage.app",
+    messagingSenderId:"88041829355",
+    appId:"1:88041829355:web:56d7048e7c842d14e99fae"
+  };
+  const status=document.getElementById('scoreSync');
+  const retry=document.getElementById('retryScore');
+  let connection=null, currentResult=null, uploading=false;
+  function connect(){
+    if(!connection)connection=(async()=>{
+      const base='https://www.gstatic.com/firebasejs/13.3.0/';
+      const [appSDK,authSDK,dbSDK]=await Promise.all([
+        import(base+'firebase-app.js'),import(base+'firebase-auth.js'),import(base+'firebase-firestore.js')
+      ]);
+      const app=appSDK.initializeApp(config,'turkey-shoot');
+      const auth=authSDK.getAuth(app);
+      await auth.authStateReady();
+      const user=auth.currentUser||(await authSDK.signInAnonymously(auth)).user;
+      return {user,db:dbSDK.getFirestore(app),sdk:dbSDK};
+    })().catch(error=>{connection=null;throw error;});
+    return connection;
+  }
+  function errorText(error){
+    if(error.code==='permission-denied')return 'Score saved on this device. Online scores need the Firestore rules enabled.';
+    if(error.code==='auth/admin-restricted-operation'||error.code==='auth/operation-not-allowed')return 'Score saved on this device. Anonymous sign-in needs to be enabled.';
+    return 'Score saved on this device. Could not reach the leaderboard. Please retry.';
+  }
+  async function loadLeaderboard(){
+    const message=document.getElementById('leaderStatus'),list=document.getElementById('leaderList');
+    message.textContent='Loading scores…';
+    try{
+      const {db,sdk}=await connect();
+      const snapshot=await sdk.getDocs(sdk.query(sdk.collection(db,'turkeyShootScores'),sdk.orderBy('score','desc'),sdk.limit(10)));
+      list.replaceChildren();
+      snapshot.forEach(doc=>{
+        const entry=doc.data(),row=document.createElement('li');
+        row.textContent=entry.playerName+' — '+entry.score.toLocaleString()+' points · Level '+entry.level;
+        list.append(row);
+      });
+      message.textContent=snapshot.empty?'Be the first on the leaderboard!':'';
+    }catch(error){message.textContent='Leaderboard unavailable. Please reopen to retry.';}
+  }
+  async function upload(){
+    if(uploading||!currentResult)return;
+    uploading=true;retry.hidden=true;
+    const result=currentResult;
+    status.textContent='Saving your score…';
+    try{
+      const {user,db,sdk}=await connect();
+      const reference=sdk.doc(db,'turkeyShootScores',user.uid);
+      await sdk.runTransaction(db,async transaction=>{
+        const old=await transaction.get(reference);
+        if(old.exists()&&old.data().score>=result.score)return;
+        transaction.set(reference,{
+          playerName:result.playerName,score:result.score,level:result.level,
+          turkeyHits:result.turkeyHits,updatedAt:sdk.serverTimestamp()
+        });
+      });
+      if(currentResult===result){
+        status.textContent='Your best score is saved to the leaderboard.';
+        try{localStorage.removeItem('turkeyPendingScore');}catch{}
+      }
+      if(document.getElementById('leaderboard').open)loadLeaderboard();
+    }catch(error){
+      if(currentResult===result){status.textContent=errorText(error);retry.hidden=false;}
+    }finally{
+      uploading=false;
+      if(currentResult!==result)upload();
+    }
+  }
+  window.addEventListener('turkey-round-ended',event=>{
+    currentResult={...event.detail};
+    try{localStorage.setItem('turkeyPendingScore',JSON.stringify(currentResult));}catch{}
+    upload();
+  });
+  retry.addEventListener('click',upload);
+  document.getElementById('leaderboard').addEventListener('toggle',event=>{
+    if(event.target.open)loadLeaderboard();
+  });
+})();
+
 </script>
 </body>
 </html>
