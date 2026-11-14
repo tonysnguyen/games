@@ -163,17 +163,17 @@ button{touch-action:manipulation}
 #ready .howto i{font-size:29px;flex:0 0 36px;text-align:center}
 #roundComplete .panel{width:90%}
 #roundComplete p{font-size:18px;line-height:1.45;color:#532d19}
- .harvestParty{position:relative;width:min(100%,225px);height:80px;margin:0 auto 5px;font-size:30px;line-height:1}
+ .harvestParty{position:relative;width:min(100%,225px);height:85px;margin:0 auto 5px;font-size:34px;line-height:1}
 .harvestParty span{position:absolute;left:var(--x);bottom:var(--y);transform:translateX(-50%) rotate(var(--angle));opacity:0}
 .harvestParty span:nth-child(1){--x:11%;--y:23px;--angle:-19deg;--delay:.12s;font-size:.85em}
 .harvestParty span:nth-child(2){--x:29%;--y:6px;--angle:-9deg;--delay:.23s}
 .harvestParty span:nth-child(3){--x:50%;--y:31px;--angle:0deg;--delay:.34s;font-size:1.28em}
 .harvestParty span:nth-child(4){--x:71%;--y:6px;--angle:9deg;--delay:.45s}
 .harvestParty span:nth-child(5){--x:89%;--y:22px;--angle:20deg;--delay:.56s;font-size:.85em}
-#roundComplete.show .harvestParty span{animation:harvestPopIcon .52s cubic-bezier(.2,.75,.25,1) var(--delay) both}
+#roundComplete.show .harvestParty span{animation:harvestPopIcon .66s cubic-bezier(.22,.65,.3,1) var(--delay) both}
 @keyframes harvestPopIcon{
-  from{opacity:0;transform:translate(-50%,15px) rotate(var(--angle)) scale(.55)}
-  65%{opacity:1;transform:translate(-50%,-3px) rotate(var(--angle)) scale(1.08)}
+  from{opacity:0;transform:translate(-50%,10px) rotate(var(--angle)) scale(.66)}
+  72%{opacity:1;transform:translate(-50%,-1px) rotate(var(--angle)) scale(1.035)}
   to{opacity:1;transform:translateX(-50%) rotate(var(--angle)) scale(1)}
 }
 @media(prefers-reduced-motion:reduce){#roundComplete.show .harvestParty span{animation:none;opacity:1}}
@@ -244,6 +244,13 @@ button{touch-action:manipulation}
 .playerNameRow .ghostBtn{flex:0 0 auto;min-height:44px;padding:8px 14px}
 #editPlayerName[hidden],#playerError[hidden]{display:none}
 #playerError{color:#9b2d1d;font-weight:600}
+#leaderboard .leaderPinned{flex:none;width:100%;display:grid;grid-template-columns:48px minmax(0,1fr) 73px;align-items:center;background:#fae4b9;color:#4a2a14;border:1px solid #b87c39;border-radius:8px;min-height:39px;padding:0;font:600 14px 'Fredoka',system-ui,sans-serif;cursor:pointer;text-align:left}
+#leaderboard .leaderPinned[hidden]{display:none}
+#leaderboard .leaderPinned.inView{visibility:hidden}
+#leaderboard .leaderPinned:disabled{cursor:default}
+.leaderPinned span{padding:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.leaderPinned span:first-child{text-align:center}
+.leaderPinned span:last-child{text-align:right}
 </style>
 </head>
 <body>
@@ -298,7 +305,7 @@ button{touch-action:manipulation}
         <div class="from">from Tony, Amy &amp; Major <svg class="paw" viewBox="0 0 32 32"><ellipse cx="16" cy="21" rx="7.5" ry="6.5"/><ellipse cx="7" cy="13" rx="3.2" ry="4"/><ellipse cx="12.5" cy="7.5" rx="3.2" ry="4"/><ellipse cx="19.5" cy="7.5" rx="3.2" ry="4"/><ellipse cx="25" cy="13" rx="3.2" ry="4"/></svg></div>
         <div class="leaderboardStage">
         <section id="leaderboard" aria-labelledby="leaderTitle">
-          <h3 id="leaderTitle">Top 10 leaderboard</h3>
+          <h3 id="leaderTitle">Top 50 leaderboard</h3>
           <p id="scoreSync" role="status"></p>
           <button class="ghostBtn" id="retryScore" hidden>Retry score upload</button>
           <p id="leaderStatus" role="status"></p>
@@ -308,6 +315,7 @@ button{touch-action:manipulation}
               <thead role="rowgroup"><tr role="row"><th role="columnheader" scope="col">Place</th><th role="columnheader" scope="col">Player</th><th role="columnheader" scope="col">Score</th></tr></thead>
               <tbody id="leaderList" class="leaderScroll" role="rowgroup" tabindex="0" aria-label="Leaderboard rankings"></tbody>
             </table>
+            <button type="button" class="leaderPinned" id="leaderPinned" hidden></button>
           </div>
         </section>
         </div>
@@ -724,14 +732,53 @@ function ensureAudio(){ if(!actx){ try{ actx=new (window.AudioContext||window.we
 function tone(f,d=.08,type='sine',v=.12,slide=0,delay=0){ if(muted||!actx) return; const t=actx.currentTime+delay,o=actx.createOscillator(),g=actx.createGain();
   o.type=type; o.frequency.setValueAtTime(f,t); if(slide) o.frequency.exponentialRampToValueAtTime(Math.max(30,f*slide),t+d);
   g.gain.setValueAtTime(v,t); g.gain.exponentialRampToValueAtTime(.0001,t+d); o.connect(g).connect(actx.destination); o.start(t); o.stop(t+d+.02); }
-function noise(d=.15,v=.15){ if(muted||!actx) return; const b=actx.createBuffer(1,actx.sampleRate*d,actx.sampleRate), ch=b.getChannelData(0);
-  for(let i=0;i<ch.length;i++) ch[i]=(Math.random()*2-1)*(1-i/ch.length); const s=actx.createBufferSource(), g=actx.createGain(); g.gain.value=v; s.buffer=b; s.connect(g).connect(actx.destination); s.start(); }
+const impactSounds=new Map();
+function buildImpactSound(explosion){
+  const rate=actx.sampleRate;
+  const duration=explosion?.82:.115;
+  const buffer=actx.createBuffer(1,Math.ceil(rate*duration),rate);
+  const samples=buffer.getChannelData(0);
+  const cutoff=explosion?340:2300;
+  const smoothing=1-Math.exp(-2*Math.PI*cutoff/rate);
+  let body=0, bass=0, previous=0;
+  const cracks=explosion?Array.from({length:10},(_,i)=>({
+    time:.025+i*.032+Math.random()*.022, strength:.07+Math.random()*.12
+  })):[{time:.013,strength:.13}];
+  for(let i=0;i<samples.length;i++){
+    const t=i/rate, grain=Math.random()*2-1;
+    body+=(grain-body)*smoothing;
+    bass+=(body-bass)*(explosion?.012:.035);
+    const snap=(grain-previous)*Math.exp(-t/(explosion?.017:.0045));
+    previous=grain;
+    const thump=explosion?body*.85*Math.exp(-t/.13)+bass*1.65*Math.exp(-t/.24):
+      body*.55*Math.exp(-t/.015)+bass*.64*Math.exp(-t/.035);
+    let crackle=0;
+    for(const crack of cracks){
+      const age=t-crack.time;
+      if(age>=0&&age<.04)crackle+=crack.strength*Math.exp(-age/.007);
+    }
+    const fade=Math.min(1,t/.0007,(duration-t)/.025);
+    samples[i]=Math.tanh(thump+snap*.34+grain*crackle)*fade;
+  }
+  return buffer;
+}
+function playImpact(explosion){
+  if(muted||!actx) return;
+  if(!impactSounds.has(explosion))impactSounds.set(explosion,buildImpactSound(explosion));
+  const source=actx.createBufferSource();
+  const gain=actx.createGain();
+  source.buffer=impactSounds.get(explosion);
+  source.playbackRate.value=.95+Math.random()*.1;
+  gain.gain.value=explosion?.88:.76;
+  source.connect(gain).connect(actx.destination);
+  source.start();
+}
 const sfx={
-  shot(){ noise(.06,.12); tone(900,.05,'square',.04,.4); },
+  shot(){ playImpact(false); },
   hit(m){ tone(520+m*80,.09,'triangle',.1,1.6); tone(1040+m*120,.08,'sine',.06,1.2,.05); },
   gobble(){ for(let i=0;i<4;i++) tone(rand(300,420),.05,'sawtooth',.04,1.4,i*.055); },
   gold(){ [880,1108,1318,1760].forEach((f,i)=>tone(f,.12,'sine',.09,1,i*.06)); },
-  boom(){ noise(.45,.3); tone(120,.4,'sawtooth',.12,.3); },
+  boom(){ playImpact(true); },
   miss(){ tone(200,.08,'sine',.05,.7); },
   tick(){ tone(1200,.03,'square',.03); },
   end(){ [523,659,784,1046].forEach((f,i)=>tone(f,.22,'triangle',.1,1,i*.13)); },
@@ -1305,6 +1352,75 @@ function drawTarget(tg){
     g.addColorStop(0,`rgba(255,70,50,${a})`); g.addColorStop(1,'rgba(255,70,50,0)'); ctx.globalCompositeOperation='screen'; ctx.fillStyle=g; ctx.fillRect(p.x-50,p.ay-90,100,100); ctx.globalCompositeOperation='source-over'; }
 }
 function laneClip(l){ ctx.beginPath(); ctx.rect(LANE_X,laneTop(l),LANE_W,railY(l)+40-laneTop(l)); ctx.clip(); }
+const seasonalBackdrops=new Map();
+function seasonalBackdrop(key,height){
+  const id=key+':'+height;
+  if(seasonalBackdrops.has(id))return seasonalBackdrops.get(id);
+  const art=document.createElement('canvas');
+  art.width=720; art.height=Math.ceil(height*2);
+  const c=art.getContext('2d');
+  c.scale(2,2);
+  const night=key==='cranberry';
+  const sky=c.createLinearGradient(0,0,0,height);
+  sky.addColorStop(0,night?'#24263e':'#57364a');
+  sky.addColorStop(.67,night?'#684863':'#cd8561');
+  sky.addColorStop(1,night?'#b07780':'#f1bc80');
+  c.fillStyle=sky; c.fillRect(0,0,360,height);
+  function oval(x,y,rx,ry,color){
+    c.fillStyle=color; c.beginPath(); c.ellipse(x,y,rx,ry,0,0,Math.PI*2); c.fill();
+  }
+  function cutout(color,points){
+    c.fillStyle=color; c.beginPath(); c.moveTo(...points[0]);
+    for(const point of points.slice(1))c.lineTo(...point);
+    c.closePath(); c.fill();
+  }
+  const sunY=height*.37;
+  oval(259,sunY,24,24,night?'#ffdbb6':'#ffd38f');
+  oval(264,sunY-4,17,17,night?'#ffe7c8':'#ffe1a3');
+  for(let i=0;i<22;i++){
+    const x=9+(i*109)%340,y=12+(i*71)%Math.max(1,height*.52-12);
+    if(night&&Math.hypot(x-259,y-sunY)>28)oval(x,y,1+i%3*.25,1+i%3*.25,'#e5bbc3');
+    if(!night&&i%4===0&&Math.hypot(x-259,y-sunY)>40)oval(x,y,9+i%13,1.4,'#f5bd9066');
+  }
+  const ridge=height-65;
+  cutout(night?'#59435e':'#a96a59',[[0,ridge-10],[46,ridge-25],[101,ridge-14],[148,ridge-36],[209,ridge-21],[271,ridge-30],[360,ridge-13],[360,height],[0,height]]);
+  cutout(night?'#40394f':'#78554a',[[0,ridge+1],[49,ridge-10],[122,ridge+8],[191,ridge-11],[244,ridge+3],[316,ridge-16],[360,ridge],[360,height],[0,height]]);
+  if(night){
+    oval(207,height-26,193,32,'#743e60');
+    oval(247,height-28,135,18,'#92516c');
+    for(let i=0;i<18;i++){
+      const x=30+(i*53)%320,y=height-47+(i*17)%42;
+      oval(x,y,4+i%11,1,'#e6a5a98a');
+    }
+    for(let i=0;i<14;i++){
+      const x=(i*79)%360,y=height-10-i%3*8;
+      oval(x,y,13,5,'#524456');
+      for(let j=0;j<5;j++)oval(x-8+j*4,y-2-(j%2)*3,2.2,2.4,j%2?'#d46a79':'#ae4b64');
+    }
+  }else{
+    const barnY=height-57;
+    c.fillStyle='#954c42'; c.fillRect(90,barnY-24,35,25);
+    cutout('#593a42',[[85,barnY-22],[108,barnY-42],[130,barnY-22]]);
+    c.fillStyle='#ffcc83'; c.fillRect(104,barnY-18,7,7);
+    c.fillStyle='#663d40'; c.fillRect(112,barnY-10,8,11);
+    cutout('#ad774f',[[0,height-38],[91,height-49],[198,height-37],[290,height-49],[360,height-42],[360,height],[0,height]]);
+    for(let i=0;i<8;i++){
+      const x=i*58-25;
+      cutout('#805543',[[155+i*9,height-40],[160+i*10,height-40],[x+14,height],[x,height]]);
+    }
+    for(let i=0;i<15;i++){
+      const x=10+(i*73)%340,y=height-7-i%4*8,r=3+i%3;
+      oval(x-r*.55,y,r,r*.8,'#be6538');
+      oval(x+r*.55,y,r,r*.8,'#d17b3f');
+      oval(x,y,r*.75,r*.92,'#e8a051');
+      c.fillStyle='#77754b'; c.fillRect(x,y-r-2,1.5,3);
+    }
+  }
+  if(seasonalBackdrops.size>=8)seasonalBackdrops.clear();
+  seasonalBackdrops.set(id,art);
+  return art;
+}
+
 function drawLanes(time){
   const th=theme();
   for(let l=0;l<LANES;l++){
@@ -1312,17 +1428,18 @@ function drawLanes(time){
     ctx.save(); laneClip(l);
     // 1. sky, then slowly scrolling hills
     const sky=IMG[LANES===1?'bg-lane-sky-tall':'bg-lane-sky'];
-    if(sky){
+    if(themeKey!=='snowy'){
+      ctx.drawImage(seasonalBackdrop(themeKey,Math.round(LANE_H)),LANE_X,top,LANE_W,LANE_H);
+    }else if(sky){
       const skyHeight=LANE_W*sky.height/sky.width;
       // Extend the distant hills color below the proportional artwork.
       ctx.fillStyle=LANES===1?'#4b7b80':'#416772';
       ctx.fillRect(LANE_X,top,LANE_W,LANE_STEP);
       ctx.drawImage(sky,LANE_X,top,LANE_W,skyHeight);
     }
-    if(IMG['mg-lane-hills']){ const off=(hillScroll*(l%2?-1:1)+l*90+LANE_W)%LANE_W;
+    if(themeKey==='snowy'&&IMG['mg-lane-hills']){ const off=(hillScroll*(l%2?-1:1)+l*90+LANE_W)%LANE_W;
       ctx.drawImage(IMG['mg-lane-hills'],LANE_X-off,hillsY(l),LANE_W,100); ctx.drawImage(IMG['mg-lane-hills'],LANE_X-off+LANE_W,hillsY(l),LANE_W,100); }
     // theme tint on the scenery
-    if(th.tint){ ctx.globalCompositeOperation='multiply'; ctx.fillStyle=th.tint; ctx.fillRect(LANE_X,top,LANE_W,LANE_H); ctx.globalCompositeOperation='source-over'; }
     const g=ctx.createRadialGradient(LANE_X+LANE_W*.72,top+30,5,LANE_X+LANE_W*.72,top+30,170); g.addColorStop(0,th.glow); g.addColorStop(1,'rgba(0,0,0,0)');
     ctx.globalCompositeOperation='screen'; ctx.fillStyle=g; ctx.fillRect(LANE_X,top,LANE_W,LANE_H); ctx.globalCompositeOperation='source-over';
     // 2. recess (ceiling, side walls, floor) + small particles behind the targets
@@ -1533,10 +1650,57 @@ fontsReady.then(()=>{
     if(error.code==='auth/admin-restricted-operation'||error.code==='auth/operation-not-allowed')return 'Score saved on this device. Anonymous sign-in needs to be enabled.';
     return 'Score saved on this device. Could not reach the leaderboard. Please retry.';
   }
-  function renderLeaderboard(docs=[],uid=null){
+  const leaderboardSize=50;
+  const rankList=document.getElementById('leaderList');
+  const pinnedRank=document.getElementById('leaderPinned');
+  let playerRow=null;
+  function updatePinnedRank(){
+    if(!playerRow)return;
+    const row=playerRow.getBoundingClientRect();
+    const viewport=rankList.getBoundingClientRect();
+    const visible=viewport.height>0&&row.top>=viewport.top-1&&row.bottom<=viewport.bottom+1;
+    pinnedRank.classList.toggle('inView',visible);
+  }
+  function jumpToPlayer(){
+    if(!playerRow)return;
+    jumpToPlayerWithoutFocus();
+    rankList.focus({preventScroll:true});
+  }
+  rankList.addEventListener('scroll',updatePinnedRank,{passive:true});
+  pinnedRank.addEventListener('click',jumpToPlayer);
+  new ResizeObserver(updatePinnedRank).observe(rankList);
+  function setPinnedRank(rank,name,score,rankDescription){
+    pinnedRank.classList.remove('inView');
+    pinnedRank.replaceChildren();
+    for(const value of [rank,name+' (you)',formatLeaderboardScore(score)]){
+      const cell=document.createElement('span');
+      cell.textContent=value;
+      pinnedRank.append(cell);
+    }
+    pinnedRank.disabled=!playerRow;
+    pinnedRank.setAttribute('aria-label',playerRow?
+      'Your rank '+rank+', '+formatLeaderboardScore(score)+' points. Jump to your row.':
+      rankDescription+' Your score is '+formatLeaderboardScore(score)+'.');
+    pinnedRank.hidden=false;
+  }
+  function leaderboardName(entry,fallback='Player'){
+    for(const candidate of [entry?.playerName,entry?.name,fallback]){
+      if(typeof candidate!=='string') continue;
+      const name=candidate.normalize('NFKC').trim().replace(/\s+/gu,' ');
+      if(window.turkeyNameAllowed(name)) return name;
+    }
+    return 'Player';
+  }
+  function formatLeaderboardScore(score){
+    return Number.isFinite(score)?score.toLocaleString():'—';
+  }
+  function renderLeaderboard(docs=[],uid=null,availableRanks=leaderboardSize){
     const list=document.getElementById('leaderList');
     list.replaceChildren();
-    for(let index=0;index<10;index++){
+    list.scrollTop=0;
+    playerRow=null;
+    pinnedRank.hidden=true;
+    for(let index=0;index<availableRanks;index++){
       const doc=docs[index];
       const entry=doc?.data(),row=document.createElement('tr');
       if(index<3) row.classList.add('podium'+(index+1));
@@ -1553,8 +1717,9 @@ fontsReady.then(()=>{
         icon.textContent=medal;
         place.append(icon);
       }else place.textContent=index+1;
-      const displayName=entry&&typeof entry.playerName==='string'&&window.turkeyNameAllowed(entry.playerName)?entry.playerName:'Player';
-      const values=entry?[displayName+(doc.id===uid?' (you)':''),entry.score.toLocaleString()]:['—','—'];
+      const isPlayer=doc?.id===uid;
+      const displayName=leaderboardName(entry,isPlayer?currentResult?.playerName:undefined);
+      const values=entry?[displayName+(isPlayer?' (you)':''),formatLeaderboardScore(entry.score)]:['—','—'];
       if(!entry) row.classList.add('emptyRank');
       for(const value of values){
         const cell=document.createElement('td');
@@ -1563,17 +1728,60 @@ fontsReady.then(()=>{
         row.append(cell);
       }
       list.append(row);
+      if(doc?.id===uid){
+        playerRow=row;
+        setPinnedRank(index+1,displayName,entry.score);
+      }
     }
+    if(playerRow)jumpToPlayerWithoutFocus();
+
+  }
+  function jumpToPlayerWithoutFocus(){
+    const row=playerRow.getBoundingClientRect();
+    const viewport=rankList.getBoundingClientRect();
+    rankList.scrollTop+=row.top-viewport.top-(rankList.clientHeight-row.height)/2;
+    updatePinnedRank();
   }
   async function loadLeaderboard(){
     const message=document.getElementById('leaderStatus');
     message.textContent='Loading scores…';
     try{
       const {user,db,sdk}=await connect();
-      const snapshot=await sdk.getDocs(sdk.query(sdk.collection(db,'turkeyShootScores'),sdk.orderBy('score','desc'),sdk.limit(10)));
-      renderLeaderboard(snapshot.docs,user.uid);
-      message.textContent='';
-    }catch(error){message.textContent='Leaderboard unavailable. Try again after your next round.';}
+      const collection=sdk.collection(db,'turkeyShootScores');
+      const fetchRanks=count=>sdk.getDocs(sdk.query(collection,sdk.orderBy('score','desc'),sdk.limit(count)));
+      let availableRanks=leaderboardSize;
+      let snapshot;
+      try{
+        snapshot=await fetchRanks(availableRanks);
+      }catch(error){
+        if(error.code!=='permission-denied') throw error;
+        availableRanks=10;
+        snapshot=await fetchRanks(availableRanks);
+      }
+      renderLeaderboard(snapshot.docs,user.uid,availableRanks);
+      if(!playerRow){
+        const result=currentResult;
+        if(result)setPinnedRank('—',leaderboardName(result),result.score,'Rank pending.');
+        try{
+          const own=await sdk.getDoc(sdk.doc(db,'turkeyShootScores',user.uid));
+          if(own.exists()&&currentResult===result){
+            const best=own.data();
+            setPinnedRank(availableRanks+'+',leaderboardName(best,result?.playerName),
+              best.score,'Outside the top '+availableRanks+'.');
+          }
+        }catch{
+          if(result&&currentResult===result){
+            setPinnedRank('—',leaderboardName(result),result.score,'Rank unavailable.');
+          }
+        }
+      }
+      message.textContent=availableRanks===leaderboardSize?'':'Showing 10 places until Firestore allows 50.';
+    }catch(error){
+      if(currentResult&&!playerRow){
+        setPinnedRank('—',leaderboardName(currentResult),currentResult.score,'Rank unavailable.');
+      }
+      message.textContent='Leaderboard unavailable. Try again after your next round.';
+    }
   }
   async function upload(){
     if(uploading||!currentResult)return;
@@ -1612,6 +1820,7 @@ fontsReady.then(()=>{
   window.addEventListener('turkey-round-ended',event=>{
     currentResult={...event.detail};
     renderLeaderboard();
+    setPinnedRank('—',leaderboardName(currentResult),currentResult.score,'Rank pending.');
     document.getElementById('leaderStatus').textContent='Loading scores…';
     try{localStorage.setItem('turkeyPendingScore',JSON.stringify(currentResult));}catch{}
     upload();
