@@ -7,6 +7,15 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#3a1d14">
 <title>Happy Thanksgiving — Turkey Shoot</title>
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://tonysnguyen.games/turkey/">
+<meta property="og:title" content="Happy Thanksgiving from Tony, Amy and Major">
+<meta property="og:description" content="Click to see the card.">
+<meta property="og:image" content="https://tonysnguyen.games/turkey/thanksgiving-share.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="628">
+<meta property="og:image:alt" content="A pumpkin, pie, and autumn leaves frame a Thanksgiving greeting from Tony, Amy and Major. Click to see the card.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Pacifico&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -756,9 +765,15 @@ function drawCover(){
   const g=c.createRadialGradient(W2/2,H2*.62,20,W2/2,H2*.62,230); g.addColorStop(0,'rgba(255,214,120,.55)'); g.addColorStop(1,'rgba(255,214,120,0)');
   c.fillStyle=g; c.fillRect(0,0,W2,H2);
   drawPeekingHead(c,W2,H2);
-  // hills
+  // Each cut-paper hill casts a soft shadow onto the layer behind it.
+  c.save();
+  const hillScale=d*s;
+  c.shadowColor='rgba(51,13,12,.49)';
+  c.shadowBlur=12*hillScale;
+  c.shadowOffsetY=-3*hillScale;
   c.fillStyle='#8f2f17'; c.beginPath(); c.moveTo(0,H2*.78); c.quadraticCurveTo(W2*.3,H2*.68,W2*.55,H2*.76); c.quadraticCurveTo(W2*.8,H2*.83,W2,H2*.74); c.lineTo(W2,H2); c.lineTo(0,H2); c.fill();
   c.fillStyle='#6e2210'; c.beginPath(); c.moveTo(0,H2*.86); c.quadraticCurveTo(W2*.5,H2*.78,W2,H2*.88); c.lineTo(W2,H2); c.lineTo(0,H2); c.fill();
+  c.restore();
   // pumpkins
   const pumpkin=(x,y,sc)=>{ c.save(); c.translate(x,y); c.scale(sc,sc);
     rr(c,-3,-34,6,10,2); fs(c,'#5d7a2a',2.5);
