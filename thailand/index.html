@@ -5,15 +5,28 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Koh Phangan Stays</title>
 <style>
-:root{color-scheme:light;--ink:#182821;--muted:#53645a;--line:#d9e2da;--accent:#22624e;--paper:#f5f7f3;--white:#fff}
-*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.55 "Instrument Sans",system-ui,sans-serif}
-a{color:var(--accent);text-underline-offset:.2em}a:hover{text-decoration-thickness:2px}:focus-visible{outline:3px solid #49846d;outline-offset:4px}
-.wrap{width:min(1120px,calc(100% - 40px));margin:auto}header{background:#163e32;color:white;padding:50px 0 46px}header a{color:#d1f0de}.eyebrow{font-size:.83rem;text-transform:uppercase;letter-spacing:.14em;color:#d1e9dc}h1{font:normal clamp(2.7rem,7vw,5rem)/1.05 Georgia,serif;letter-spacing:-.045em;margin:12px 0 17px}h2,h3,p{margin:0}header p{margin-bottom:13px}main{padding:26px 0 42px}
-nav{display:flex;gap:7px;border-bottom:1px solid var(--line);margin-bottom:22px}button,select,input{font:inherit;color:inherit}button{cursor:pointer}.tab{border:0;border-bottom:3px solid transparent;background:transparent;padding:12px 15px;font-weight:650}.tab[aria-selected=true]{border-color:var(--accent);color:var(--accent)}
-.toolbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:14px}select,input{border:1px solid #9aaa9e;background:white;border-radius:7px;padding:7px 9px}select{margin-left:7px}h2{font-size:1.45rem}.note,.muted,small{color:var(--muted)}.note{margin-bottom:19px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,265px),1fr));gap:14px}.card,details.sources,.table-wrap{background:white;border:1px solid var(--line);border-radius:12px}.card{padding:19px;display:flex;flex-direction:column;gap:9px}.card h3{font-size:1.14rem;line-height:1.3}.area{color:var(--accent);font-weight:650;font-size:.82rem}.price{font-weight:700}.card details{margin-top:auto;border-top:1px solid var(--line);padding-top:9px}.card details p{margin-top:6px}summary{cursor:pointer;font-weight:650;color:var(--accent)}.links{display:flex;flex-wrap:wrap;gap:5px 12px;font-size:.9rem}
-.compare{margin-top:32px}.compare .note{margin:5px 0 12px}.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;min-width:760px;text-align:left}th,td{padding:12px;vertical-align:top;border-bottom:1px solid var(--line)}thead{background:#e9f0e9;font-size:.87rem}tbody tr:last-child>*{border-bottom:0}td input{width:8.4rem}td small{display:block}.sources{padding:15px 19px;margin-top:24px}.sources .links{margin-top:10px}.empty{padding:15px 0}footer{padding:0 0 30px;color:var(--muted);font-size:.9rem}[hidden]{display:none!important}
-.currency-switch{display:inline-flex;gap:4px;background:#e9f0e9;border-radius:9px;padding:4px}.currency-switch button{border:0;background:transparent;border-radius:6px;padding:5px 10px}.currency-switch button[aria-pressed=true]{background:var(--accent);color:white}.currency{background:white;border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin-bottom:19px}.currency .toolbar{justify-content:flex-start;margin-bottom:3px;gap:10px 20px}.currency input{width:8rem}.currency output{font-weight:700}.currency label{display:inline-flex;align-items:center;gap:6px}.currency select{margin:0}
-@media(max-width:550px){header{padding:33px 0}.wrap{width:calc(100% - 28px)}.tab{padding:9px 10px}.toolbar{align-items:flex-start}}
+:root{color-scheme:light;--ink:#182821;--muted:#53645a;--line:#d9e2da;--accent:#22624e;--paper:#f5f7f3}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.55 system-ui,sans-serif}
+a{color:var(--accent);text-underline-offset:.2em}a:hover{text-decoration-thickness:2px}:focus-visible{outline:3px solid #49846d;outline-offset:3px}
+.wrap{width:min(1120px,calc(100% - 36px));margin:auto}header{background:#163e32;color:white;padding:clamp(30px,6vw,60px) 0}header a{color:#d1f0de}
+.eyebrow{font-size:.8rem;text-transform:uppercase;letter-spacing:.12em;color:#d1e9dc}h1{font:normal clamp(2.55rem,7vw,5rem)/1.03 Georgia,serif;letter-spacing:-.045em;margin:.2em 0}h2,h3,p{margin:0}h2{font-size:1.47rem}header p{margin-bottom:.6em}
+main{padding:22px 0 30px}.toolbar,.links,.currency-fields{display:flex;align-items:center;flex-wrap:wrap;gap:8px 15px}.toolbar{justify-content:space-between;margin-bottom:10px}
+nav{display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid var(--line);margin:18px 0;gap:2px}
+button,input,select{font:inherit;color:inherit;min-height:44px}button{cursor:pointer}.tab{background:transparent;border:0;border-bottom:3px solid transparent;font-weight:650;padding:9px 3px}.tab[aria-selected=true]{border-color:var(--accent);color:var(--accent)}
+input,select{border:1px solid #9aaa9e;background:white;border-radius:8px;padding:8px 10px;max-width:100%}.currency,input{min-width:0}.currency input{width:8rem}.currency label{display:inline-flex;gap:8px;align-items:center}.currency output{font-weight:700}.currency small{display:block;margin-top:6px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,245px),1fr));gap:12px}.card,.currency,.sources,.table-wrap{background:white;border:1px solid var(--line);border-radius:12px}.card,.currency,.sources{padding:16px}.card{display:flex;flex-direction:column;gap:7px}.card details{margin-top:auto;border-top:1px solid var(--line);padding-top:5px}
+.area,summary{color:var(--accent);font-weight:650}.area{font-size:.82rem}summary{cursor:pointer;padding:10px 0}.note,.muted,small,footer{color:var(--muted)}.note{margin-bottom:12px}.links a{display:inline-flex;align-items:center;min-height:44px}.compare,.sources{margin-top:24px}
+.currency-switch{display:inline-flex;gap:3px;background:#e9f0e9;padding:3px;border-radius:9px}.currency-switch button{border:0;border-radius:6px;background:transparent;padding:4px 10px}.currency-switch button[aria-pressed=true]{background:var(--accent);color:white}
+.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;text-align:left}th,td{padding:11px;border-bottom:1px solid var(--line);vertical-align:top}thead{background:#e9f0e9;font-size:.87rem}tbody tr:last-child>*{border-bottom:0}td input{width:8.2rem}td small,th small{display:block}.result{display:block;margin-bottom:6px}footer{padding-bottom:24px;font-size:.9rem}[hidden]{display:none!important}
+@media(max-width:760px){
+ .wrap{width:calc(100% - 28px)}.grid{grid-template-columns:1fr}
+ .table-wrap{overflow:visible;background:transparent;border:0}
+ table,tbody{display:block}thead{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+ tbody tr{display:block;background:white;border:1px solid var(--line);border-radius:12px;margin-bottom:12px;padding:4px 13px}
+ tbody th,tbody td{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);align-items:start;gap:9px;padding:10px 0;overflow-wrap:anywhere}
+ tbody th{display:block}tbody td::before{content:attr(data-label);color:var(--muted);font-size:.9rem}tbody td:last-child{border-bottom:0}tbody tr:last-child>*{border-bottom:1px solid var(--line)}tbody tr:last-child>td:last-child{border-bottom:0}
+ td input{width:100%}.currency-fields{align-items:stretch}.currency-fields label{width:100%;justify-content:space-between}
+}
 </style>
 </head>
 <body>
@@ -21,16 +34,16 @@ nav{display:flex;gap:7px;border-bottom:1px solid var(--line);margin-bottom:22px}
 <div class="eyebrow">Thailand · Muay Thai training trip</div>
 <h1>Koh Phangan stays</h1>
 <p>Jan 29–Feb 13, 2027 · 5 adults · 15 nights</p>
-<a target="_blank" rel="noopener" href="https://rittisakmuaythai.com/contact/">Rittisak Muay Thai in Chaloklum ↗</a>
+<a href="https://rittisakmuaythai.com/contact/" target="_blank" rel="noopener">Rittisak Muay Thai in Chaloklum ↗</a>
 </div></header>
 <main class="wrap">
 <section class="currency" aria-label="Currency conversion">
-<div class="toolbar">
+<div class="currency-fields">
 <label>฿ per US$1 <input id="fx-rate" type="number" min="0.0001" step="0.0001" inputmode="decimal" value="33.859" aria-describedby="fx-source"></label>
 <label>Convert US$ <input id="usd-amount" type="number" min="0" step="0.01" inputmode="decimal" value="100"></label>
 <output id="converted-baht" for="fx-rate usd-amount" aria-live="polite"></output>
 </div>
-<small id="fx-source">Starting rate from Nov 13, 2026. <a target="_blank" rel="noopener" href="https://app.bot.or.th/BTWS_STAT/statistics/ReportPage.aspx?language=eng&amp;reportID=123">Bank of Thailand ↗</a></small>
+<small id="fx-source">Starting rate from Nov 13, 2026. <a href="https://app.bot.or.th/BTWS_STAT/statistics/ReportPage.aspx?language=eng&amp;reportID=123" target="_blank" rel="noopener">Bank of Thailand ↗</a></small>
 </section>
 <nav role="tablist" aria-label="Accommodation type">
 <button class="tab" role="tab" id="airbnbs" aria-controls="panel" aria-selected="true">Airbnbs</button>
@@ -38,235 +51,189 @@ nav{display:flex;gap:7px;border-bottom:1px solid var(--line);margin-bottom:22px}
 <button class="tab" role="tab" id="other" aria-controls="panel" aria-selected="false" tabindex="-1">Other options</button>
 </nav>
 <section id="panel" role="tabpanel" aria-labelledby="airbnbs">
-<div class="toolbar"><h2 id="heading">Airbnbs</h2><label for="area">Area <select id="area"><option value="">All areas</option><option>Chaloklum</option><option>Mae Haad</option><option>Haad Salad / Mae Haad area</option></select></label></div>
+<div class="toolbar"><h2 id="heading">Airbnbs</h2><label>Area <select id="area"><option value="">All areas</option><option>Chaloklum</option><option>Mae Haad</option><option>Haad Salad / Mae Haad area</option></select></label></div>
 <p class="note" id="description"></p>
-<div class="grid" id="cards"></div>
 <section class="compare" id="compare">
-<div class="toolbar">
-<h2>Rate comparison</h2>
-<div class="currency-switch" role="group" aria-label="Rate comparison currency">
-<button type="button" data-currency="THB" aria-pressed="true">฿ Thai baht</button>
-<button type="button" data-currency="USD" aria-pressed="false">US$ US dollars</button>
-</div>
-</div>
-<p class="note" id="rate-note"></p><p class="note" id="villa-example" hidden>Example before fees: ฿10,000 per night for 15 nights is <strong id="example-group"></strong> for the group and <strong id="example-person"></strong> each.</p>
-<div class="table-wrap" role="region" aria-label="Scrollable rate comparison" tabindex="0">
-<table><thead><tr id="rate-head"></tr></thead><tbody id="rows"></tbody></table>
-</div></section>
+<div class="toolbar"><h2 id="rates-title">Rate comparison</h2><div class="currency-switch" role="group" aria-label="Rate comparison currency">
+<button type="button" data-currency="THB" aria-pressed="true">฿ Thai baht</button><button type="button" data-currency="USD" aria-pressed="false">US$ US dollars</button>
+</div></div>
+<p class="note" id="rate-note"></p>
+<p class="note" id="villa-example">Example before fees. ฿10,000 a night for 15 nights is <strong id="example-group"></strong> for the group and <strong id="example-person"></strong> each.</p>
+<div class="table-wrap"><table role="table" aria-labelledby="rates-title"><thead role="rowgroup"><tr id="rate-head" role="row"></tr></thead><tbody role="rowgroup" id="rows"></tbody></table></div>
+</section>
+<section class="compare" aria-labelledby="stays-title"><h2 class="note" id="stays-title">Stay details</h2><div class="grid" id="cards"></div></section>
 </section>
 <details class="sources"><summary>Search and reference links</summary><div class="links" id="sources"></div></details>
-<noscript><p>Enable JavaScript to view the listings and use the quote calculator.</p></noscript>
+<noscript><p>Enable JavaScript to compare stays and calculate rates.</p></noscript>
 </main>
 <footer class="wrap">The lodging dates follow the flight window. Confirm local arrival and ferry timing before booking.</footer>
 <script>
 const dates = 'check_in=2027-01-29&check_out=2027-02-13&adults=5';
 const hotelDates = 'checkin=2027-01-29&checkout=2027-02-13&group_adults=5&group_children=0';
-const airbnb = id => ['Airbnb', 'https://www.airbnb.com/rooms/' + id + '?' + dates];
-const booking = (slug, rooms = 1) => ['Booking.com', 'https://www.booking.com/hotel/th/' + slug + '.html?' + hotelDates + '&no_rooms=' + rooms];
+const airbnb = id => ['Airbnb','https://www.airbnb.com/rooms/' + id + '?' + dates];
+const booking = (slug, rooms = 1) => ['Booking.com','https://www.booking.com/hotel/th/' + slug + '.html?' + hotelDates + '&no_rooms=' + rooms];
 const listings = [
- ['alain','airbnbs','Chaloklum','Alain’s Beachfront Villa','5 bedrooms · 5 beds · 4 baths','One bedroom each. The host says breakfast and lunch can be prepared if you buy the ingredients. The listing description and summary differ on the bath count.',[airbnb('1025800')]],
- ['pahili','airbnbs','Chaloklum','Pahili Panoramic Pool Villa','4 bedrooms · 5 beds · 4 baths','Three kings and a twin room let five adults sleep separately. Ask the resort for the walk or drive to Rittisak.',[airbnb('1426558835908545046'),['Book direct','https://us2.cloudbeds.com/reservation/G66vt0']]],
- ['aria','airbnbs','Chaloklum','Villa Aria','4 bedrooms · 4 kings · 3 baths','Ask about an extra bed if five separate beds are needed. Confirm whether the listing’s February construction notice applies to your dates.',[airbnb('1178606973577674810')]],
- ['ton-palm','airbnbs','Haad Salad / Mae Haad area','Baan Ton Palm','4 bedrooms · 3 baths','Hillside villa near Mae Haad and Haad Salad. The host recommends transport. Confirm bed layout and price the trip to Rittisak.',[airbnb('6708411')]],
- ['boathouse','airbnbs','Haad Salad / Mae Haad area','The Boathouse Villa','4 bedrooms · 4 beds · 5 baths','Overlooks Haad Salad Bay. Confirm whether a fifth separate bed can be added and include gym rides in your quote.',[airbnb('21905410')]],
+ ['alain','airbnbs','Chaloklum','Alain’s Beachfront Villa','5 bedrooms · 5 beds · 4 baths','One bedroom each. The host offers to prepare breakfast and lunch with groceries you buy. Confirm the bathroom count with the host.',[airbnb('1025800')]],
+ ['pahili','airbnbs','Chaloklum','Pahili Panoramic Pool Villa','4 bedrooms · 5 beds · 4 baths','Three kings and a twin room give five adults separate beds.',[airbnb('1426558835908545046'),['Book direct','https://us2.cloudbeds.com/reservation/G66vt0']]],
+ ['aria','airbnbs','Chaloklum','Villa Aria','4 bedrooms · 4 kings · 3 baths','Ask about an extra bed and whether the February construction notice applies to your dates.',[airbnb('1178606973577674810')]],
+ ['ton-palm','airbnbs','Haad Salad / Mae Haad area','Baan Ton Palm','4 bedrooms · 3 baths','Hillside villa near Mae Haad and Haad Salad. The host recommends transport.',[airbnb('6708411')]],
+ ['boathouse','airbnbs','Haad Salad / Mae Haad area','The Boathouse Villa','4 bedrooms · 4 beds · 5 baths','Overlooks Haad Salad Bay. Ask about a fifth separate bed and factor in gym rides.',[airbnb('21905410')]],
  ['maehaad-bay','hotels','Mae Haad','Maehaad Bay Resort','Private or shared rooms','Ask about a group rate, breakfast and room types. Include gym rides in the comparison.',[['Agoda','https://www.agoda.com/maehaad-bay-resort/hotel/koh-phangan-th.html']]],
- ['malibu','hotels','Chaloklum','Malibu Beach Bungalows','Private or shared bungalows','Ask for a total for five private units, or four if a twin unit is available and two people want to share.',[booking('malibu-beach-bungalows', 3)]],
- ['zivilla','other','Chaloklum','ZiVilla Beachfront Pool Villa','4 bedrooms · at least 4 baths','Entire villa listed on Booking.com. Ask whether one room can provide separate beds.',[booking('zivilla-private-pool-beachfront')]],
- ['beach-villa','other','Chaloklum','Beach Villa Phangan','5 bedrooms · 4 baths','Whole-villa benchmark. The provider recommends a car. The displayed range varies by season.',[['Thailand Retreats','https://www.thailandretreats.com/Villa/Beach-Villa-Phangan']],'US$705–1,282 / night','Published villa range'],
- ['rittisak','other','Chaloklum','Rittisak Train & Stay','Individual huts · shared or private baths','Ask for enough units and a quote for your full stay. The published 14-night package includes training, and availability for five requires confirmation.',[['Package prices','https://rittisakmuaythai.com/classes-pricing/'],['Gym contact','https://rittisakmuaythai.com/contact/']],'฿11,000 / 14 nights','Published basic hut + training']
+ ['malibu','hotels','Chaloklum','Malibu Beach Bungalows','Private or shared bungalows','Confirm whether a twin room is available if two people prefer separate beds.',[booking('malibu-beach-bungalows',3)]],
+ ['zivilla','other','Chaloklum','ZiVilla Beachfront Pool Villa','4 bedrooms · at least 4 baths','Ask whether one room can provide separate beds.',[booking('zivilla-private-pool-beachfront')]],
+ ['beach-villa','other','Chaloklum','Beach Villa Phangan','5 bedrooms · 4 baths','The published range varies by season. The provider recommends a car.',[['Thailand Retreats','https://www.thailandretreats.com/Villa/Beach-Villa-Phangan']],'US$705–1,282 / night','Published villa range'],
+ ['rittisak','other','Chaloklum','Rittisak Train & Stay','Individual huts · shared or private baths','Ask about unit availability and a full-stay quote for five.',[['Package prices','https://rittisakmuaythai.com/classes-pricing/'],['Gym contact','https://rittisakmuaythai.com/contact/']],'฿11,000 / 14 nights','Published basic hut with training']
 ];
-const nights = 15;
 const hotelRates = {
- 'maehaad-bay': {rate:2056, date:'Oct 9, 2026', url:'https://www.expedia.co.th/en/Ko-Pha-Ngan-Hotels-Maehaad-Bay-Resort.h5956062.Hotel-Information'},
- malibu: {rate:1447, date:'Nov 1, 2026', url:'https://www.expedia.co.th/en/Ko-Pha-Ngan-Hotels-Malibu-Beach-Bungalows.h3488711.Hotel-Information'}
+ 'maehaad-bay': {rate:2056,date:'Oct 9, 2026',url:'https://www.expedia.co.th/en/Ko-Pha-Ngan-Hotels-Maehaad-Bay-Resort.h5956062.Hotel-Information'},
+ malibu: {rate:1447,date:'Nov 1, 2026',url:'https://www.expedia.co.th/en/Ko-Pha-Ngan-Hotels-Malibu-Beach-Bungalows.h3488711.Hotel-Information'}
 };
-const searchLinks = [
+const links = [
  ['Airbnb · Chaloklum','https://www.airbnb.com/s/Chaloklum--Thailand/homes?adults=5&checkin=2027-01-29&checkout=2027-02-13&min_bedrooms=4&min_bathrooms=2'],
  ['Booking.com · Chaloklum','https://www.booking.com/city/th/chaloklum.html?' + hotelDates],
- ['Booking.com · Mae Haad','https://www.booking.com/city/th/mae-haad-th.html?' + hotelDates],
  ['Mae Haad Beach to Rittisak','https://www.google.com/maps/dir/?api=1&origin=Mae+Haad+Beach%2C+Koh+Phangan&destination=Rittisak+Muay+Thai+Gym%2C+Koh+Phangan']
 ];
-const notes = {
- airbnbs:'Five bedrooms preferred. All homes shown have at least four bedrooms and two bathrooms.',
- hotels:'Compare the cost of enough rooms to give everyone the privacy they want.',
- other:'Compare whole villas and the gym’s training-and-lodging package.'
-};
+const byId = id => document.getElementById(id);
 const tabs = [...document.querySelectorAll('.tab')];
-const area = document.querySelector('#area');
-const cards = document.querySelector('#cards');
-const rows = document.querySelector('#rows');
-const panel = document.querySelector('#panel');
-const storageKey = 'koh-phangan-stays-quotes-v1';
-const fxRate = document.querySelector('#fx-rate');
-const currencyButtons = [...document.querySelectorAll('[data-currency]')];
-let displayCurrency = 'THB';
-const usdAmount = document.querySelector('#usd-amount');
-const convertedBaht = document.querySelector('#converted-baht');
-const fxStorageKey = 'koh-phangan-currency-v1';
-const usd = new Intl.NumberFormat('en-US', {style:'currency',currency:'USD'});
-const number = new Intl.NumberFormat('en', {maximumFractionDigits:2});
+const buttons = [...document.querySelectorAll('[data-currency]')];
+const area = byId('area'), rows = byId('rows'), fx = byId('fx-rate'), amount = byId('usd-amount');
+const quoteKey = 'koh-phangan-stays-quotes-v1', currencyKey = 'koh-phangan-currency-v1';
+const number = new Intl.NumberFormat('en-US',{maximumFractionDigits:2});
+const usd = new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'});
+const nights = 15, guests = 5;
+function read(key) { try { return JSON.parse(localStorage.getItem(key)) || {}; } catch { return {}; } }
+function save(key,value) { try { localStorage.setItem(key,JSON.stringify(value)); } catch {} }
+const quotes = read(quoteKey);
+const saved = read(currencyKey);
+let currency = saved.display === 'USD' ? 'USD' : 'THB';
 let selected = tabs[0];
-let quotes = {};
-try { quotes = JSON.parse(localStorage.getItem(storageKey)) || {}; } catch {}
+if (Number.isFinite(saved.rate) && saved.rate > 0) fx.value = saved.rate;
 
-try {
- const saved = JSON.parse(localStorage.getItem(fxStorageKey));
- if (Number.isFinite(saved?.rate) && saved.rate > 0) fxRate.value = saved.rate;
- if (saved?.display === 'USD') displayCurrency = 'USD';
-} catch {}
-
+function linkMarkup(items) {
+ return items.map(([name,url]) => `<a target="_blank" rel="noopener" href="${url.replaceAll('&','&amp;')}">${name} ↗</a>`).join(' ');
+}
 function formatCost(baht) {
- const rate = fxRate.valueAsNumber;
- const thb = '฿' + number.format(baht);
- if (!Number.isFinite(rate) || rate <= 0 || displayCurrency === 'THB') return thb;
- const dollars = usd.format(baht / rate);
- return 'US' + dollars;
+ const rate = fx.valueAsNumber;
+ return currency === 'USD' && rate > 0 ? 'US' + usd.format(baht / rate) : '฿' + number.format(baht);
 }
-
-function refreshCurrency() {
- const rate = fxRate.valueAsNumber;
- const amount = usdAmount.valueAsNumber;
- const validRate = Number.isFinite(rate) && rate > 0;
- for (const button of currencyButtons) {
-  button.disabled = button.dataset.currency === 'USD' && !validRate;
-  button.setAttribute('aria-pressed', String(button.dataset.currency === (validRate ? displayCurrency : 'THB')));
- }
- fxRate.setAttribute('aria-invalid', String(!validRate));
- convertedBaht.value = !validRate ? 'Enter a positive exchange rate' :
-  Number.isFinite(amount) && amount >= 0 ? '= ฿' + number.format(amount * rate) : '—';
- document.querySelector('#example-group').textContent = formatCost(150000);
- document.querySelector('#example-person').textContent = formatCost(30000);
- rows.querySelectorAll('tr').forEach(updateShare);
- if (validRate) {
-  try { localStorage.setItem(fxStorageKey, JSON.stringify({rate,display:displayCurrency})); } catch {}
- }
-}
-
-function linksMarkup(links) {
- return links.map(([name,url]) => '<a target="_blank" rel="noopener" href="' + url + '">' + name + ' ↗</a>').join('');
-}
-
-function hotelRateMarkup(id) {
+function hotelSample(id) {
  const {rate,date,url} = hotelRates[id];
- return '฿' + number.format(rate) + ' / room / night<small>Two-adult sample for ' + date +
-  ', before taxes and fees. ' + linksMarkup([['Expedia rate source',url]]) + '</small>';
+ return `<strong>฿${number.format(rate)} / room / night</strong><small>Two adults · ${date} · before taxes and fees. ${linkMarkup([['Expedia',url]])}</small>`;
 }
-
-function rateInput(id, name, label, placeholder = 'Enter total') {
- return '<input type="number" min="0" step="0.01" inputmode="decimal" placeholder="' + placeholder +
-  '" data-id="' + id + '" aria-label="' + label + ' for ' + name + '">';
+function quoteInput(key,name,field,placeholder) {
+ return `<input type="number" min="0" step="0.01" inputmode="decimal" data-id="${key}" aria-label="${field} for ${name}" placeholder="${placeholder}">`;
 }
 
 function render() {
- const matches = listings.filter(([,type,place]) => type === selected.id && (!area.value || place === area.value));
- panel.setAttribute('aria-labelledby', selected.id);
- document.querySelector('#heading').textContent = selected.textContent;
- document.querySelector('#description').textContent = notes[selected.id] + ' Trip dates and totals still need confirmation.';
- document.querySelector('#compare').hidden = matches.length === 0;
+ const category = selected.id;
+ const hotels = category === 'hotels', airbnbs = category === 'airbnbs';
+ const matches = listings.filter(([,type,place]) => type === category && (!area.value || place === area.value));
+ const headers = hotels ? ['Stay / area','Sample rate','Private room / night (฿)','Shared room / night (฿)','Per person · 15 nights','Group · 15 nights'] :
+  ['Stay / area','Layout','Published rate',...(airbnbs ? ['Whole home / night (฿)'] : []),'Group quote (฿)','Group total','Per person'];
+ byId('panel').setAttribute('aria-labelledby',category);
+ byId('heading').textContent = selected.textContent;
+ byId('description').textContent = 'Live availability and trip prices are unconfirmed.';
+ byId('compare').hidden = matches.length === 0;
+ byId('villa-example').hidden = !airbnbs;
+ byId('rate-note').textContent = hotels
+  ? 'Enter nightly room quotes in baht. Until then, both room types use the two-adult sample rate. Sample estimates exclude taxes and fees.'
+  : 'Enter the full-stay group quote in baht, including fees.' + (airbnbs ? ' A nightly rate gives a 15-night estimate until you enter a full-stay quote.' : '');
+ byId('rate-head').innerHTML = headers.map(header => `<th scope="col" role="columnheader">${header}</th>`).join('');
 
- const hotels = selected.id === 'hotels';
- const airbnbs = selected.id === 'airbnbs';
- document.querySelector('#villa-example').hidden = !airbnbs;
- document.querySelector('#rate-note').textContent = hotels
-  ? 'Room quotes are entered in baht. Hotel estimates cover 15 nights and use the two-adult sample rate for both private and shared rooms until you enter separate nightly quotes. Confirm twin beds if sharing a room with separate beds. Sample prices exclude taxes and fees.'
-  : 'Enter the quoted 15-night group total in Thai baht, including fees. For Airbnbs, you can also enter a nightly price to estimate the total. The full-stay quote takes priority.';
- const headers = hotels
-  ? ['Stay / area','Sample rate','Private room per night','Shared room per night','Per person / 15 nights','Group / 15 nights']
-  : ['Stay / area','Layout','Published rate',...(airbnbs ? ['Whole home per night (฿)'] : []),'Group quote (฿)','Group total','Per person'];
- document.querySelector('#rate-head').innerHTML = headers.map(heading => '<th scope="col">' + heading + '</th>').join('');
-
- cards.innerHTML = matches.map(([id,,place,name,layout,detail,links,rate,basis]) =>
-  '<article class="card"><div class="area">' + place + '</div><h3>' + name + '</h3><p class="muted">' + layout +
-  '</p><div class="price">' + (hotels ? hotelRateMarkup(id) : (rate || 'Check live rate')) + '</div>' +
-  (basis ? '<small>' + basis + '</small>' : '') + '<div class="links">' + linksMarkup(links) +
-  '</div><details><summary>Stay details</summary><p>' + detail + '</p></details></article>'
- ).join('') || '<p class="empty">No stays in this category for the selected area. Choose All areas to see the shortlist.</p>';
-
- rows.innerHTML = matches.map(([id,,place,name,layout,,links,rate,basis]) => {
-  const title = '<tr data-stay="' + id + '"><th scope="row">' + linksMarkup([[name,links[0][1]]]) + '<br><small>' + place + '</small></th>';
-  if (hotels) {
-   const sample = '฿' + number.format(hotelRates[id].rate);
-   return title + '<td>' + hotelRateMarkup(id) + '</td><td>' + rateInput(id + '-single', name, 'Private room rate in baht', sample) +
-    '</td><td>' + rateInput(id + '-double', name, 'Shared room rate in baht', sample) + '</td><td><output data-person></output></td><td><output data-group></output></td></tr>';
-  }
-  return title + '<td>' + layout + '</td><td>' + (rate || 'Check dates') + (basis ? '<small>' + basis + '</small>' : '') +
-   '</td>' + (airbnbs ? '<td>' + rateInput(id + '-nightly', name, 'Whole home nightly rate in baht', 'Enter rate') + '</td>' : '') +
-   '<td>' + rateInput(id, name, 'Group quote in baht') + '</td><td><output data-group>—</output></td><td><output data-person>—</output></td></tr>';
+ rows.innerHTML = matches.map(([id,,place,name,layout,,sources,rate,basis]) => {
+  const title = `<th scope="row" role="rowheader">${linkMarkup([[name,sources[0][1]]])}<small>${place}</small></th>`;
+  const person = '<output data-person>—</output>', group = '<output data-group>—</output>';
+  const values = hotels ? [hotelSample(id),
+   quoteInput(id+'-single',name,'Private room nightly rate in baht','฿'+hotelRates[id].rate),
+   quoteInput(id+'-double',name,'Shared room nightly rate in baht','฿'+hotelRates[id].rate),person,group] :
+   [layout,rate ? rate + '<small>' + basis + '</small>' : 'Check dates',
+    ...(airbnbs ? [quoteInput(id+'-nightly',name,'Whole-home nightly rate in baht','Enter rate')] : []),
+    quoteInput(id,name,'Group quote in baht','Enter total'),group,person];
+  return `<tr role="row" data-stay="${id}">${title}${values.map((value,index) => `<td role="cell" data-label="${headers[index+1]}"><div>${value}</div></td>`).join('')}</tr>`;
  }).join('');
-
- rows.querySelectorAll('input').forEach(input => {
-  input.value = quotes[input.dataset.id] ?? '';
- });
- rows.querySelectorAll('tr').forEach(updateShare);
+ byId('cards').innerHTML = matches.map(([id,,place,name,layout,detail,sources,rate,basis]) => `
+  <article class="card"><div class="area">${place}</div><h3>${name}</h3><p class="muted">${layout}</p>
+  <div>${hotels ? hotelSample(id) : (rate || 'Check live rate')}${basis ? '<small>'+basis+'</small>' : ''}</div>
+  <div class="links">${linkMarkup(sources)}</div><details><summary>More about this stay</summary><p>${detail}</p></details></article>`
+ ).join('') || '<p>No stays in this category for the selected area. Choose All areas to see the shortlist.</p>';
+ for (const input of rows.querySelectorAll('input')) input.value = quotes[input.dataset.id] ?? '';
+ refreshCurrency();
 }
 
 function updateShare(row) {
  const id = row.dataset.stay;
  const hotel = hotelRates[id];
  const rateFor = key => {
-  const rate = row.querySelector('[data-id="' + key + '"]')?.valueAsNumber;
-  return Number.isFinite(rate) && rate >= 0 ? rate : undefined;
+  const value = row.querySelector(`[data-id="${key}"]`)?.valueAsNumber;
+  return Number.isFinite(value) && value >= 0 ? value : undefined;
  };
- const money = formatCost;
- const person = row.querySelector('[data-person]');
- const group = row.querySelector('[data-group]');
+ const person = row.querySelector('[data-person]'), group = row.querySelector('[data-group]');
  if (hotel) {
-  const privateStay = (rateFor(id + '-single') ?? hotel.rate) * nights;
-  const sharedStay = (rateFor(id + '-double') ?? hotel.rate) * nights;
-  person.innerHTML = '<strong>' + money(privateStay) + '</strong> private<br><strong>' +
-   money(sharedStay / 2) + '</strong> sharing';
-  group.innerHTML = money(privateStay * 5) + '<small>5 private rooms</small>' +
-   money(privateStay * 3 + sharedStay) + '<small>3 private + 1 shared</small>' +
-   money(privateStay + sharedStay * 2) + '<small>1 private + 2 shared</small>';
+  const privateStay = (rateFor(id+'-single') ?? hotel.rate) * nights;
+  const sharedStay = (rateFor(id+'-double') ?? hotel.rate) * nights;
+  person.innerHTML = `<span class="result">${formatCost(privateStay)}<small>Private room</small></span>${formatCost(sharedStay/2)}<small>Sharing</small>`;
+  group.innerHTML = `<span class="result">${formatCost(privateStay*5)}<small>5 private rooms</small></span>
+   <span class="result">${formatCost(privateStay*3+sharedStay)}<small>3 private + 1 shared</small></span>
+   ${formatCost(privateStay+sharedStay*2)}<small>1 private + 2 shared</small>`;
   return;
  }
- const quote = rateFor(id);
- const nightly = rateFor(id + '-nightly');
- const total = quote ?? (nightly === undefined ? undefined : nightly * nights);
+ const quote = rateFor(id), nightly = rateFor(id+'-nightly');
+ const total = quote ?? (nightly === undefined ? undefined : nightly*nights);
  const prefix = quote === undefined ? '≈ ' : '';
- group.value = total === undefined ? '—' : prefix + money(total);
- person.value = total === undefined ? '—' : prefix + money(total / 5);
+ group.value = total === undefined ? '—' : prefix + formatCost(total);
+ person.value = total === undefined ? '—' : prefix + formatCost(total/guests);
 }
 
+function refreshCurrency() {
+ const rate = fx.valueAsNumber, dollars = amount.valueAsNumber;
+ const valid = Number.isFinite(rate) && rate > 0;
+ fx.setAttribute('aria-invalid',String(!valid));
+ for (const button of buttons) {
+  button.disabled = button.dataset.currency === 'USD' && !valid;
+  button.setAttribute('aria-pressed',String(button.dataset.currency === (valid ? currency : 'THB')));
+ }
+ byId('converted-baht').value = !valid ? 'Enter a positive exchange rate' :
+  dollars >= 0 ? '= ฿' + number.format(dollars*rate) : '—';
+ byId('example-group').textContent = formatCost(150000);
+ byId('example-person').textContent = formatCost(30000);
+ rows.querySelectorAll('tr').forEach(updateShare);
+ if (valid) save(currencyKey,{rate,display:currency});
+}
 function selectTab(tab) {
  selected = tab;
  for (const item of tabs) {
-  item.setAttribute('aria-selected', String(item === tab));
   item.tabIndex = item === tab ? 0 : -1;
+  item.setAttribute('aria-selected',String(item === tab));
  }
  render();
 }
-
-rows.addEventListener('input', event => {
- const input = event.target;
- if (!input.matches('input[data-id]')) return;
- quotes[input.dataset.id] = Number.isFinite(input.valueAsNumber) && input.valueAsNumber >= 0 ? input.valueAsNumber : '';
- try { localStorage.setItem(storageKey, JSON.stringify(quotes)); } catch {}
- updateShare(input.closest('tr'));
-});
 for (const tab of tabs) {
- tab.addEventListener('click', () => selectTab(tab));
- tab.addEventListener('keydown', event => {
+ tab.addEventListener('click',()=>selectTab(tab));
+ tab.addEventListener('keydown',event=>{
   const index = tabs.indexOf(tab);
-  const next = {ArrowLeft:(index + tabs.length - 1) % tabs.length,ArrowRight:(index + 1) % tabs.length,Home:0,End:tabs.length - 1}[event.key];
+  const next = {ArrowLeft:(index+2)%3,ArrowRight:(index+1)%3,Home:0,End:2}[event.key];
   if (next === undefined) return;
   event.preventDefault();
   selectTab(tabs[next]);
   tabs[next].focus();
  });
 }
-area.addEventListener('change', render);
-fxRate.addEventListener('input', refreshCurrency);
-for (const button of currencyButtons) {
- button.addEventListener('click', () => {
-  displayCurrency = button.dataset.currency;
-  refreshCurrency();
- });
-}
-usdAmount.addEventListener('input', refreshCurrency);
-document.querySelector('#sources').innerHTML = linksMarkup(searchLinks);
+rows.addEventListener('input',event=>{
+ const input = event.target;
+ if (!input.matches('input[data-id]')) return;
+ quotes[input.dataset.id] = input.valueAsNumber >= 0 ? input.valueAsNumber : '';
+ save(quoteKey,quotes);
+ updateShare(input.closest('tr'));
+});
+for (const button of buttons) button.addEventListener('click',()=>{
+ currency = button.dataset.currency;
+ refreshCurrency();
+});
+area.addEventListener('change',render);
+fx.addEventListener('input',refreshCurrency);
+amount.addEventListener('input',refreshCurrency);
+byId('sources').innerHTML = linkMarkup(links);
 render();
-refreshCurrency();
 </script>
 </body>
 </html>
