@@ -101,8 +101,8 @@
 
   /* ---------------- In-game overlays ---------------- */
   .overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(40,15,8,.55);
-    backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);opacity:0;pointer-events:none;transition:opacity .3s;z-index:5}
-  .overlay.show{opacity:1;pointer-events:auto}
+    backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .3s;z-index:5}
+  .overlay.show{opacity:1;visibility:visible;pointer-events:auto}
   .panel{width:84%;background:linear-gradient(#fff8ec,#f5e2bf);border-radius:24px;padding:22px 20px 20px;text-align:center;
     box-shadow:0 7px 0 #c48a45,0 16px 36px rgba(0,0,0,.4), inset 0 0 0 4px #fff8ec, inset 0 0 0 6px #e0a95a;transform:scale(.85);transition:transform .35s cubic-bezier(.2,1.6,.4,1)}
   .overlay.show .panel{transform:scale(1)}
@@ -297,7 +297,8 @@ button{touch-action:manipulation}
 .roundStatsStage{position:relative;width:min(100%,260px);margin:14px auto 0}
 .roundStatsStage .resultStats{position:relative;margin:0}
 .scorePeek{position:absolute;inset:auto 0 100%;height:62px;pointer-events:none;overflow:hidden}
-.scorePeek canvas{position:absolute;pointer-events:auto;cursor:pointer;bottom:0;left:calc(25% - 40px);width:80px;height:62px}
+.scorePeek canvas{position:absolute;pointer-events:none;cursor:pointer;bottom:0;left:calc(25% - 40px);width:80px;height:62px}
+#roundComplete.show .scorePeek canvas{pointer-events:auto}
 @media(prefers-reduced-motion:reduce){.scorePeek{display:none}}
 .resultStats div{padding:4px 3px}
 .resultStats.allTimeBest{display:block;width:fit-content;min-width:132px;margin:8px auto;padding:5px 12px;background:#743c24;border-color:#743c24;color:#fff4dc}
@@ -307,7 +308,8 @@ button{touch-action:manipulation}
 .leaderboardStage{position:relative;margin-top:16px}
 #leaderboard{position:relative;margin-top:0}
 .leaderTableStage{position:relative;overflow:visible}
-#leaderTurkey{position:absolute;cursor:pointer;z-index:1;bottom:calc(100% - 2px);right:-12px;width:min(36%,136px);height:auto;pointer-events:auto}
+#leaderTurkey{position:absolute;cursor:pointer;z-index:1;bottom:calc(100% - 2px);right:-12px;width:min(36%,136px);height:auto;pointer-events:none}
+#over.show #leaderTurkey{pointer-events:auto}
 #leaderboard .podium1{background:#f5d17b;color:#543409}
 #leaderboard .podium2{background:#dfe6ee;color:#26394a}
 #leaderboard .podium3{background:#ecc1a4;color:#592d1d}
@@ -1987,8 +1989,10 @@ function seasonalBackdrop(key,height){
     c.closePath(); c.fill();
   }
   const sunY=height*.37;
-  oval(259,sunY,24,24,night?'#ffdbb6':'#ffd38f');
-  oval(264,sunY-4,17,17,night?'#ffe7c8':'#ffe1a3');
+  if(!night){
+    oval(259,sunY,24,24,'#ffd38f');
+    oval(264,sunY-4,17,17,'#ffe1a3');
+  }
   for(let i=0;i<22;i++){
     const x=9+(i*109)%340,y=12+(i*71)%Math.max(1,height*.52-12);
     if(night&&Math.hypot(x-259,y-sunY)>28)oval(x,y,1+i%3*.25,1+i%3*.25,'#e5bbc3');
@@ -2033,19 +2037,113 @@ function seasonalBackdrop(key,height){
   return art;
 }
 
-function shadeLaneOpening(top,rail){
+function drawBackgroundActivity(lane){
+  // Gameplay time holds still while a popup or the start screen is shown.
+  const t=motionPreference.matches?0:elapsed;
+  const height=LANE_H;
   ctx.save();
-  ctx.beginPath(); ctx.rect(LANE_X,top,LANE_W,rail-top); ctx.clip();
-  const edge=ctx.createLinearGradient(LANE_X,0,LANE_X+LANE_W,0);
-  edge.addColorStop(0,'#170e19b8'); edge.addColorStop(.12,'#170e1900');
-  edge.addColorStop(.88,'#170e1900'); edge.addColorStop(1,'#170e19b8');
-  ctx.fillStyle=edge; ctx.fillRect(LANE_X,top,LANE_W,rail-top);
-  const upper=ctx.createLinearGradient(0,top,0,top+48);
-  upper.addColorStop(0,'#1c101cbd'); upper.addColorStop(1,'#1c101c00');
-  ctx.fillStyle=upper; ctx.fillRect(LANE_X,top,LANE_W,48);
-  const floor=ctx.createLinearGradient(0,rail-24,0,rail);
-  floor.addColorStop(0,'#23162300'); floor.addColorStop(1,'#23162373');
-  ctx.fillStyle=floor; ctx.fillRect(LANE_X,rail-24,LANE_W,24);
+  ctx.translate(LANE_X,laneTop(lane));
+  ctx.beginPath();ctx.rect(0,0,LANE_W,height);ctx.clip();
+  if(themeKey==='cranberry'){
+    const phase=t*.065+lane*.7;
+    const x=259+Math.sin(phase)*9,y=height*.37+Math.sin(phase*.7)*4;
+    ctx.fillStyle='#ffdbb6';ctx.beginPath();ctx.ellipse(x,y,24,24,0,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#ffe7c8';ctx.beginPath();ctx.ellipse(x+5,y-4,17,17,0,0,Math.PI*2);ctx.fill();
+    for(const i of [2,8,14,19]){
+      const starX=9+(i*109)%340,starY=12+(i*71)%Math.max(1,height*.52-12);
+      if(Math.hypot(starX-x,starY-y)<30)continue;
+      ctx.globalAlpha=.25+.3*(.5+.5*Math.sin(t*.85+i));
+      ctx.fillStyle='#fff0d3';ctx.beginPath();ctx.arc(starX,starY,1.8,0,Math.PI*2);ctx.fill();
+    }
+    ctx.globalAlpha=1;
+  }
+  if(themeKey==='harvest'){
+    const glow=.5+.5*Math.sin(t*.65+lane*.8);
+    ctx.fillStyle='rgba(255,204,131,'+(.12+glow*.1)+')';
+    ctx.beginPath();ctx.ellipse(107.5,height-71.5,11,10,0,0,Math.PI*2);ctx.fill();
+    ctx.globalAlpha=.2+glow*.7;ctx.fillStyle='#fff0be';
+    ctx.fillRect(104,height-75,7,7);ctx.globalAlpha=1;
+    ctx.strokeStyle='#8a553b';ctx.lineWidth=.7;
+    ctx.beginPath();ctx.moveTo(107.5,height-75);ctx.lineTo(107.5,height-68);
+    ctx.moveTo(104,height-71.5);ctx.lineTo(111,height-71.5);ctx.stroke();
+  }
+  if(themeKey==='snowy'){
+    // Thin paper-cloud wisps slip across the distant sky.
+    ctx.globalAlpha=.12;ctx.fillStyle='#d4dce8';
+    for(let i=0;i<2;i++){
+      const x=((t*1.8+i*215+lane*67)%510)-75;
+      const y=24+i*Math.min(30,height*.15);
+      ctx.beginPath();ctx.ellipse(x,y,31,2.3,0,0,Math.PI*2);ctx.fill();
+    }
+    ctx.globalAlpha=1;
+  }
+  if(!motionPreference.matches&&themeKey!=='cranberry'){
+    const cycle=(t+lane*11)%31;
+    if(cycle>=5&&cycle<=15){
+      const flight=(cycle-5)/10;
+      ctx.strokeStyle=themeKey==='snowy'?'#708699':'#66464b';ctx.lineWidth=1.35;ctx.lineCap='round';
+      for(let bird=0;bird<3;bird++){
+        const x=-35+flight*(LANE_W+85)-bird*13;
+        const y=height*.23+bird*5+Math.sin(flight*Math.PI*2)*3;
+        const wing=Math.sin(t*7-bird*.9)*3;
+        ctx.beginPath();ctx.moveTo(x-4,y-wing);
+        ctx.quadraticCurveTo(x-2,y-2,x,y);
+        ctx.quadraticCurveTo(x+2,y-2,x+4,y-wing);ctx.stroke();
+      }
+    }
+  }
+  ctx.restore();
+}
+
+function shadeLaneOpening(top,rail){
+  const left=LANE_X,right=LANE_X+LANE_W;
+  const depth=Math.min(21,(rail-top)*.13);
+  const ceiling=Math.min(17,depth*.8),floorDepth=Math.min(19,depth*.9);
+  ctx.save();
+  ctx.beginPath();ctx.rect(left,top,LANE_W,rail-top);ctx.clip();
+
+  // The four bevels converge toward a smaller opening at the back.
+  const ceilingShade=ctx.createLinearGradient(0,top,0,top+ceiling);
+  ceilingShade.addColorStop(0,'#25141e');ceilingShade.addColorStop(1,'#592f38');
+  ctx.fillStyle=ceilingShade;
+  ctx.beginPath();ctx.moveTo(left,top);ctx.lineTo(right,top);
+  ctx.lineTo(right-depth,top+ceiling);ctx.lineTo(left+depth,top+ceiling);ctx.closePath();ctx.fill();
+
+  const leftWall=ctx.createLinearGradient(left,0,left+depth,0);
+  leftWall.addColorStop(0,'#9a5c46');leftWall.addColorStop(.24,'#794232');leftWall.addColorStop(1,'#3b202b');
+  ctx.fillStyle=leftWall;
+  ctx.beginPath();ctx.moveTo(left,top);ctx.lineTo(left+depth,top+ceiling);
+  ctx.lineTo(left+depth,rail-floorDepth);ctx.lineTo(left,rail);ctx.closePath();ctx.fill();
+
+  const rightWall=ctx.createLinearGradient(right-depth,0,right,0);
+  rightWall.addColorStop(0,'#281925');rightWall.addColorStop(.8,'#522b33');rightWall.addColorStop(1,'#704032');
+  ctx.fillStyle=rightWall;
+  ctx.beginPath();ctx.moveTo(right,top);ctx.lineTo(right-depth,top+ceiling);
+  ctx.lineTo(right-depth,rail-floorDepth);ctx.lineTo(right,rail);ctx.closePath();ctx.fill();
+
+  const floor=ctx.createLinearGradient(0,rail-floorDepth,0,rail);
+  floor.addColorStop(0,'#633e36');floor.addColorStop(.75,'#a86d48');floor.addColorStop(1,'#c48b57');
+  ctx.fillStyle=floor;
+  ctx.beginPath();ctx.moveTo(left+depth,rail-floorDepth);ctx.lineTo(right-depth,rail-floorDepth);
+  ctx.lineTo(right,rail);ctx.lineTo(left,rail);ctx.closePath();ctx.fill();
+
+  const recess=ctx.createLinearGradient(left,0,right,0);
+  recess.addColorStop(0,'#180f235c');recess.addColorStop(.14,'#180f2300');
+  recess.addColorStop(.85,'#180f2300');recess.addColorStop(1,'#180f237d');
+  ctx.fillStyle=recess;ctx.fillRect(left,top,LANE_W,rail-top);
+  const upper=ctx.createLinearGradient(0,top+ceiling,0,top+ceiling+30);
+  upper.addColorStop(0,'#180e237a');upper.addColorStop(1,'#180e2300');
+  ctx.fillStyle=upper;ctx.fillRect(left+depth,top+ceiling,LANE_W-depth*2,30);
+
+  // Fine seams define the back plane and the lit front edge.
+  ctx.strokeStyle='#160e1e99';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(left+depth,rail-floorDepth);ctx.lineTo(left+depth,top+ceiling);
+  ctx.lineTo(right-depth,top+ceiling);ctx.lineTo(right-depth,rail-floorDepth);ctx.stroke();
+  ctx.strokeStyle='#e3b47b94';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(left+1,top+2);ctx.lineTo(left+1,rail-1);
+  ctx.moveTo(left+2,rail-1);ctx.lineTo(right-2,rail-1);ctx.stroke();
+  ctx.strokeStyle='#f0c38b40';
+  ctx.beginPath();ctx.moveTo(left+2,rail-2);ctx.lineTo(left+depth,rail-floorDepth);ctx.stroke();
   ctx.restore();
 }
 function drawLanes(time){
@@ -2066,6 +2164,7 @@ function drawLanes(time){
     }
     if(themeKey==='snowy'&&IMG['mg-lane-hills']){ const off=(hillScroll*(l%2?-1:1)+l*90+LANE_W)%LANE_W;
       ctx.drawImage(IMG['mg-lane-hills'],LANE_X-off,hillsY(l),LANE_W,100); ctx.drawImage(IMG['mg-lane-hills'],LANE_X-off+LANE_W,hillsY(l),LANE_W,100); }
+    drawBackgroundActivity(l);
     // theme tint on the scenery
     const g=ctx.createRadialGradient(LANE_X+LANE_W*.72,top+30,5,LANE_X+LANE_W*.72,top+30,170); g.addColorStop(0,th.glow); g.addColorStop(1,'rgba(0,0,0,0)');
     ctx.globalCompositeOperation='screen'; ctx.fillStyle=g; ctx.fillRect(LANE_X,top,LANE_W,LANE_H); ctx.globalCompositeOperation='source-over';
@@ -2176,6 +2275,14 @@ function drawBooth(){
   ctx.fillRect(W-LANE_X,columnTop,LANE_X,columnHeight);
   drawBoothColumn(IMG['fg-post-left'],0,columnTop,36,columnHeight);
   drawBoothColumn(IMG['fg-post-right'],W-36,columnTop,36,columnHeight);
+  // A narrow raised molding catches light on the face of each post.
+  ctx.save();
+  for(const x of [34,W-36]){
+    const molding=ctx.createLinearGradient(x,0,x+2,0);
+    molding.addColorStop(0,'#edc08c');molding.addColorStop(.5,'#bd8056');molding.addColorStop(1,'#48212a');
+    ctx.fillStyle=molding;ctx.fillRect(x,laneTop(0),2,railY(LANES-1)-laneTop(0));
+  }
+  ctx.restore();
   drawFooterDrapery(counterTop+58);
 
   // Give the canopy and counter a visible underside where they project past the frame.
