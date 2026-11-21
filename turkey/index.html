@@ -39,6 +39,14 @@
   #cardScene{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;perspective:1600px;
     background:radial-gradient(120% 80% at 50% 25%,#8a4322 0%,#5a2416 55%,#2c120c 100%);transition:opacity .6s, visibility .6s}
   #cardScene.gone{opacity:0;visibility:hidden}
+  #cardScene::before{
+    content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+    background:radial-gradient(ellipse at 50% 40%,#1e1519,#09090e);
+    opacity:0;transition:opacity 1.25s ease;
+  }
+  #cardScene.envelopeIntro:not(.envelopeOpening)::before{opacity:1}
+  @media(prefers-reduced-motion:reduce){#cardScene::before{transition:none}}
+
   #leafFall{position:absolute;inset:0;pointer-events:none}
   #leafFront{position:absolute;inset:0;pointer-events:none;z-index:5;filter:blur(.7px) drop-shadow(0 6px 6px rgba(40,10,0,.35))}
   #card{position:relative;width:min(86vw,380px);aspect-ratio:5/7;transform-style:preserve-3d;transition:transform 1s cubic-bezier(.3,1.2,.4,1)}
@@ -247,17 +255,18 @@ button{touch-action:manipulation}
 #ready .howto i{font-size:29px;flex:0 0 36px;text-align:center}
 #roundComplete .panel{width:90%}
 #roundComplete p{font-size:18px;line-height:1.45;color:#532d19}
- .harvestParty{position:relative;width:min(100%,225px);height:85px;margin:0 auto 5px;font-size:34px;line-height:1}
+ .harvestParty{position:relative;width:min(100%,280px);height:105px;margin:0 auto 7px;font-size:clamp(40px,12vw,46px);line-height:1}
 .harvestParty span{position:absolute;left:var(--x);bottom:var(--y);transform:translateX(-50%) rotate(var(--angle));opacity:0}
 .harvestParty span:nth-child(1){--x:11%;--y:23px;--angle:-19deg;--delay:.12s;font-size:.85em}
 .harvestParty span:nth-child(2){--x:29%;--y:6px;--angle:-9deg;--delay:.23s}
 .harvestParty span:nth-child(3){--x:50%;--y:31px;--angle:0deg;--delay:.34s;font-size:1.28em}
 .harvestParty span:nth-child(4){--x:71%;--y:6px;--angle:9deg;--delay:.45s}
 .harvestParty span:nth-child(5){--x:89%;--y:22px;--angle:20deg;--delay:.56s;font-size:.85em}
-#roundComplete.show .harvestParty span{animation:harvestPopIcon .66s cubic-bezier(.22,.65,.3,1) var(--delay) both}
+#roundComplete.show .harvestParty span{animation:harvestPopIcon .6s cubic-bezier(.2,.75,.3,1) var(--delay) both}
 @keyframes harvestPopIcon{
-  from{opacity:0;transform:translate(-50%,10px) rotate(var(--angle)) scale(.66)}
-  72%{opacity:1;transform:translate(-50%,-1px) rotate(var(--angle)) scale(1.035)}
+  from{opacity:0;transform:translate(-50%,24px) rotate(calc(var(--angle) - 12deg)) scale(.15)}
+  60%{opacity:1;transform:translate(-50%,-5px) rotate(calc(var(--angle) + 3deg)) scale(1.13)}
+  82%{opacity:1;transform:translate(-50%,1px) rotate(var(--angle)) scale(.97)}
   to{opacity:1;transform:translateX(-50%) rotate(var(--angle)) scale(1)}
 }
 @media(prefers-reduced-motion:reduce){#roundComplete.show .harvestParty span{animation:none;opacity:1}}
@@ -300,17 +309,25 @@ button{touch-action:manipulation}
 #over .row .ghostBtn{min-height:46px;gap:8px}
 #over .row .ghostBtn svg{width:28px;height:28px;flex:none}
 #homeCard svg,#mute svg{width:26px;height:26px}
-.resultStats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:10px 0;padding:9px;border-radius:12px;background:#e8b878;border:1px solid #aa6b35;color:#49240f;text-align:center}
-.roundStatsStage{position:relative;width:min(100%,260px);margin:14px auto 0}
+.resultStats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:10px 0;padding:11px 9px;border-radius:14px;background:#71343b;border:1px solid #9c5b51;color:#fff2d7;text-align:center}
+.roundStatsStage{position:relative;width:min(100%,300px);margin:14px auto 0}
 .roundStatsStage .resultStats{position:relative;margin:0}
-.scorePeek{position:absolute;inset:auto 0 100%;height:62px;pointer-events:none;overflow:hidden}
-.scorePeek canvas{position:absolute;pointer-events:none;cursor:pointer;bottom:0;left:calc(25% - 40px);width:80px;height:62px}
+.scorePeek{position:absolute;inset:auto 0 100%;height:134px;pointer-events:none;overflow:hidden}
+.scorePeek canvas{position:absolute;pointer-events:none;cursor:pointer;bottom:0;left:calc(25% - min(18%,68px));width:min(36%,136px);height:auto}
 #roundComplete.show .scorePeek canvas{pointer-events:auto}
 @media(prefers-reduced-motion:reduce){.scorePeek{display:none}}
 .resultStats div{padding:4px 3px}
-.resultStats.allTimeBest{display:block;width:fit-content;min-width:132px;margin:8px auto;padding:5px 12px;background:#743c24;border-color:#743c24;color:#fff4dc}
-.resultStats dt{font-size:12px;font-weight:600}
-.resultStats dd{margin:2px 0 0;font:400 20px 'Lilita One',sans-serif;overflow-wrap:anywhere}
+.resultStats.allTimeBest{display:block;width:fit-content;min-width:180px;margin:13px auto 9px;padding:8px 18px;background:#f2ce88;border-color:#c59a55;color:#542b1c;box-shadow:none}
+.resultStats dt{font-size:14px;font-weight:700;line-height:1.25}
+#roundComplete .roundStatsStage .resultStats dt{
+  color:#fff9ec;font-size:16px;font-weight:700;line-height:1.3;
+  text-shadow:0 1px 1px #32131f;
+}
+#roundComplete .roundStatsStage .resultStats dd{margin-top:8px;color:#fff1c5}
+
+.resultStats dd{margin:5px 0 0;font:400 clamp(28px,8vw,34px)/1.1 'Lilita One',sans-serif;overflow-wrap:anywhere}
+#clearScore{color:#ffe3a2;text-shadow:0 2px 0 #351a25}
+#clearBest{font-size:clamp(28px,7.5vw,32px);color:#542b1c}
 #card:not(.open),#card:not(.open) #cover,#card:not(.open) #cover *,#cardScene:not(.gone):has(#card:not(.open)){touch-action:none}
 .leaderboardStage{position:relative;margin-top:16px}
 #leaderboard{position:relative;margin-top:0}
@@ -462,13 +479,85 @@ button{touch-action:manipulation}
   #openingEnvelope,.envelopeBack{display:none}
   #cardScene.envelopeIntro #card{animation:none}
 }
+
+/* Shared interaction and responsive layouts. */
+.playBtn{background:linear-gradient(#dc641f,#ba3c16)}
+.playBtn,.ghostBtn,.textButton{min-height:44px}
+.textButton{
+  border:0;background:transparent;color:#75432c;padding:9px 12px;
+  font:600 14px/1.35 'Fredoka',system-ui,sans-serif;cursor:pointer;text-decoration:underline;
+  text-underline-offset:3px;
+}
+.textButton[hidden]{display:none}
+button:focus-visible,a:focus-visible,[role="button"]:focus-visible,#leaderList:focus-visible{
+  outline:3px solid #d98935;outline-offset:3px;
+}
+.playerEntry label span{display:block;margin-top:3px;font-size:14px;font-weight:500;color:#754c34}
+.playerEntry input[readonly]{background:#f6e8cf;border-color:#c2a071;color:#5c3b28}
+#ready .sub{font-size:17px}
+#ready .howto{font-size:16px;gap:10px;margin:16px 0 8px}
+#readyStatus:empty{display:none}
+#readyStatus{font-size:14px;line-height:1.4}
+.playBtn:disabled{opacity:.6;cursor:wait}
+#roundComplete .panel{
+  max-height:calc(100% - 24px);display:flex;flex-direction:column;overflow:hidden;
+  padding:20px 18px 18px;
+}
+.roundContent{min-height:0;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;padding:0 3px 5px}
+#roundComplete #nextLevel{flex:none;margin-top:14px}
+#roundComplete #roundCopy{margin:9px 0 7px;font-size:16px;line-height:1.4}
+#roundComplete #roundNext{margin:0 0 12px;font-size:14px;line-height:1.45;color:#77513b}
+#runSummary{margin:1px 0 6px;color:#653c29;font-size:14px;line-height:1.4}
+#over .leaderboardStage,#leaderboard{flex:1 1 auto}
+.leaderTableStage{flex:1 1 auto}
+.leaderScroll{scrollbar-width:thin;scrollbar-color:#caa26b #f6e6c9}
+.leaderScroll::-webkit-scrollbar{width:5px}
+.leaderScroll::-webkit-scrollbar-thumb{background:#caa26b;border-radius:4px}
+#leaderboard th{line-height:32px;padding-block:0}
+#leaderboard td{line-height:39px}
+#refreshScores{align-self:flex-start;padding:4px 0;min-height:36px}
+.cardActions{display:grid;place-items:center}
+.cardActions > button{grid-area:1/1}
+#revealCard{font-size:14px;position:relative;z-index:4}
+#pauseScreen .panel{width:84%;max-height:calc(100% - 24px);overflow-y:auto}
+#pauseScreen p{font-size:17px;line-height:1.4}
+#pauseScreen .textButton{margin-top:9px}
+@media(max-height:700px){
+  #roundComplete .harvestParty{height:82px;font-size:39px}
+  #roundComplete .panel h2{font-size:28px;line-height:1.15}
+  #roundComplete .roundStatsStage{margin-top:11px}
+  #roundComplete .resultStats{padding:8px}
+  #roundComplete .resultStats.allTimeBest{margin-top:10px;padding:5px 14px}
+  #over .panel{padding:16px 16px 15px}
+  #over .thanksgivingTitle{font-size:clamp(27px,8.5vw,35px);line-height:1.15;margin:0 0 5px}
+  #over .from{font-size:12px;margin-top:1px}
+  #over .leaderboardStage{margin-top:10px}
+  #leaderboard{padding:9px}
+  #leaderTitle{font-size:18px}
+  #over .playBtn{margin-top:10px;padding-block:11px}
+  #over .row{margin-top:8px}
+  #over .row .ghostBtn{font-size:14px;min-height:44px;padding-block:7px}
+  #over .row .ghostBtn svg{width:23px;height:23px}
+  #ready .panel{padding:20px 18px}
+  #ready .playerEntry{margin-top:13px}
+}
+@media(max-height:500px){
+  #roundComplete .harvestParty{height:73px;font-size:35px}
+  #roundComplete .roundContent{padding-bottom:0}
+  #over .thanksgivingTitle{font-size:25px}
+  #over .from{display:none}
+}
+@media(prefers-reduced-motion:reduce){
+  .cover,.seq,.ch,.panel{transition:none}
+  #card.open .track{animation:none;opacity:var(--o,.42)}
+}
 </style>
 </head>
 <body>
 <div id="stage">
   <div id="wrap">
-    <canvas id="game"></canvas>
-    <button id="debugWin" hidden>Win level</button>
+    <canvas id="game" tabindex="-1" aria-label="Turkey Shoot playing field"></canvas>
+    <button id="debugWin" hidden aria-label="Preview tool: win this level">Preview · Win level</button>
     <button id="homeCard" aria-label="Back to the card">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" stroke="none" fill-rule="evenodd" d="M12 2 1.5 11H5v10h5v-7h4v7h5V11h3.5L12 2Z"/></svg>
     </button>
@@ -477,14 +566,14 @@ button{touch-action:manipulation}
         <path d="M3 9h4l6-5v16l-6-5H3Z" fill="currentColor" stroke="none"/><path id="sndWave" d="M17 7a7 7 0 0 1 0 10"/></svg>
     </button>
 
-    <div id="ready" class="overlay">
+    <div id="ready" class="overlay" role="dialog" aria-modal="true" aria-labelledby="readyTitle">
       <div class="panel">
-        <h2>STEP RIGHT UP!</h2>
-        <div class="sub">The Thanksgiving Turkey Shoot</div>
+        <h2 id="readyTitle">STEP RIGHT UP!</h2>
+        <div class="sub" id="readyGoal">Hit 10 harvest targets in 60 seconds.</div>
         <div class="howto">
-          <div><i>🥧</i>Clear the harvest to level up</div>
-          <div><i>🦃</i>Runaway turkeys = big points</div>
-          <div><i>💣</i>Bombs cost a ❤</div>
+          <div><i aria-hidden="true">🥧</i>Tap harvest targets to fill the meter.</div>
+          <div><i aria-hidden="true">🦃</i>Running turkeys earn bonus points.</div>
+          <div><i aria-hidden="true">💣</i>Avoid bombs. You have 3 hearts.</div>
         </div>
         <div class="playerEntry">
           <label for="playerName">Player name <span>· Play for 1st place!</span></label>
@@ -492,30 +581,43 @@ button{touch-action:manipulation}
           <small id="playerError" role="alert" hidden></small>
           <small id="playerHint">Your name and best score appear on the leaderboard.</small>
         </div>
-        <button class="playBtn" id="goBtn">START!</button>
+        <p id="readyStatus" role="status"></p>
+        <button class="playBtn" id="goBtn">Start level 1</button>
+        <button class="textButton" id="readyCard">Back to card</button>
       </div>
     </div>
 
-    <div id="roundComplete" class="overlay">
+    <div id="pauseScreen" class="overlay" role="dialog" aria-modal="true" aria-labelledby="pauseTitle">
       <div class="panel">
+        <h2 id="pauseTitle">Take a breather</h2>
+        <p>Your game is paused.</p>
+        <button class="playBtn" id="resumeGame">Keep playing</button>
+        <button class="textButton" id="leaveGame">Return to card</button>
+      </div>
+    </div>
+    <div id="roundComplete" class="overlay" role="dialog" aria-modal="true" aria-labelledby="roundTitle">
+      <div class="panel">
+        <div class="roundContent">
         <div class="harvestParty" aria-hidden="true"><span>🍁</span><span>🥧</span><span>🦃</span><span>🎃</span><span>🍂</span></div>
         <h2 id="roundTitle"></h2><p id="roundCopy"></p><p id="roundNext"></p>
         <div class="roundStatsStage">
-          <div class="scorePeek" aria-hidden="true"><canvas id="scoreTurkey" width="184" height="144"></canvas></div>
+          <div class="scorePeek" aria-hidden="true"><canvas id="scoreTurkey" width="320" height="314"></canvas></div>
         <dl class="resultStats">
           <div><dt>Level score</dt><dd id="clearScore"></dd></div>
           <div><dt>Turkeys hit</dt><dd id="clearTurkeys"></dd></div>
         </dl>
         </div>
         <dl class="resultStats allTimeBest"><div><dt>Best for this level</dt><dd id="clearBest"></dd></div></dl>
-        <button class="playBtn" id="nextLevel">NEXT HELPING!</button>
+        </div>
+        <button class="playBtn" id="nextLevel">Play level 2</button>
       </div>
     </div>
-    <div id="over" class="overlay">
+    <div id="over" class="overlay" role="dialog" aria-modal="true" aria-labelledby="resultsTitle">
       <canvas id="resultLeaves" aria-hidden="true"></canvas>
       <div class="panel">
-        <h2 class="thanksgivingTitle">Happy Thanksgiving!</h2>
+        <h2 class="thanksgivingTitle" id="resultsTitle">Happy Thanksgiving!</h2>
         <p id="overTitle"></p>
+        <p id="runSummary"></p>
         <div class="from">from Tony, Amy &amp; Major <svg class="paw" viewBox="0 0 32 32"><ellipse cx="16" cy="21" rx="7.5" ry="6.5"/><ellipse cx="7" cy="13" rx="3.2" ry="4"/><ellipse cx="12.5" cy="7.5" rx="3.2" ry="4"/><ellipse cx="19.5" cy="7.5" rx="3.2" ry="4"/><ellipse cx="25" cy="13" rx="3.2" ry="4"/></svg></div>
         <div class="leaderboardStage">
         <section id="leaderboard" aria-labelledby="leaderTitle">
@@ -523,6 +625,7 @@ button{touch-action:manipulation}
           <p id="scoreSync" role="status"></p>
           <button class="ghostBtn" id="retryScore" hidden>Retry score upload</button>
           <p id="leaderStatus" role="status"></p>
+          <button class="textButton" id="refreshScores" hidden>Refresh scores</button>
           <div class="leaderTableStage">
           <canvas id="leaderTurkey" width="320" height="314" aria-hidden="true"></canvas>
             <table role="table" aria-labelledby="leaderTitle">
@@ -615,7 +718,7 @@ button{touch-action:manipulation}
       <p>But first… the turkeys have escaped to the carnival! Step right up and see how many you can round up before dinner.</p>
       <div class="sig seq">— Tony, Amy &amp; <span class="major">Major<span class="paws"><svg class="paw" viewBox="0 0 32 32"><ellipse cx="16" cy="21" rx="7.5" ry="6.5"/><ellipse cx="7" cy="13" rx="3.2" ry="4"/><ellipse cx="12.5" cy="7.5" rx="3.2" ry="4"/><ellipse cx="19.5" cy="7.5" rx="3.2" ry="4"/><ellipse cx="25" cy="13" rx="3.2" ry="4"/></svg><svg class="paw" viewBox="0 0 32 32"><ellipse cx="16" cy="21" rx="7.5" ry="6.5"/><ellipse cx="7" cy="13" rx="3.2" ry="4"/><ellipse cx="12.5" cy="7.5" rx="3.2" ry="4"/><ellipse cx="19.5" cy="7.5" rx="3.2" ry="4"/><ellipse cx="25" cy="13" rx="3.2" ry="4"/></svg></span></span></div>
       </div>
-      <div class="cardActions"><button class="playBtn popper" id="openGame">PLAY ▶</button></div>
+      <div class="cardActions"><button class="textButton" id="revealCard">Reveal message</button><button class="playBtn popper" id="openGame">PLAY ▶</button></div>
     </div>
     <div class="page cover" id="cover" role="button" tabindex="0" aria-label="Open Thanksgiving card">
       <div class="front">
@@ -772,6 +875,7 @@ let envelopeAutoTimer;
 function openEnvelope(){
   if(!envelopePlaying||envelopeOpening)return;
   envelopeOpening=true;
+  cardScene.classList.add('envelopeOpening');
   clearTimeout(envelopeHoldTimer);
   clearTimeout(envelopeAutoTimer);
   openingEnvelope.setAttribute('tabindex','-1');
@@ -807,7 +911,7 @@ function finishEnvelope(){
   clearTimeout(envelopeAutoTimer);
   envelopePlaying=false;
   card.inert=false;
-  cardScene.classList.remove('envelopeIntro');
+  cardScene.classList.remove('envelopeIntro','envelopeOpening');
   openingEnvelope.remove();
   cardScene.querySelector('.envelopeBack')?.remove();
   coverStarted=performance.now();
@@ -1067,8 +1171,8 @@ function playScorePeek(){
     const peek=(rise-fall);
     const eased=peek*peek*(3-2*peek);
     c.save();
-    c.translate(92,218-eased*138);
-    c.scale(.94,.94);
+    c.translate(160,534-eased*302);
+    c.scale(2.6,2.6);
     const gaze=time<.9?-6:time<1.4?5:0;
     drawInteractivePeek(c,roundPeek,gaze,7*clamp((time-.75)/.3,0,1),peekBlink(time,.83,1.55),canvas.height,drawIllustratedPopupTurkey);
     c.restore();
@@ -1180,7 +1284,7 @@ function makeTracks(){
       footprint.style.top=y+'%';
       footprint.style.transform='rotate('+(Math.atan2(dy,dx)*180/Math.PI+90)+'deg)';
       footprint.style.setProperty('--o',String(.36+route*.055));
-      const delay=route*.75+step*.13;
+      const delay=route*.38+step*.075;
       footprint.style.animationDelay=delay+'s';
       lastStamp=Math.max(lastStamp,delay);
       fragment.appendChild(footprint);
@@ -1194,7 +1298,7 @@ const insideEl=document.querySelector('.inside');
 const bodyPs=[...insideEl.querySelectorAll('p')];
 bodyPs.forEach(p=>{ const t=p.textContent; p.textContent=''; for(const c of t){ const sp=document.createElement('span'); sp.className='ch'; sp.textContent=c; p.appendChild(sp); } });
 const chars=bodyPs.map(p=>[...p.children]);
-let seqTimers=[], typing=null;
+let seqTimers=[], typing=null,insideSeen=false;
 const later=(ms,fn)=>seqTimers.push(setTimeout(fn,ms));
 function resetInside(){
   seqTimers.forEach(clearTimeout); seqTimers=[]; if(typing){ cancelAnimationFrame(typing.raf); typing=null; }
@@ -1202,10 +1306,31 @@ function resetInside(){
   chars.flat().forEach(c=>c.classList.remove('on'));
   document.getElementById('tracks').innerHTML='';
   insideEl.querySelector('.cardMessage').scrollTop=0;
+  document.getElementById('revealCard').hidden=false;
 }
+function showCardPlay(){
+  insideSeen=true;
+  const revealButton=document.getElementById('revealCard');
+  const wasFocused=document.activeElement===revealButton;
+  const playButton=document.getElementById('openGame');
+  playButton.classList.add('in');
+  revealButton.hidden=true;
+  if(wasFocused)playButton.focus({preventScroll:true});
+}
+function revealInside(){
+  resetInside();
+  chars.flat().forEach(character=>character.classList.add('on'));
+  insideEl.querySelectorAll('.seq,.paws').forEach(element=>element.classList.add('in'));
+  makeTracks();
+  for(const track of document.querySelectorAll('#tracks .track')){
+    track.style.animation='none';track.style.opacity=track.style.getPropertyValue('--o');
+  }
+  showCardPlay();
+}
+document.getElementById('revealCard').addEventListener('click',revealInside);
 function typeBody(done){
   const all=[]; chars.forEach((list,i)=>{ list.forEach(c=>all.push(c)); if(i<chars.length-1) for(let k=0;k<10;k++) all.push(null); }); // nulls = pause between paragraphs
-  const MS=24; let start=performance.now(), shown=0;
+  const MS=18; let start=performance.now(), shown=0;
   typing={finish(){ all.forEach(c=>c&&c.classList.add('on')); shown=all.length; }};
   const step=now=>{ if(!typing) return; const n=Math.min(all.length,Math.floor((now-start)/MS));
     for(;shown<n;shown++){ const c=all[shown]; if(c){ c.classList.add('on'); if(c.textContent.trim() && shown%3===0) tone(1400+Math.random()*300,.015,'sine',.012); } }
@@ -1214,15 +1339,15 @@ function typeBody(done){
 }
 function runInsideSequence(){
   resetInside();
-  later(1050,()=>insideEl.querySelector('.leaves').classList.add('in'));
-  later(1250,()=>insideEl.querySelector('h2').classList.add('in'));
-  later(1800,()=>typeBody(()=>{
-    later(250,()=>{ insideEl.querySelector('.sig').classList.add('in'); });
-    later(800,()=>{ insideEl.querySelector('.paws').classList.add('in'); tone(660,.06,'triangle',.05); later(280,()=>tone(880,.06,'triangle',.05)); });
-    later(1600,()=>{
+  later(450,()=>insideEl.querySelector('.leaves').classList.add('in'));
+  later(650,()=>insideEl.querySelector('h2').classList.add('in'));
+  later(950,()=>typeBody(()=>{
+    later(120,()=>{ insideEl.querySelector('.sig').classList.add('in'); });
+    later(430,()=>{ insideEl.querySelector('.paws').classList.add('in'); tone(660,.06,'triangle',.05); later(280,()=>tone(880,.06,'triangle',.05)); });
+    later(850,()=>{
       const duration=makeTracks();
-      later(duration+350,()=>{
-        insideEl.querySelector('.popper').classList.add('in');
+      later(duration+180,()=>{
+        showCardPlay();
         tone(520,.12,'sine',.08,2);
       });
     });
@@ -1236,7 +1361,7 @@ function openCover(){
   cardOpen=true;
   neutralTilt();
   card.classList.add('open');
-  runInsideSequence();
+  if(insideSeen||motionPreference.matches)revealInside();else runInsideSequence();
   chime();
 }
 cover.addEventListener('click',event=>{
@@ -1251,7 +1376,7 @@ cover.addEventListener('keydown',event=>{
 document.getElementById('openGame').addEventListener('click',()=>{ ensureAudio(); cardScene.classList.add('gone'); showReady(); });
 function goHomeCard(){
   state='card'; syncHarvestMusic(); crosshair.show=false;
-  ['ready','over','roundComplete'].forEach(id=>document.getElementById(id).classList.remove('show'));
+  ['ready','over','roundComplete','pauseScreen'].forEach(id=>document.getElementById(id).classList.remove('show'));
   card.classList.remove('open'); cardOpen=false; coverStarted=performance.now(); resetInside();
   resetCoverLeaves();
   const coverItems=cardScene.querySelectorAll('.celebrate,.coverText .happy,.coverText .tg,.coverNames span');
@@ -1261,7 +1386,24 @@ function goHomeCard(){
   cardScene.classList.remove('gone');
 }
 document.getElementById('cardBtn').addEventListener('click',goHomeCard);
-document.getElementById('homeCard').addEventListener('click',e=>{ e.stopPropagation(); ensureAudio(); goHomeCard(); });
+document.getElementById('homeCard').addEventListener('click',e=>{
+  e.stopPropagation();ensureAudio();
+  if(state==='play')pauseGame();
+  else goHomeCard();
+});
+document.getElementById('readyCard').addEventListener('click',goHomeCard);
+document.getElementById('leaveGame').addEventListener('click',goHomeCard);
+document.getElementById('resumeGame').addEventListener('click',()=>{
+  if(state!=='paused')return;
+  ensureAudio();state='play';
+  document.getElementById('pauseScreen').classList.remove('show');
+  syncHarvestMusic();
+});
+function pauseGame(){
+  if(state!=='play')return;
+  state='paused';crosshair.show=false;syncHarvestMusic();
+  document.getElementById('pauseScreen').classList.add('show');
+}
 
 // =====================================================================
 // Audio
@@ -1514,7 +1656,7 @@ function configureLanes(){
   SPR=LANES===1?150:LANES===2?120:100;
 }
 let initialTheme=null;
-let levelStartScore=0;
+let levelStartScore=0,levelStartHits=0;
 const levelBests=new Map();
 function newGame(){
   gameCameo.peek={};
@@ -1523,7 +1665,7 @@ function newGame(){
   gameCameo.wait=rand(8,18);
   gameCameo.age=null;
   gameCameo.x=rand(110,W-110);
-  levelStartScore=0;
+  levelStartScore=0;levelStartHits=0;
   score=0; combo=0; mult=1; hearts=3; timeLeft=GAME_TIME; targets=[]; parts=[]; floaters=[]; hits=0; elapsed=0; shots=0;
   level=1; goalHit=0; levelBanner=null; laneDir=[-1,1,-1]; turkeyT=rand(2,3.2);
   setTheme('snowy'); initialTheme=themeKey; configureLanes(); hitstop=0;
@@ -1577,11 +1719,13 @@ function levelUp(){
   state='celebrate'; syncHarvestMusic(); crosshair.show=false;
   gameCameo.age=null; gameCameo.peek.face=null;
   document.getElementById('clearScore').textContent=(score-levelStartScore).toLocaleString();
-  document.getElementById('clearTurkeys').textContent=hits.toLocaleString();
+  document.getElementById('clearTurkeys').textContent=(hits-levelStartHits).toLocaleString();
   document.getElementById('clearBest').textContent=recordLevelBest().toLocaleString();
   document.getElementById('roundTitle').textContent='Level '+level+' complete!';
   document.getElementById('roundCopy').textContent=['A harvest worth celebrating!','That’s something to gobble about!','You’ve earned another helping!'][(level-1)%3];
-  document.getElementById('roundNext').textContent='Next up • '+levelCfg(level+1).lanes+' '+(levelCfg(level+1).lanes===1?'lane':'lanes')+' • '+levelCfg(level+1).seconds+' seconds';
+  const upcoming=levelCfg(level+1),nextTheme=LEVEL_THEMES[level%LEVEL_THEMES.length];
+  document.getElementById('roundNext').textContent='Next: '+THEMES[nextTheme].name+' · '+upcoming.goal+' harvest targets · '+upcoming.seconds+'s';
+  document.getElementById('nextLevel').textContent='Play level '+(level+1);
   document.getElementById('roundComplete').classList.add('show');
   playScorePeek();
   [523,659,784,1046,1318].forEach((f,i)=>tone(f,.16,'triangle',.09,1,i*.08));
@@ -1597,7 +1741,7 @@ debugWinButton.addEventListener('click',event=>{
 });
 document.getElementById('nextLevel').addEventListener('click',()=>{
   if(state!=='celebrate')return;
-  level++; levelStartScore=score; goalHit=0; timeLeft=cfg().seconds; lastTick=Math.ceil(timeLeft);
+  level++; levelStartScore=score; levelStartHits=hits; goalHit=0; timeLeft=cfg().seconds; lastTick=Math.ceil(timeLeft);
   configureLanes(); targets=[]; parts=[]; floaters=[]; rings.length=0;
   laneDir=laneDir.map(d=>-d); spawnT=[.3,.8,1.3]; turkeyT=2; hitstop=0;
   const keys=LEVEL_THEMES;
@@ -1807,8 +1951,10 @@ function endGame(){
   try{localStorage.setItem('turkeyLastResult',JSON.stringify(result));}catch{}
   window.dispatchEvent(new CustomEvent('turkey-round-ended',{detail:result}));
 
-  if(score>best){ best=score; try{ localStorage.setItem('turkeyShootBest',best); }catch(e){} }
-  document.getElementById('overTitle').textContent = hearts<=0 ? 'KA-BOOM!' : (score>=best&&score>0 ? 'NEW RECORD!' : 'GOBBLE GOBBLE!');
+  const isNewBest=score>best;
+  if(isNewBest){ best=score; try{ localStorage.setItem('turkeyShootBest',best); }catch(e){} }
+  document.getElementById('overTitle').textContent=isNewBest?'NEW RECORD!':hearts<=0?'KA-BOOM!':'Nice shooting!';
+  document.getElementById('runSummary').textContent=(hearts<=0?'Out of hearts':'Time’s up')+' · '+score.toLocaleString()+' points · Level '+level;
   setTimeout(()=>{
     if(state!=='over') return;
     document.getElementById('over').classList.add('show');
@@ -1816,7 +1962,12 @@ function endGame(){
     peekAtLeaderboard();
   },600);
 }
-function showReady(){ state='ready'; newGame(); document.getElementById('over').classList.remove('show'); document.getElementById('ready').classList.add('show'); }
+function showReady(){
+  state='ready';newGame();
+  document.getElementById('over').classList.remove('show');
+  document.getElementById('readyGoal').textContent='Hit '+cfg().goal+' harvest targets in '+cfg().seconds+' seconds.';
+  document.getElementById('ready').classList.add('show');
+}
 const playerInput=document.getElementById('playerName');
 const editPlayerName=document.getElementById('editPlayerName');
 const playerError=document.getElementById('playerError');
@@ -1843,6 +1994,9 @@ try{
 function setNameLocked(locked){
   playerInput.readOnly=locked;
   editPlayerName.hidden=!locked;
+  document.getElementById('playerHint').textContent=locked?
+    'Playing as '+playerInput.value+'. Use Edit to change your name.':
+    'Add your name for the leaderboard, or start as Guest.';
 }
 playerInput.value=playerName;
 setNameLocked(Boolean(playerName));
@@ -1874,16 +2028,24 @@ window.turkeyNameAllowed=allowedPlayerName;
 playerInput.addEventListener('keydown',event=>{
   if(event.key==='Enter'&&!event.isComposing){event.preventDefault();startPlay();}
 });
-function startPlay(){ if(state!=='ready'||!rememberPlayer())return; playerInput.blur(); ensureAudio(); document.getElementById('ready').classList.remove('show'); newGame(); state='play'; syncHarvestMusic(); }
+function startPlay(){ if(state!=='ready'||!artReady||!rememberPlayer())return; playerInput.blur(); ensureAudio(); document.getElementById('ready').classList.remove('show'); newGame(); state='play'; syncHarvestMusic(); }
+const startButton=document.getElementById('goBtn');
+startButton.disabled=!artReady;
+if(!artReady)startButton.textContent='Loading game…';
+artLoaded.then(()=>{
+  startButton.disabled=!artReady;
+  startButton.textContent='Start level 1';
+  document.getElementById('readyStatus').textContent=artReady?'':'The game art could not load. Please reload this page.';
+});
 document.getElementById('goBtn').addEventListener('click',startPlay);
 document.getElementById('againBtn').addEventListener('click',()=>{ document.getElementById('over').classList.remove('show'); showReady(); });
 
 function update(dt){
-  if(state!=='play') return;
+  if(state!=='play'||document.hidden) return;
   const f=dt*60;
   shake=Math.max(0,shake-dt*40); flashRed=Math.max(0,flashRed-dt*2.5); crosshair.flash=Math.max(0,crosshair.flash-dt*5);
   hillScroll=(hillScroll+dt*7)%LANE_W;
-  stepAmbient(backParts,f); stepAmbient(frontParts,f);
+  if(!motionPreference.matches){stepAmbient(backParts,f);stepAmbient(frontParts,f);}
   if(state==='play'){
     if(state==='play'){
       if(hitstop>0){ hitstop-=dt; return; }
@@ -2493,8 +2655,8 @@ function render(time){
     drawHud(); return;
   }
   ctx.save();
-  sceneOffset.x=state==='play'&&shake?rand(-shake,shake)*.5:0;
-  sceneOffset.y=state==='play'&&shake?rand(-shake,shake)*.5:0;
+  sceneOffset.x=state==='play'&&!motionPreference.matches&&shake?rand(-shake,shake)*.5:0;
+  sceneOffset.y=state==='play'&&!motionPreference.matches&&shake?rand(-shake,shake)*.5:0;
   ctx.translate(sceneOffset.x,sceneOffset.y);
   drawLanes(time);
   drawGameCameo();
@@ -2510,7 +2672,7 @@ function render(time){
     ctx.font='18px "Lilita One", sans-serif'; ctx.lineWidth=6; ctx.strokeText('+8s  ·  faster harvest!',0,40); ctx.fillStyle='#fff3dc'; ctx.fillText('+8s  ·  faster harvest!',0,40);
     ctx.restore(); }
   drawCrosshair();
-  if(flashRed){ ctx.fillStyle=`rgba(232,64,46,${flashRed*.35})`; ctx.fillRect(0,0,W,H); }
+  if(flashRed&&!motionPreference.matches){ ctx.fillStyle=`rgba(232,64,46,${flashRed*.35})`; ctx.fillRect(0,0,W,H); }
   ctx.restore();
   drawHud();
 }
@@ -2530,13 +2692,58 @@ cv.addEventListener('pointerleave',()=>{ crosshair.show=false; });
 const muteBtn=document.getElementById('mute'), sndWave=document.getElementById('sndWave');
 function syncMute(){ sndWave.setAttribute('d',muted?'M17 9l5 6M22 9l-5 6':'M17 7a7 7 0 0 1 0 10'); muteBtn.setAttribute('aria-label',muted?'Turn sound on':'Turn sound off'); }
 muteBtn.addEventListener('click',e=>{ e.stopPropagation(); muted=!muted; ensureAudio(); try{ localStorage.setItem('turkeyMute',muted?'1':'0'); }catch(_){} syncMute(); syncHarvestMusic(); }); syncMute();
-document.addEventListener('visibilitychange',syncHarvestMusic);
+document.addEventListener('visibilitychange',()=>{if(document.hidden)pauseGame();syncHarvestMusic();});
 
 // small inspection hook (used for testing; harmless in play)
 window.__turkeyShoot={ get:()=>({state,score,combo,mult,hearts,timeLeft,hits,theme:themeKey,targets:targets.map(t=>({id:t.id,kind:t.kind,lane:t.lane,x:t.x,dir:t.dir,hit:t.hit,...pose(t),sprite:spriteFor(t)})),artFailed,artReady}),
   spawn:(kind,lane,x,dir)=>{ const t=spawn(lane,kind); if(x!==undefined) t.x=x; if(dir){ t.dir=dir; t.face=dir; } t.speed=0.0001; t.turnsLeft=0; return t.id; },
   clear:()=>{ targets=[]; }, setTheme, occluded, targetAt:(x,y)=>{ const r=targetAt(x,y); return r.target?r.target.id:(r.blocked?'blocked':null); },
   pause:(v)=>{ window.__turkeyPaused=v; }, level:()=>({level,goalHit,goal:cfg().goal}), spawnTurkey:()=>spawnTurkey().id };
+
+// Keep the active screen's controls together for keyboard and touch navigation.
+const screenOverlays=[...document.querySelectorAll('.overlay')];
+const gameControls=['game','homeCard','mute','debugWin'].map(id=>document.getElementById(id));
+let focusedOverlay=null;
+function syncScreenAccess(){
+  const cardVisible=!cardScene.classList.contains('gone');
+  const active=cardVisible?null:screenOverlays.find(overlay=>overlay.classList.contains('show'));
+  for(const overlay of screenOverlays){
+    overlay.inert=overlay!==active;
+    overlay.setAttribute('aria-hidden',String(overlay!==active));
+  }
+  for(const control of gameControls)control.inert=cardVisible||Boolean(active);
+  insideEl.inert=!cardOpen;
+  cover.inert=cardOpen;
+  if(active!==focusedOverlay){
+    const previous=focusedOverlay;
+    focusedOverlay=active||null;
+    if(active){
+      const primary=active.querySelector('.playBtn');
+      primary?.focus({preventScroll:true});
+    }else if(previous){
+      (cardVisible?(cardOpen?document.getElementById('openGame'):cover):cv).focus({preventScroll:true});
+    }
+  }
+}
+document.addEventListener('keydown',event=>{
+  if(event.key==='Escape'&&state==='play'){
+    event.preventDefault();pauseGame();return;
+  }
+  if(event.key!=='Tab'||!focusedOverlay)return;
+  const controls=[...focusedOverlay.querySelectorAll('button,a[href],input,[tabindex="0"]')]
+    .filter(element=>!element.disabled&&!element.hidden&&element.getClientRects().length
+      &&getComputedStyle(element).visibility!=='hidden');
+  const first=controls[0],last=controls[controls.length-1];
+  if(!first)return;
+  if(event.shiftKey&&document.activeElement===first){
+    event.preventDefault();last.focus();
+  }else if(!event.shiftKey&&document.activeElement===last){
+    event.preventDefault();first.focus();
+  }
+});
+const screenObserver=new MutationObserver(syncScreenAccess);
+for(const surface of [cardScene,card,...screenOverlays])screenObserver.observe(surface,{attributes:true,attributeFilter:['class']});
+syncScreenAccess();
 
 // ---------- boot ----------
 setTheme(themeKey);
@@ -2562,7 +2769,8 @@ fontsReady.then(()=>{
   };
   const status=document.getElementById('scoreSync');
   const retry=document.getElementById('retryScore');
-  let connection=null, currentResult=null, uploading=false;
+  const refresh=document.getElementById('refreshScores');
+  let connection=null,currentResult=null,pendingScore=null,uploading=false,leaderRequest=0;
   function connect(){
     if(!connection)connection=(async()=>{
       const base='https://www.gstatic.com/firebasejs/13.3.0/';
@@ -2577,11 +2785,21 @@ fontsReady.then(()=>{
     })().catch(error=>{connection=null;throw error;});
     return connection;
   }
-  function errorText(error){
-    if(error.code==='permission-denied')return 'Score saved on this device. Online scores need the Firestore rules enabled.';
-    if(error.code==='auth/admin-restricted-operation'||error.code==='auth/operation-not-allowed')return 'Score saved on this device. Anonymous sign-in needs to be enabled.';
-    return 'Score saved on this device. Could not reach the leaderboard. Please retry.';
+  function errorText(){
+    return 'Your score is saved on this device. We couldn’t sync it yet. Try again when you’re online.';
   }
+  function savePending(){
+    try{
+      if(pendingScore)localStorage.setItem('turkeyPendingScore',JSON.stringify(pendingScore));
+      else localStorage.removeItem('turkeyPendingScore');
+    }catch{}
+  }
+  try{
+    const saved=JSON.parse(localStorage.getItem('turkeyPendingScore')||'null');
+    if(saved&&typeof saved.playerName==='string'&&window.turkeyNameAllowed(saved.playerName)
+      &&Number.isFinite(saved.score)&&saved.score>=0&&Number.isInteger(saved.level)&&saved.level>=1
+      &&Number.isInteger(saved.turkeyHits)&&saved.turkeyHits>=0)pendingScore=saved;
+  }catch{}
   const leaderboardSize=50;
   const rankList=document.getElementById('leaderList');
   const pinnedRank=document.getElementById('leaderPinned');
@@ -2675,7 +2893,10 @@ fontsReady.then(()=>{
     updatePinnedRank();
   }
   async function loadLeaderboard(){
+    const request=++leaderRequest;
+    const result=currentResult;
     const message=document.getElementById('leaderStatus');
+    refresh.hidden=true;
     message.textContent='Loading scores…';
     try{
       const {user,db,sdk}=await connect();
@@ -2690,35 +2911,38 @@ fontsReady.then(()=>{
         availableRanks=10;
         snapshot=await fetchRanks(availableRanks);
       }
+      if(request!==leaderRequest||currentResult!==result)return;
       renderLeaderboard(snapshot.docs,user.uid,availableRanks);
       if(!playerRow){
-        const result=currentResult;
         if(result)setPinnedRank('—',leaderboardName(result),result.score,'Rank pending.');
         try{
           const own=await sdk.getDoc(sdk.doc(db,'turkeyShootScores',user.uid));
-          if(own.exists()&&currentResult===result){
+          if(own.exists()&&request===leaderRequest&&currentResult===result){
             const best=own.data();
             setPinnedRank(availableRanks+'+',leaderboardName(best,result?.playerName),
               best.score,'Outside the top '+availableRanks+'.');
           }
         }catch{
-          if(result&&currentResult===result){
+          if(result&&request===leaderRequest&&currentResult===result){
             setPinnedRank('—',leaderboardName(result),result.score,'Rank unavailable.');
           }
         }
       }
-      message.textContent=availableRanks===leaderboardSize?'':'Showing 10 places until Firestore allows 50.';
+      if(request!==leaderRequest||currentResult!==result)return;
+      message.textContent=availableRanks===leaderboardSize?'':'Showing the top 10 for now.';
     }catch(error){
+      if(request!==leaderRequest||currentResult!==result)return;
+      refresh.hidden=false;
       if(currentResult&&!playerRow){
         setPinnedRank('—',leaderboardName(currentResult),currentResult.score,'Rank unavailable.');
       }
-      message.textContent='Leaderboard unavailable. Try again after your next round.';
+      message.textContent='Scores couldn’t load. You can try again here.';
     }
   }
   async function upload(){
-    if(uploading||!currentResult)return;
+    if(uploading||!pendingScore)return;
     uploading=true;retry.hidden=true;
-    const result=currentResult;
+    const result=pendingScore;
     status.textContent='';
     try{
       const {user,db,sdk}=await connect();
@@ -2737,27 +2961,37 @@ fontsReady.then(()=>{
           turkeyHits:result.turkeyHits,updatedAt:sdk.serverTimestamp()
         });
       });
-      if(currentResult===result){
+      if(pendingScore===result){
+        pendingScore=null;
+        savePending();
         status.textContent='';
-        try{localStorage.removeItem('turkeyPendingScore');}catch{}
       }
     }catch(error){
-      if(currentResult===result){status.textContent=errorText(error);retry.hidden=false;}
+      if(pendingScore===result){status.textContent=errorText();retry.hidden=false;}
     }finally{
       uploading=false;
-      if(currentResult!==result)upload();
+      if(pendingScore&&pendingScore!==result)upload();
       else loadLeaderboard();
     }
   }
   window.addEventListener('turkey-round-ended',event=>{
     currentResult={...event.detail};
+    leaderRequest++;
+    pendingScore=pendingScore&&pendingScore.score>currentResult.score?
+      {...pendingScore,playerName:currentResult.playerName}:{...currentResult};
     renderLeaderboard();
     setPinnedRank('—',leaderboardName(currentResult),currentResult.score,'Rank pending.');
     document.getElementById('leaderStatus').textContent='Loading scores…';
-    try{localStorage.setItem('turkeyPendingScore',JSON.stringify(currentResult));}catch{}
+    savePending();
     upload();
   });
   retry.addEventListener('click',upload);
+  refresh.addEventListener('click',loadLeaderboard);
+  window.addEventListener('online',()=>{
+    if(pendingScore)upload();
+    else if(document.getElementById('over').classList.contains('show'))loadLeaderboard();
+  });
+  if(pendingScore&&navigator.onLine)upload();
 })();
 
 </script>
