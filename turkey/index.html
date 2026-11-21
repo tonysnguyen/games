@@ -309,7 +309,7 @@ button{touch-action:manipulation}
 #over .row .ghostBtn{min-height:46px;gap:8px}
 #over .row .ghostBtn svg{width:28px;height:28px;flex:none}
 #homeCard svg,#mute svg{width:26px;height:26px}
-.resultStats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:10px 0;padding:11px 9px;border-radius:14px;background:#71343b;border:1px solid #9c5b51;color:#fff2d7;text-align:center}
+.resultStats{display:block;margin:10px 0;padding:15px 14px 10px;border-radius:14px;background:#edd3a6;border:1px solid #c69a61;color:#542f1d;text-align:center;box-shadow:inset 0 2px 5px #82522b1a,inset 0 -1px 0 #fff5dc85}
 .roundStatsStage{position:relative;width:min(100%,300px);margin:14px auto 0}
 .roundStatsStage .resultStats{position:relative;margin:0}
 .scorePeek{position:absolute;inset:auto 0 100%;height:134px;pointer-events:none;overflow:hidden}
@@ -317,17 +317,31 @@ button{touch-action:manipulation}
 #roundComplete.show .scorePeek canvas{pointer-events:auto}
 @media(prefers-reduced-motion:reduce){.scorePeek{display:none}}
 .resultStats div{padding:4px 3px}
-.resultStats.allTimeBest{display:block;width:fit-content;min-width:180px;margin:13px auto 9px;padding:8px 18px;background:#f2ce88;border-color:#c59a55;color:#542b1c;box-shadow:none}
+.resultStats.allTimeBest{display:block;width:auto;min-width:0;margin:13px 0 12px;padding:0;background:none;border:0;color:#77513b;box-shadow:none}
+.resultStats.allTimeBest div{display:flex;align-items:baseline;justify-content:center;gap:8px;flex-wrap:wrap;padding:0}
+.resultStats.allTimeBest dt{font-size:13px;font-weight:500}
 .resultStats dt{font-size:14px;font-weight:700;line-height:1.25}
 #roundComplete .roundStatsStage .resultStats dt{
-  color:#fff9ec;font-size:16px;font-weight:700;line-height:1.3;
-  text-shadow:0 1px 1px #32131f;
+  color:#633b24;font-size:16px;font-weight:700;line-height:1.3;
+  text-shadow:none;
 }
-#roundComplete .roundStatsStage .resultStats dd{margin-top:8px;color:#fff1c5}
+#roundComplete .roundStatsStage .levelScore dd{
+  margin:7px 0 2px;color:#542b18;font-size:clamp(40px,12vw,50px);line-height:1.05;
+}
+#roundComplete .roundStatsStage .roundTurkeyStat{
+  display:flex;align-items:baseline;justify-content:center;gap:9px;
+  margin-top:11px;padding:9px 3px 1px;border-top:1px solid #ae7b4040;
+}
+#roundComplete .roundStatsStage .roundTurkeyStat dt{
+  font-size:14px;font-weight:500;color:#744d31;text-shadow:none;
+}
+#roundComplete .roundStatsStage .roundTurkeyStat dd{
+  margin:0;color:#633b24;font-size:22px;line-height:1.15;
+}
 
 .resultStats dd{margin:5px 0 0;font:400 clamp(28px,8vw,34px)/1.1 'Lilita One',sans-serif;overflow-wrap:anywhere}
-#clearScore{color:#ffe3a2;text-shadow:0 2px 0 #351a25}
-#clearBest{font-size:clamp(28px,7.5vw,32px);color:#542b1c}
+#clearScore{color:#542b18;text-shadow:none}
+#clearBest{margin:0;font:600 17px/1.3 'Fredoka',system-ui,sans-serif;color:#77513b}
 #card:not(.open),#card:not(.open) #cover,#card:not(.open) #cover *,#cardScene:not(.gone):has(#card:not(.open)){touch-action:none}
 .leaderboardStage{position:relative;margin-top:16px}
 #leaderboard{position:relative;margin-top:0}
@@ -527,7 +541,7 @@ button:focus-visible,a:focus-visible,[role="button"]:focus-visible,#leaderList:f
   #roundComplete .panel h2{font-size:28px;line-height:1.15}
   #roundComplete .roundStatsStage{margin-top:11px}
   #roundComplete .resultStats{padding:8px}
-  #roundComplete .resultStats.allTimeBest{margin-top:10px;padding:5px 14px}
+  #roundComplete .resultStats.allTimeBest{margin:11px 0 9px;padding:0}
   #over .panel{padding:16px 16px 15px}
   #over .thanksgivingTitle{font-size:clamp(27px,8.5vw,35px);line-height:1.15;margin:0 0 5px}
   #over .from{font-size:12px;margin-top:1px}
@@ -599,15 +613,16 @@ button:focus-visible,a:focus-visible,[role="button"]:focus-visible,#leaderList:f
       <div class="panel">
         <div class="roundContent">
         <div class="harvestParty" aria-hidden="true"><span>🍁</span><span>🥧</span><span>🦃</span><span>🎃</span><span>🍂</span></div>
-        <h2 id="roundTitle"></h2><p id="roundCopy"></p><p id="roundNext"></p>
+        <h2 id="roundTitle"></h2><p id="roundCopy"></p>
         <div class="roundStatsStage">
           <div class="scorePeek" aria-hidden="true"><canvas id="scoreTurkey" width="320" height="314"></canvas></div>
         <dl class="resultStats">
-          <div><dt>Level score</dt><dd id="clearScore"></dd></div>
-          <div><dt>Turkeys hit</dt><dd id="clearTurkeys"></dd></div>
+          <div class="levelScore"><dt>Your level score</dt><dd id="clearScore"></dd></div>
+          <div class="roundTurkeyStat"><dt>Turkeys hit</dt><dd id="clearTurkeys"></dd></div>
         </dl>
         </div>
         <dl class="resultStats allTimeBest"><div><dt>Best for this level</dt><dd id="clearBest"></dd></div></dl>
+        <p id="roundNext"></p>
         </div>
         <button class="playBtn" id="nextLevel">Play level 2</button>
       </div>
