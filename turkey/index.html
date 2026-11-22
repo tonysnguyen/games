@@ -101,6 +101,9 @@
   }
   .inside{position:absolute;isolation:isolate}
   .cover{z-index:2}
+  #card:not(.open) .inside{visibility:hidden}
+  #card.resettingCover,#card.resettingCover .cover{transition:none!important}
+  #card.resettingCover .tapHint{animation:none!important;opacity:0!important}
   .inside > *:not(.trackLayer){position:relative;z-index:1}
   .inside #openGame{z-index:3}
   .major{position:relative;white-space:nowrap}
@@ -999,7 +1002,23 @@ function neutralTilt(){
   for(const [key,value] of [['--tilt-x','0deg'],['--tilt-y','0deg'],['--drift-x','0px'],['--drift-y','0px']])card.style.setProperty(key,value);
 }
 const cover=document.getElementById('cover');
-let coverTouch=null;
+let coverTouch=null,coverDebugHoldTimer;
+function cancelCoverDebugHold(){
+  clearTimeout(coverDebugHoldTimer);
+  coverDebugHoldTimer=null;
+}
+function beginCoverDebugHold(event){
+  cancelCoverDebugHold();
+  const pumpkin=cardScene.querySelector('.celebrate.pumpkin');
+  const bounds=pumpkin.getBoundingClientRect();
+  if(event.clientX<bounds.left||event.clientX>bounds.right||event.clientY<bounds.top||event.clientY>bounds.bottom)return;
+  coverDebugHoldTimer=setTimeout(()=>{
+    if(!coverTouch||coverTouch.dragged||cardOpen||envelopePlaying)return;
+    coverTouch.dragged=true;
+    card.classList.remove('dragging');neutralTilt();
+    debugEnabled=true;openDebugMenu();
+  },1300);
+}
 const TAP_SLOP=8;
 cardScene.addEventListener('pointerdown',event=>{
   if(envelopePlaying||cardOpen||!event.isPrimary||event.button!==0) return;
@@ -1008,12 +1027,13 @@ cardScene.addEventListener('pointerdown',event=>{
   const onCard=x>=bounds.left&&x<=bounds.right&&y>=bounds.top&&y<=bounds.bottom;
   coverTouch={id:event.pointerId,x,y,onCard,dragged:false};
   cardScene.setPointerCapture(event.pointerId);
+  beginCoverDebugHold(event);
 },true);
 cardScene.addEventListener('pointermove',event=>{
   const touch=coverTouch;
   if(cardOpen||touch?.id!==event.pointerId) return;
   const dx=event.clientX-touch.x,dy=event.clientY-touch.y;
-  if(Math.hypot(dx,dy)>TAP_SLOP) touch.dragged=true;
+  if(Math.hypot(dx,dy)>TAP_SLOP){touch.dragged=true;cancelCoverDebugHold();}
   if(touch.dragged&&!motionPreference.matches){
     card.classList.add('dragging');
     tiltCard(dx/65,dy/65);
@@ -1023,6 +1043,7 @@ function releaseCover(event){
   const touch=coverTouch;
   if(touch?.id!==event.pointerId) return;
   coverTouch=null;
+  cancelCoverDebugHold();
   card.classList.remove('dragging');
   neutralTilt();
   if(event.type==='pointerup'&&touch.onCard&&!touch.dragged&&
@@ -1033,6 +1054,9 @@ function releaseCover(event){
 cardScene.addEventListener('pointerup',releaseCover,true);
 cardScene.addEventListener('pointercancel',releaseCover,true);
 cardScene.addEventListener('lostpointercapture',releaseCover,true);
+cardScene.addEventListener('contextmenu',event=>{
+  if(coverDebugHoldTimer&&!cardOpen&&!envelopePlaying)event.preventDefault();
+});
 motionPreference.addEventListener('change',neutralTilt);
 const coverPeek={}, roundPeek={}, leaderboardPeek={};
 function tapPeekTurkey(peek,event){
@@ -1438,6 +1462,8 @@ cover.addEventListener('keydown',event=>{
 });
 document.getElementById('openGame').addEventListener('click',()=>{ ensureAudio(); cardScene.classList.add('gone'); showReady(); });
 function goHomeCard(){
+  cancelCoverDebugHold();coverTouch=null;
+  card.classList.add('resettingCover');
   state='card'; syncHarvestMusic(); crosshair.show=false;
   ['ready','over','roundComplete','pauseScreen'].forEach(id=>document.getElementById(id).classList.remove('show'));
   neutralTilt();
@@ -1447,7 +1473,10 @@ function goHomeCard(){
   coverItems.forEach(item=>{item.style.animation='none';});
   void card.offsetWidth;
   coverItems.forEach(item=>{item.style.animation='';});
+  // Commit the fully closed cover before fading the home screen back in.
+  void card.offsetWidth;
   cardScene.classList.remove('gone');
+  requestAnimationFrame(()=>card.classList.remove('resettingCover'));
 }
 document.getElementById('cardBtn').addEventListener('click',goHomeCard);
 document.getElementById('homeCard').addEventListener('click',e=>{
@@ -2928,7 +2957,8 @@ function navigateDebugPage(page){
   const playing=state==='play'||state==='paused';
   clearDebugScreens();
   if(page==='envelope'){restartEnvelopePreview();return;}
-  if(page==='cover'||page==='inside'){
+  if(page==='cover'){goHomeCard();return;}
+  if(page==='inside'){
     state='card';syncHarvestMusic();cardScene.classList.remove('gone');
     cardOpen=page==='inside';card.classList.toggle('open',cardOpen);neutralTilt();
     if(cardOpen)revealInside();
