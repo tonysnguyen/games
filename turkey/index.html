@@ -1809,7 +1809,18 @@ function levelCfg(L){
 let level=1, goalHit=0, turkeyT=3, levelBanner=null;
 const cfg=()=>levelCfg(level);
 
-let state='card'; // card | ready | play | over
+let state='card'; // card | ready | intro | play | over
+let levelIntro=null;
+function beginLevelIntro(){
+  state='intro';levelIntro={t:0};crosshair.show=false;
+  syncHarvestMusic();
+}
+function levelIntroPose(){
+  const t=levelIntro?.t||0;
+  const travel=motionPreference.matches?(t>=.65?1:0):clamp((t-.95)/.85,0,1);
+  const eased=travel*travel*(3-2*travel);
+  return {travel,eased,done:t>=(motionPreference.matches?.85:2.02)};
+}
 let score, combo, mult, hearts, timeLeft, targets, parts, floaters, hits, spawnT, elapsed, shots, crosshair={x:W/2,y:400,show:false,flash:0}, lastTick;
 let hitstop=0, shake=0, flashRed=0, hillScroll=0, seq=0;
 const sceneOffset={x:0,y:0};
@@ -1826,6 +1837,7 @@ let initialTheme=null;
 let levelStartScore=0,levelStartHits=0;
 const levelBests=new Map();
 function newGame(){
+  levelIntro=null;
   clearTimeout(endGameTimer);debugRun=debugEnabled;
   blockers=[];blockerT=6;blockerSequence=0;
   gameCameo.peek={};
@@ -1923,10 +1935,8 @@ document.getElementById('nextLevel').addEventListener('click',()=>{
   laneDir=laneDir.map(d=>-d); spawnT=[.3,.8,1.3]; turkeyT=2; hitstop=0;
   const keys=LEVEL_THEMES;
   setTheme(keys[(Math.max(0,keys.indexOf(initialTheme))+level-1)%keys.length]);
-  for(let l=0;l<LANES;l++){const target=spawn(l);if(!target.popup) target.x=rand(90,330);}
   document.getElementById('roundComplete').classList.remove('show');
-  state='play';
-  syncHarvestMusic();
+  beginLevelIntro();
 });
 // where a target is drawn right now (shared by drawing AND hit detection)
 function popupOffset(popup){
@@ -2293,7 +2303,7 @@ window.turkeyNameAllowed=allowedPlayerName;
 playerInput.addEventListener('keydown',event=>{
   if(event.key==='Enter'&&!event.isComposing){event.preventDefault();startPlay();}
 });
-function startPlay(){ if(state!=='ready'||!artReady||!rememberPlayer())return; playerInput.blur(); ensureAudio(); document.getElementById('ready').classList.remove('show'); newGame(); state='play'; syncHarvestMusic(); }
+function startPlay(){ if(state!=='ready'||!artReady||!rememberPlayer())return; playerInput.blur(); ensureAudio(); document.getElementById('ready').classList.remove('show'); newGame(); beginLevelIntro(); }
 const startButton=document.getElementById('goBtn');
 startButton.disabled=!artReady;
 if(!artReady)startButton.textContent='Loading game…';
@@ -2306,7 +2316,13 @@ document.getElementById('goBtn').addEventListener('click',startPlay);
 document.getElementById('againBtn').addEventListener('click',()=>{ document.getElementById('over').classList.remove('show'); showReady(); });
 
 function update(dt){
-  if(state!=='play'||document.hidden) return;
+  if(document.hidden)return;
+  if(state==='intro'){
+    levelIntro.t+=dt;
+    if(levelIntroPose().done){levelIntro=null;state='play';syncHarvestMusic();}
+    return;
+  }
+  if(state!=='play') return;
   const f=dt*60;
   shake=Math.max(0,shake-dt*40); flashRed=Math.max(0,flashRed-dt*2.5); crosshair.flash=Math.max(0,crosshair.flash-dt*5);
   hillScroll=(hillScroll+dt*7)%LANE_W;
@@ -2801,7 +2817,7 @@ function drawBooth(){
   canopyShade.addColorStop(0,'#241019c9'); canopyShade.addColorStop(1,'#24101900');
   ctx.fillStyle=canopyShade; ctx.fillRect(0,OY+49,W,54);
   if(IMG['fg-awning']) ctx.drawImage(IMG['fg-awning'],-2,OY,W+4,72);
-  if(IMG['fg-sign']) ctx.drawImage(IMG['fg-sign'],(W-278)/2,plaqueY,278,plaqueHeight);
+  if(state!=='intro'&&IMG['fg-sign']) ctx.drawImage(IMG['fg-sign'],(W-278)/2,plaqueY,278,plaqueHeight);
 
   const counterShade=ctx.createLinearGradient(0,counterTop+41,0,counterTop+86);
   counterShade.addColorStop(0,'#241019bd'); counterShade.addColorStop(1,'#24101900');
@@ -2809,7 +2825,7 @@ function drawBooth(){
   if(IMG['fg-counter-props']) ctx.drawImage(IMG['fg-counter-props'],-18,counterTop-26,W+36,90);
 }
 function drawLettering(){
-  const inRound=['play','paused','celebrate','over'].includes(state);
+  const inRound=['intro','play','paused','celebrate','over'].includes(state);
   const signCenter=plaqueY+plaqueHeight*.46;
   ctx.save();
   if(inRound){
@@ -2833,6 +2849,28 @@ function drawLettering(){
   ctx.strokeText(label,W/2,signCenter+1);
   ctx.fillStyle='#fff0c9';ctx.fillText(label,W/2,signCenter);
   ctx.restore();
+}
+function drawLevelIntro(){
+  if(state!=='intro'||!levelIntro)return;
+  const {eased}=levelIntroPose();
+  const centerY=H*.43,destinationY=plaqueY+plaqueHeight/2;
+  const y=centerY+(destinationY-centerY)*eased,scale=1.16-.16*eased;
+  ctx.save();
+  ctx.fillStyle='rgba(22,15,21,'+(.52*(1-eased))+')';ctx.fillRect(0,0,W,H);
+  ctx.translate(W/2,y);ctx.scale(scale,scale);ctx.translate(-W/2,-destinationY);
+  if(IMG['fg-sign'])ctx.drawImage(IMG['fg-sign'],(W-278)/2,plaqueY,278,plaqueHeight);
+  drawLettering();
+  ctx.restore();
+  if(eased<1){
+    ctx.save();ctx.globalAlpha=1-eased;ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.font='21px "Lilita One", sans-serif';ctx.fillStyle='#fff0c9';
+    ctx.fillText('LEVEL '+level,W/2,centerY-49);
+    ctx.font='600 16px Fredoka, sans-serif';
+    ctx.fillText('Fill this banner to finish the level',W/2,centerY+48);
+    ctx.font='14px Fredoka, sans-serif';ctx.fillStyle='#f2d7a4';
+    ctx.fillText('Hit '+cfg().goal+' harvest targets',W/2,centerY+72);
+    ctx.restore();
+  }
 }
 function drawLighting(){
   const th=theme();
@@ -2913,7 +2951,7 @@ function render(time){
   drawGameCameo();
   drawBooth();
   drawLighting();
-  drawLettering();
+  if(state!=='intro')drawLettering();
   drawFx();
   ctx.save(); ctx.beginPath(); ctx.rect(0,OY,W,H-OY); ctx.clip(); drawAmbient(frontParts); ctx.restore();
   if(levelBanner){ const k=levelBanner.t, a=k<.25?k/.25:k>1.8?Math.max(0,(2.2-k)/.4):1, sc=k<.25?.6+k/.25*.45:1.05-Math.min(.05,(k-.25)*.1);
@@ -2926,6 +2964,7 @@ function render(time){
   if(flashRed&&!motionPreference.matches){ ctx.fillStyle=`rgba(232,64,46,${flashRed*.35})`; ctx.fillRect(0,0,W,H); }
   ctx.restore();
   drawHud();
+  drawLevelIntro();
 }
 
 // ---------- input (mouse + touch via pointer events) ----------
