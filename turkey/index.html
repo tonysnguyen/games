@@ -117,7 +117,10 @@
   .ch{opacity:0;transition:opacity .14s}
   .ch.on{opacity:1}
   .inside .playBtn.popper{opacity:0;transform:scale(.3)}
-  .inside .playBtn.popper.in{animation:btnPop .55s cubic-bezier(.3,1.9,.5,1) forwards}
+  .inside .playBtn.popper.in{animation:btnPop .55s cubic-bezier(.3,1.9,.5,1) forwards,playIdleBounce 4.8s ease-in-out 3s infinite}
+  .inside .playBtn.popper.in:is(:hover,:focus-visible){animation-play-state:running,paused}
+  @keyframes playIdleBounce{0%,76%,100%{translate:0 0}83%{translate:0 -4px}90%{translate:0 0}95%{translate:0 -1px}}
+  @media(prefers-reduced-motion:reduce){.inside .playBtn.popper.in{animation:none;opacity:1;transform:none;translate:0 0}}
   @keyframes btnPop{0%{opacity:0;transform:scale(.3)}100%{opacity:1;transform:scale(1)}}
   .trackLayer{position:absolute;inset:0;pointer-events:none;overflow:hidden;border-radius:18px;z-index:2}
   .track{position:absolute;width:7%;aspect-ratio:1;margin:-3.5% 0 0 -3.5%;opacity:0}
@@ -158,15 +161,15 @@
   .howto i{display:block;font-style:normal;font-size:24px}
   #homeCard,#mute{
     position:absolute;bottom:calc(max(3.8%,21px) + 10px);translate:0 50%;
-    width:44px;height:44px;z-index:4;cursor:pointer;padding:7px;
+    width:68px;height:44px;z-index:4;cursor:pointer;padding:7px;
     display:flex;align-items:center;justify-content:center;
     border:2px solid #e2af65;border-radius:15px;
     background:radial-gradient(ellipse at 35% 15%,#954946,#682833 57%,#421c2a);
     box-shadow:0 4px 0 #28121c,0 6px 9px #170c1659,inset 0 0 0 2px #71323b,inset 0 0 0 3px #b77556,inset 0 4px 7px #ffa96724;
     transition:transform .1s,filter .1s;
   }
-  #homeCard{left:9%}
-  #mute{right:9%}
+  #homeCard{left:calc(30% - 34px)}
+  #mute{right:calc(30% - 34px)}
   #homeCard::before,#mute::before{
     content:"";position:absolute;inset:4px;border:1px solid #ecc58885;
     border-radius:10px;pointer-events:none;
@@ -214,7 +217,7 @@
 #card .inside{padding:clamp(18px,7cqw,28px) 8% 0;overflow:hidden;justify-content:flex-start;touch-action:pan-y}
 .inside .cardMessage{width:100%;min-height:0;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;padding-bottom:4px}
 .inside .cardActions{width:100%;flex:none;z-index:3;padding:12px 0 23px}
-.inside #openGame{min-height:44px;margin:0;padding:10px 26px}
+.inside #openGame{width:min(100%,280px);min-height:44px;margin:0;padding:10px 26px}
 .inside #openGame:not(.in){visibility:hidden}
 @container (max-width:320px){
  .inside .leaves{font-size:36px;margin-bottom:7px}
@@ -604,7 +607,7 @@ button:focus-visible,a:focus-visible,[role="button"]:focus-visible,#leaderList:f
         <h2 id="readyTitle">STEP RIGHT UP!</h2>
         <div class="sub" id="readyGoal">Hit 10 harvest targets in 60 seconds.</div>
         <div class="howto">
-          <div><i aria-hidden="true">🥧</i>Tap harvest targets to fill the meter.</div>
+          <div><i aria-hidden="true">🥧</i>Tap harvest targets to fill the banner.</div>
           <div><i aria-hidden="true">🦃</i>Running turkeys earn bonus points.</div>
           <div><i aria-hidden="true">💣</i>Avoid bombs. You have 3 hearts.</div>
         </div>
@@ -1437,11 +1440,7 @@ document.getElementById('openGame').addEventListener('click',()=>{ ensureAudio()
 function goHomeCard(){
   state='card'; syncHarvestMusic(); crosshair.show=false;
   ['ready','over','roundComplete','pauseScreen'].forEach(id=>document.getElementById(id).classList.remove('show'));
-  if(insideSeen){
-    cardOpen=true;neutralTilt();card.classList.add('open');
-    resetCoverLeaves();revealInside();cardScene.classList.remove('gone');
-    return;
-  }
+  neutralTilt();
   card.classList.remove('open'); cardOpen=false; coverStarted=performance.now(); resetInside();
   resetCoverLeaves();
   const coverItems=cardScene.querySelectorAll('.celebrate,.coverText .happy,.coverText .tg,.coverNames span');
@@ -1875,7 +1874,7 @@ function spawnBlockerWave(){
   for(let index=0;index<count;index++){
     const choice=randi(0,free.length-1),lane=free.splice(choice,1)[0];
     const dir=-laneDir[lane],kind=['tree','wall','turkey'][blockerSequence++%3];
-    const sizeScale=kind==='wall'?1.14:1.04,size=SPR*sizeScale;
+    const sizeScale=kind==='wall'?1.19:1.10,size=SPR*sizeScale;
     blockers.push({
       lane,kind,dir,sizeScale,x:dir>0?LANE_X-size*.7:LANE_X+LANE_W+size*.7,
       speed:settings.blockerSpeed*rand(.94,1.06),delay:index*.6,hit:0
@@ -1997,7 +1996,7 @@ function shoot(px,py){
   const p=pose(tg), cy=p.ay-50;
   stats.byKind[tg.kind]=(stats.byKind[tg.kind]||0)+1;
   if(def.bomb){
-    hearts--; combo=0; mult=1; sfx.boom(); buzz([60,40,60]); shake=14; flashRed=1;
+    hearts--; combo=0; mult=1; sfx.boom(); buzz([95,45,150]); shake=14; flashRed=1;
     sparkBurst(tg.x,cy,14); burst(tg.x,cy,['#2b2730','#4a4452','#ff6b4a','#ffd23f'],18,5,'chip');
     floatText(tg.x,cy-34,'-❤','#ff6b4a',28);
     if(hearts<=0) endGame();
@@ -2724,14 +2723,33 @@ function drawBooth(){
   const counterShade=ctx.createLinearGradient(0,counterTop+41,0,counterTop+86);
   counterShade.addColorStop(0,'#241019bd'); counterShade.addColorStop(1,'#24101900');
   ctx.fillStyle=counterShade; ctx.fillRect(0,counterTop+41,W,45);
-  if(IMG['fg-counter-props']) ctx.drawImage(IMG['fg-counter-props'],0,counterTop-15,W,79);
+  if(IMG['fg-counter-props']) ctx.drawImage(IMG['fg-counter-props'],-18,counterTop-26,W+36,90);
 }
 function drawLettering(){
-  ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.lineJoin='round';
+  const inRound=['play','paused','celebrate','over'].includes(state);
   const signCenter=plaqueY+plaqueHeight*.46;
-  ctx.font='21px "Lilita One", sans-serif';
-  ctx.lineWidth=3; ctx.strokeStyle='#50171f'; ctx.strokeText('TURKEY SHOOT',W/2,signCenter+1);
-  ctx.fillStyle='#ffe5a8'; ctx.fillText('TURKEY SHOOT',W/2,signCenter);
+  ctx.save();
+  if(inRound){
+    const goal=cfg().goal,progress=clamp(goalHit/goal,0,1);
+    const x=(W-278)/2+18,y=plaqueY+7,width=242,height=22;
+    rr(ctx,x,y,width,height,3);ctx.clip();
+    ctx.fillStyle='#49212a';ctx.fillRect(x,y,width,height);
+    if(progress>0){
+      const green=ctx.createLinearGradient(0,y,0,y+height);
+      green.addColorStop(0,'#5d8c50');green.addColorStop(1,'#36643c');
+      ctx.fillStyle=green;ctx.fillRect(x,y,width*progress,height);
+      ctx.fillStyle='#acc98255';ctx.fillRect(x,y,width*progress,1);
+    }
+  }
+  ctx.restore();
+  ctx.save();
+  ctx.textAlign='center';ctx.textBaseline='middle';ctx.lineJoin='round';
+  const label=inRound?'LEVEL '+level+'  ·  '+goalHit+'/'+cfg().goal:'TURKEY SHOOT';
+  ctx.font=(inRound?'18px':'21px')+' "Lilita One", sans-serif';
+  ctx.lineWidth=3;ctx.strokeStyle=inRound?'#233422':'#50171f';
+  ctx.strokeText(label,W/2,signCenter+1);
+  ctx.fillStyle='#fff0c9';ctx.fillText(label,W/2,signCenter);
+  ctx.restore();
 }
 function drawLighting(){
   const th=theme();
@@ -2778,52 +2796,15 @@ function drawHud(){
   if(mult>1){ const bx=22+sw, by=22; rr(ctx,bx,by,34,20,6); fs(ctx,'#3fae4a',2); ctx.font='14px "Lilita One"'; ctx.fillStyle='#fff'; ctx.textAlign='center'; ctx.fillText('x'+mult,bx+17,by+15); }
   // Overlap the shooting frame with the timer.
   const counterTop=OY+1800*S3+boothExtension();
-  const tx=W/2, ty=counterTop-12, tr=23;
+  const tx=W/2, ty=counterTop-18, tr=32;
   const frac=clamp((timeLeft??GAME_TIME)/(cfg().seconds??GAME_TIME),0,1);
   ctx.fillStyle='#311b16'; ctx.beginPath(); ctx.arc(tx,ty,tr+4,0,Math.PI*2); ctx.fill();
   ctx.lineWidth=1; ctx.strokeStyle='#d59a61'; ctx.stroke();
   ctx.strokeStyle='rgba(255,255,255,.15)'; ctx.lineWidth=4.5; ctx.beginPath(); ctx.arc(tx,ty,tr,0,7); ctx.stroke();
   ctx.strokeStyle=(timeLeft??60)<=10?'#ff6b4a':'#f5c75a'; ctx.lineCap='round'; ctx.beginPath(); ctx.arc(tx,ty,tr,-Math.PI/2,-Math.PI/2+Math.PI*2*frac); ctx.stroke(); ctx.lineCap='butt';
-  ctx.font='29px "Lilita One"'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillStyle='#fff8ec';
+  ctx.font='38px "Lilita One"'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillStyle='#fff8ec';
   const tl=Math.ceil(timeLeft??GAME_TIME); const pulse=(tl<=5&&state==='play')?1+.15*Math.max(0,Math.sin(((timeLeft%1)+1)*Math.PI)):1;
   ctx.save(); ctx.translate(tx,ty+1); ctx.scale(pulse,pulse); ctx.fillText(tl,0,0); ctx.restore();
-  // level + harvest goal
-  const gw=178, gx=(W-gw)/2, meterHeight=44;
-  const footerCenter=H-Math.max(H*.038,21/scale)-10/scale;
-  const meterY=footerCenter-meterHeight/2;
-  const c=cfg(), gp=clamp(goalHit/c.goal,0,1);
-  ctx.save();
-  ctx.shadowColor='#170c1899';ctx.shadowBlur=6;ctx.shadowOffsetY=3;
-  rr(ctx,gx-13,meterY-2,gw+26,meterHeight+4,12);
-  const plaque=ctx.createLinearGradient(0,meterY,0,meterY+meterHeight);
-  plaque.addColorStop(0,'#87453d');plaque.addColorStop(.48,'#592730');plaque.addColorStop(1,'#3b1c29');
-  ctx.fillStyle=plaque;ctx.fill();ctx.shadowColor='transparent';
-  ctx.strokeStyle='#e2b26a';ctx.lineWidth=1.6;ctx.stroke();
-  rr(ctx,gx-9,meterY+2,gw+18,meterHeight-4,8);
-  ctx.strokeStyle='#d4955e80';ctx.lineWidth=.8;ctx.stroke();
-  for(const side of [-1,1]){
-    const ornamentX=side<0?gx-13:gx+gw+13;
-    ctx.save();ctx.translate(ornamentX,meterY+meterHeight/2);ctx.scale(side,1);
-    ctx.strokeStyle='#edc17d';ctx.lineWidth=1.2;
-    ctx.beginPath();ctx.moveTo(0,-13);ctx.bezierCurveTo(12,-12,13,-3,5,-2);
-    ctx.bezierCurveTo(15,-1,14,9,3,13);ctx.stroke();
-    ctx.fillStyle='#edc17d';ctx.beginPath();ctx.moveTo(3,-3);ctx.lineTo(7,0);ctx.lineTo(3,3);ctx.lineTo(-1,0);ctx.closePath();ctx.fill();
-    ctx.restore();
-  }
-  ctx.restore();
-  ctx.textAlign='left'; ctx.textBaseline='alphabetic';
-  ctx.font='15px "Lilita One", sans-serif'; ctx.fillStyle='#ffe0a0';
-  ctx.fillText('LEVEL '+level,gx,meterY+18);
-  ctx.textAlign='right'; ctx.fillStyle='#fff8ec';
-  ctx.fillText(goalHit+'/'+c.goal,gx+gw,meterY+18);
-  rr(ctx,gx-1,meterY+24,gw+2,14,7);ctx.strokeStyle='#b77d4c';ctx.lineWidth=1;ctx.stroke();
-  rr(ctx,gx,meterY+25,gw,12,6); ctx.fillStyle='#23161c'; ctx.fill();
-  if(gp>0){
-    rr(ctx,gx,meterY+25,Math.max(12,gw*gp),12,6);
-    const gradient=ctx.createLinearGradient(gx,0,gx+gw,0);
-    gradient.addColorStop(0,'#f6c431'); gradient.addColorStop(1,'#ff8a3d');
-    ctx.fillStyle=gradient; ctx.fill();
-  }
   for(let i=0;i<3;i++){ const hx=W-28-i*33, hy=HUD_H/2, on=i<(hearts??3);
     ctx.save(); ctx.translate(hx,hy); ctx.scale(1.08,1.08); ctx.beginPath(); ctx.moveTo(0,10); ctx.bezierCurveTo(-18,-2,-12,-18,0,-8); ctx.bezierCurveTo(12,-18,18,-2,0,10); ctx.closePath();
     ctx.fillStyle=on?'#e8402e':'rgba(255,255,255,.15)'; ctx.fill(); ctx.lineWidth=2.5; ctx.strokeStyle='rgba(0,0,0,.6)'; ctx.stroke();
