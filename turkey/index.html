@@ -1817,9 +1817,10 @@ function beginLevelIntro(){
 }
 function levelIntroPose(){
   const t=levelIntro?.t||0;
-  const travel=motionPreference.matches?(t>=.65?1:0):clamp((t-.95)/.85,0,1);
+  const drain=clamp((t-.3)/.9,0,1),remaining=t>=1.2?0:1-drain;
+  const travel=motionPreference.matches?(t>=1.32?1:0):clamp((t-1.32)/.85,0,1);
   const eased=travel*travel*(3-2*travel);
-  return {travel,eased,done:t>=(motionPreference.matches?.85:2.02)};
+  return {travel,eased,remaining,done:t>=(motionPreference.matches?1.54:2.39)};
 }
 let score, combo, mult, hearts, timeLeft, targets, parts, floaters, hits, spawnT, elapsed, shots, crosshair={x:W/2,y:400,show:false,flash:0}, lastTick;
 let hitstop=0, shake=0, flashRed=0, hillScroll=0, seq=0;
@@ -2826,10 +2827,12 @@ function drawBooth(){
 }
 function drawLettering(){
   const inRound=['intro','play','paused','celebrate','over'].includes(state);
+  const introProgress=state==='intro'?levelIntroPose().remaining:null;
+  const shownHit=introProgress==null?goalHit:Math.ceil(cfg().goal*introProgress-1e-9);
   const signCenter=plaqueY+plaqueHeight*.46;
   ctx.save();
   if(inRound){
-    const goal=cfg().goal,progress=clamp(goalHit/goal,0,1);
+    const goal=cfg().goal,progress=introProgress??clamp(goalHit/goal,0,1);
     const x=(W-278)/2+18,y=plaqueY+7,width=242,height=22;
     rr(ctx,x,y,width,height,3);ctx.clip();
     ctx.fillStyle='#49212a';ctx.fillRect(x,y,width,height);
@@ -2843,7 +2846,7 @@ function drawLettering(){
   ctx.restore();
   ctx.save();
   ctx.textAlign='center';ctx.textBaseline='middle';ctx.lineJoin='round';
-  const label=inRound?'LEVEL '+level+'  ·  '+goalHit+'/'+cfg().goal:'TURKEY SHOOT';
+  const label=inRound?'LEVEL '+level+'  ·  '+shownHit+'/'+cfg().goal:'TURKEY SHOOT';
   ctx.font=(inRound?'18px':'21px')+' "Lilita One", sans-serif';
   ctx.lineWidth=3;ctx.strokeStyle=inRound?'#233422':'#50171f';
   ctx.strokeText(label,W/2,signCenter+1);
@@ -2861,16 +2864,6 @@ function drawLevelIntro(){
   if(IMG['fg-sign'])ctx.drawImage(IMG['fg-sign'],(W-278)/2,plaqueY,278,plaqueHeight);
   drawLettering();
   ctx.restore();
-  if(eased<1){
-    ctx.save();ctx.globalAlpha=1-eased;ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.font='21px "Lilita One", sans-serif';ctx.fillStyle='#fff0c9';
-    ctx.fillText('LEVEL '+level,W/2,centerY-49);
-    ctx.font='600 16px Fredoka, sans-serif';
-    ctx.fillText('Fill this banner to finish the level',W/2,centerY+48);
-    ctx.font='14px Fredoka, sans-serif';ctx.fillStyle='#f2d7a4';
-    ctx.fillText('Hit '+cfg().goal+' harvest targets',W/2,centerY+72);
-    ctx.restore();
-  }
 }
 function drawLighting(){
   const th=theme();
