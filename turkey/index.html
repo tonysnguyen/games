@@ -485,6 +485,12 @@ button{touch-action:manipulation}
   clip-path:url(#envelopePostmarkFlapShape);pointer-events:none;
 }
 #cardScene.envelopeIntro #card{animation:cardFromEnvelope var(--envelope-intro-duration) cubic-bezier(.24,.65,.32,1) both;pointer-events:none}
+/* Keep every envelope layer at its first frame until the page is ready. */
+#cardScene.envelopeIntro #card,
+#cardScene.envelopeIntro #openingEnvelope,
+#cardScene.envelopeIntro .envelopeBack,
+#cardScene.envelopeIntro .envelopeFlap,
+#cardScene.envelopeIntro .envelopeSeal{animation-play-state:paused;will-change:transform,opacity}
 #cardScene.envelopeIntro .celebrate,
 #cardScene.envelopeIntro .coverText>*,
 #cardScene.envelopeIntro .coverNames span{animation:none;opacity:0}
@@ -933,19 +939,22 @@ let envelopeAnimations=envelopePlaying
   ? document.getAnimations().filter(animation=>envelopeAnimationNames.has(animation.animationName))
   : [];
 let envelopeOpening=false;
-let envelopeHoldTimer;
+const ENVELOPE_DURATION=3240,ENVELOPE_SETTLE=ENVELOPE_DURATION*.2169;
+let envelopeHoldFrame;
+let envelopeArrived=false,envelopeOpenRequested=false;
 let envelopeAutoTimer;
 function openEnvelope(){
   if(!envelopePlaying||envelopeOpening)return;
+  if(!envelopeArrived){envelopeOpenRequested=true;return;}
   envelopeOpening=true;
   cardScene.classList.add('envelopeOpening');
-  clearTimeout(envelopeHoldTimer);
+  cancelAnimationFrame(envelopeHoldFrame);
   clearTimeout(envelopeAutoTimer);
   openingEnvelope.setAttribute('tabindex','-1');
   openingEnvelope.style.pointerEvents='none';
   // Resume every layer at the moment the flap starts to open.
   for(const animation of envelopeAnimations){
-    animation.currentTime=3240*.4247;
+    animation.currentTime=ENVELOPE_DURATION*.4247;
     animation.play();
   }
 }
@@ -960,20 +969,32 @@ openingEnvelope.addEventListener('keydown',event=>{
   }
 });
 function scheduleEnvelopeOpening(){
-  clearTimeout(envelopeHoldTimer);clearTimeout(envelopeAutoTimer);
+  cancelAnimationFrame(envelopeHoldFrame);clearTimeout(envelopeAutoTimer);
   if(!envelopePlaying)return;
-  envelopeHoldTimer=setTimeout(()=>{
+  envelopeArrived=false;envelopeOpenRequested=false;
+  envelopeAnimations=document.getAnimations().filter(animation=>envelopeAnimationNames.has(animation.animationName));
+  // Start the card, pocket, flap and seal together after layout is ready.
+  const startTime=document.timeline.currentTime;
+  for(const animation of envelopeAnimations){
+    animation.pause();animation.currentTime=0;animation.play();animation.startTime=startTime;
+  }
+  const arrival=envelopeAnimations.find(animation=>animation.animationName==='envelopeArrival');
+  if(!arrival){finishEnvelope();return;}
+  const settle=()=>{
     if(envelopeOpening||!envelopePlaying)return;
-    for(const animation of envelopeAnimations){
-      animation.pause();
-      animation.currentTime=3240*.2169;
+    if((arrival.currentTime??0)<ENVELOPE_SETTLE){
+      envelopeHoldFrame=requestAnimationFrame(settle);return;
     }
-  },3240*.2169);
-  envelopeAutoTimer=setTimeout(openEnvelope,3240*.2169+3000);
+    // Hold only after every layer has reached its stationary section.
+    for(const animation of envelopeAnimations){animation.pause();animation.currentTime=ENVELOPE_SETTLE;}
+    envelopeArrived=true;
+    if(envelopeOpenRequested)openEnvelope();
+    else if(!debugMenu.classList.contains('show'))envelopeAutoTimer=setTimeout(openEnvelope,3000);
+  };
+  envelopeHoldFrame=requestAnimationFrame(settle);
 }
-scheduleEnvelopeOpening();
 function finishEnvelope(){
-  clearTimeout(envelopeHoldTimer);
+  cancelAnimationFrame(envelopeHoldFrame);
   clearTimeout(envelopeAutoTimer);
   envelopePlaying=false;
   card.inert=false;
@@ -1113,11 +1134,11 @@ function drawPeekKnockout(c,hitAge){
     c.save();
     c.translate(Math.cos(angle)*43,-65+Math.sin(angle)*11);
     c.rotate(angle*.5);c.scale(pulse,pulse);
-    c.fillStyle=i===1?'#fff2ad':'#ffd247';c.strokeStyle='#a66424';c.lineWidth=1.2;
+    c.fillStyle=i===1?'#fff2ad':'#ffd247';c.strokeStyle='#a66424';c.lineWidth=1.6;
     c.beginPath();
     for(let point=0;point<10;point++){
       const direction=-Math.PI/2+point*Math.PI/5;
-      const radius=point%2?4:10;
+      const radius=point%2?6.4:16;
       c.lineTo(Math.cos(direction)*radius,Math.sin(direction)*radius);
     }
     c.closePath();c.fill();c.stroke();
@@ -2935,7 +2956,6 @@ function restartEnvelopePreview(){
   openingEnvelope.setAttribute('tabindex','0');openingEnvelope.style.pointerEvents='';
   void openingEnvelope.offsetWidth;
   envelopeAnimations=document.getAnimations().filter(animation=>envelopeAnimationNames.has(animation.animationName));
-  for(const animation of envelopeAnimations){animation.currentTime=0;animation.play();}
   if(motionPreference.matches)finishEnvelope();
   else scheduleEnvelopeOpening();
 }
@@ -3079,6 +3099,7 @@ newGame();
 const fontsReady = document.fonts ? Promise.race([Promise.all([document.fonts.load('30px "Lilita One"'),document.fonts.load('30px Pacifico'),document.fonts.load('600 14px Fredoka')]), new Promise(r=>setTimeout(r,1500))]) : Promise.resolve();
 fontsReady.then(()=>{
   resize();
+  if(envelopePlaying&&!envelopeOpening)scheduleEnvelopeOpening();
   addEventListener('resize',resize);
   addEventListener('orientationchange',resize);
   addEventListener('pageshow',resize);
