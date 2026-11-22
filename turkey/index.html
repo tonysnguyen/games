@@ -395,15 +395,25 @@ button{touch-action:manipulation}
 /* The envelope sits in front of the cover until it drops away. */
 #cardScene{
   overflow:hidden;display:grid;place-items:center;
-  --card-width:min(86vw,380px,calc((100dvh - 40px) * .7142857));
-  --card-height:auto;
+  grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr);
+  bottom:auto;height:100svh;
+  --card-width:min(86vw,380px,calc((100svh - 40px) * .7142857));
+  --card-height:calc(var(--card-width) * 1.4);
   --envelope-intro-duration:3.24s;
 }
 #card,#openingEnvelope,.envelopeBack{
-  grid-area:1/1;width:var(--card-width);height:var(--card-height);aspect-ratio:5/7;
+  grid-area:1/1;width:var(--card-width);height:var(--card-height);aspect-ratio:5/7;min-width:0;min-height:0;
 }
 @media(max-height:500px) and (orientation:landscape){
-  #cardScene{--card-width:min(54vw,270px);--card-height:calc(100dvh - 32px)}
+  #cardScene{--card-width:min(54vw,270px);--card-height:calc(100svh - 32px)}
+}
+/* Freeze shared geometry while the envelope enters, opens and slides away. */
+#cardScene.envelopeIntro{height:var(--envelope-scene-height,100svh)}
+#cardScene.envelopeIntro #card,
+#cardScene.envelopeIntro #openingEnvelope,
+#cardScene.envelopeIntro .envelopeBack{
+  width:var(--envelope-fixed-width,var(--card-width));
+  height:var(--envelope-fixed-height,var(--card-height));
 }
 #openingEnvelope,.envelopeBack{
   position:relative;pointer-events:none;
@@ -497,7 +507,7 @@ button{touch-action:manipulation}
 @keyframes envelopeArrival{
   0%{transform:translate3d(0,-26dvh,0) rotate(-9deg) scale(.87);opacity:0}
   21.69%,67.51%{transform:translate3d(0,0,0);opacity:1}
-  100%{transform:translate3d(0,110dvh,0);opacity:1}
+  100%{transform:translate3d(0,110svh,0);opacity:1}
 }
 @keyframes envelopeFrontFold{
   0%,42.47%{transform:scaleY(1);opacity:1;animation-timing-function:ease-in}
@@ -969,6 +979,17 @@ openingEnvelope.addEventListener('keydown',event=>{
     openEnvelope();
   }
 });
+function lockEnvelopeLayout(){
+  // Measure untransformed layout once; browser-bar changes must not resize a moving envelope.
+  for(const name of ['--envelope-scene-height','--envelope-fixed-width','--envelope-fixed-height'])cardScene.style.removeProperty(name);
+  const style=getComputedStyle(card),sceneStyle=getComputedStyle(cardScene);
+  const width=parseFloat(style.width),height=parseFloat(style.height),sceneHeight=parseFloat(sceneStyle.height);
+  if(width>0&&height>0&&sceneHeight>0){
+    cardScene.style.setProperty('--envelope-fixed-width',width+'px');
+    cardScene.style.setProperty('--envelope-fixed-height',height+'px');
+    cardScene.style.setProperty('--envelope-scene-height',sceneHeight+'px');
+  }
+}
 function scheduleEnvelopeOpening(){
   cancelAnimationFrame(envelopeHoldFrame);clearTimeout(envelopeAutoTimer);
   const run=++envelopeEntranceRun;
@@ -976,12 +997,13 @@ function scheduleEnvelopeOpening(){
   envelopeEntranceAnimations=[];
   if(!envelopePlaying)return;
   envelopeArrived=false;envelopeOpenRequested=false;
+  lockEnvelopeLayout();
   envelopeAnimations=document.getAnimations().filter(animation=>envelopeAnimationNames.has(animation.animationName));
   // Keep the opening sequence parked. The entrance has its own uninterrupted easing.
   for(const animation of envelopeAnimations){animation.pause();animation.currentTime=ENVELOPE_SETTLE;}
   const frames=[
-    {transform:'translate3d(0,-90px,0) rotate(-3deg) scale(.98)',opacity:0},
-    {transform:'translate3d(0,0,0) rotate(0deg) scale(1)',opacity:1}
+    {transform:'translate3d(0,-90px,0)',opacity:0},
+    {transform:'translate3d(0,0,0)',opacity:1}
   ];
   const startTime=document.timeline.currentTime;
   envelopeEntranceAnimations=[card,openingEnvelope,cardScene.querySelector('.envelopeBack')].map(element=>{
