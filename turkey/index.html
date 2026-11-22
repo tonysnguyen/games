@@ -941,6 +941,7 @@ let envelopeAnimations=envelopePlaying
 let envelopeOpening=false;
 const ENVELOPE_DURATION=3240,ENVELOPE_SETTLE=ENVELOPE_DURATION*.2169;
 let envelopeHoldFrame;
+let envelopeEntranceAnimations=[],envelopeEntranceRun=0;
 let envelopeArrived=false,envelopeOpenRequested=false;
 let envelopeAutoTimer;
 function openEnvelope(){
@@ -952,10 +953,10 @@ function openEnvelope(){
   clearTimeout(envelopeAutoTimer);
   openingEnvelope.setAttribute('tabindex','-1');
   openingEnvelope.style.pointerEvents='none';
-  // Resume every layer at the moment the flap starts to open.
+  // Resume every opening layer on the same clock, after the entrance has finished.
+  const openingTime=ENVELOPE_DURATION*.4247,startTime=document.timeline.currentTime-openingTime;
   for(const animation of envelopeAnimations){
-    animation.currentTime=ENVELOPE_DURATION*.4247;
-    animation.play();
+    animation.currentTime=openingTime;animation.play();animation.startTime=startTime;
   }
 }
 openingEnvelope.addEventListener('click',event=>{
@@ -970,30 +971,40 @@ openingEnvelope.addEventListener('keydown',event=>{
 });
 function scheduleEnvelopeOpening(){
   cancelAnimationFrame(envelopeHoldFrame);clearTimeout(envelopeAutoTimer);
+  const run=++envelopeEntranceRun;
+  for(const animation of envelopeEntranceAnimations)animation.cancel();
+  envelopeEntranceAnimations=[];
   if(!envelopePlaying)return;
   envelopeArrived=false;envelopeOpenRequested=false;
   envelopeAnimations=document.getAnimations().filter(animation=>envelopeAnimationNames.has(animation.animationName));
-  // Start the card, pocket, flap and seal together after layout is ready.
+  // Keep the opening sequence parked. The entrance has its own uninterrupted easing.
+  for(const animation of envelopeAnimations){animation.pause();animation.currentTime=ENVELOPE_SETTLE;}
+  const frames=[
+    {transform:'translate3d(0,-90px,0) rotate(-3deg) scale(.98)',opacity:0},
+    {transform:'translate3d(0,0,0) rotate(0deg) scale(1)',opacity:1}
+  ];
   const startTime=document.timeline.currentTime;
-  for(const animation of envelopeAnimations){
-    animation.pause();animation.currentTime=0;animation.play();animation.startTime=startTime;
-  }
-  const arrival=envelopeAnimations.find(animation=>animation.animationName==='envelopeArrival');
-  if(!arrival){finishEnvelope();return;}
-  const settle=()=>{
-    if(envelopeOpening||!envelopePlaying)return;
-    if((arrival.currentTime??0)<ENVELOPE_SETTLE){
-      envelopeHoldFrame=requestAnimationFrame(settle);return;
-    }
-    // Hold only after every layer has reached its stationary section.
-    for(const animation of envelopeAnimations){animation.pause();animation.currentTime=ENVELOPE_SETTLE;}
-    envelopeArrived=true;
+  envelopeEntranceAnimations=[card,openingEnvelope,cardScene.querySelector('.envelopeBack')].map(element=>{
+    const animation=element.animate(frames,{
+      duration:motionPreference.matches?0:1150,
+      easing:'cubic-bezier(.22,.61,.36,1)',fill:'both'
+    });
+    animation.startTime=startTime;
+    return animation;
+  });
+  Promise.all(envelopeEntranceAnimations.map(animation=>animation.finished)).then(()=>{
+    if(run!==envelopeEntranceRun||!envelopePlaying)return;
+    // Both animations end at the exact same resting pose, so removing this layer never snaps.
+    for(const animation of envelopeEntranceAnimations)animation.cancel();
+    envelopeEntranceAnimations=[];envelopeArrived=true;
     if(envelopeOpenRequested)openEnvelope();
     else if(!debugMenu.classList.contains('show'))envelopeAutoTimer=setTimeout(openEnvelope,3000);
-  };
-  envelopeHoldFrame=requestAnimationFrame(settle);
+  }).catch(()=>{}); // Restarting or leaving the preview cancels its entrance.
 }
 function finishEnvelope(){
+  ++envelopeEntranceRun;
+  for(const animation of envelopeEntranceAnimations)animation.cancel();
+  envelopeEntranceAnimations=[];
   cancelAnimationFrame(envelopeHoldFrame);
   clearTimeout(envelopeAutoTimer);
   envelopePlaying=false;
