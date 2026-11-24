@@ -162,29 +162,43 @@
   .howto{display:flex;justify-content:space-around;margin:14px 0 2px;font-size:12px;font-weight:700;opacity:.8}
   .howto div{width:31%}
   .howto i{display:block;font-style:normal;font-size:24px}
+  .boothControls{
+    position:absolute;left:50%;bottom:calc(max(3.8%,21px) + 10px);translate:-50% 50%;
+    width:min(70%,240px);height:48px;z-index:1;
+    display:flex;align-items:center;justify-content:space-between;gap:clamp(24px,8vw,48px);
+    padding:0;border:0;background:none;box-shadow:none;
+  }
+  #wrap > .overlay{z-index:10}
+  #levelIntroCanvas{position:absolute;inset:0;width:100%;height:100%;z-index:3;pointer-events:none}
+  #levelIntroCanvas[hidden]{display:none}
+  #wrap:has(> #ready.show) .boothControls{
+    opacity:.5;filter:blur(1.5px);pointer-events:none;
+  }
   #homeCard,#mute{
-    position:absolute;bottom:calc(max(3.8%,21px) + 10px);translate:0 50%;
-    width:68px;height:44px;z-index:4;cursor:pointer;padding:7px;
+    position:relative;flex:1;min-width:0;min-height:44px;cursor:pointer;padding:8px;
     display:flex;align-items:center;justify-content:center;
-    border:2px solid #e2af65;border-radius:15px;
-    background:radial-gradient(ellipse at 35% 15%,#954946,#682833 57%,#421c2a);
-    box-shadow:0 4px 0 #28121c,0 6px 9px #170c1659,inset 0 0 0 2px #71323b,inset 0 0 0 3px #b77556,inset 0 4px 7px #ffa96724;
-    transition:transform .1s,filter .1s;
+    border:1px solid #b9896166;border-radius:8px;
+    color:#713b2b;
+    background:repeating-linear-gradient(0deg,#fff5dd35 0 .6px,transparent .6px 4px),
+      repeating-linear-gradient(90deg,#936c3c0d 0 .6px,transparent .6px 4px),
+      linear-gradient(#eddbb8e8,#e2c89ee8);
+    box-shadow:0 1px 2px #69432524,inset 0 1px 0 #fff2d56b;
+    transition:background-color .12s,box-shadow .12s;
+    touch-action:manipulation;
   }
-  #homeCard{left:calc(30% - 34px)}
-  #mute{right:calc(30% - 34px)}
   #homeCard::before,#mute::before{
-    content:"";position:absolute;inset:4px;border:1px solid #ecc58885;
-    border-radius:10px;pointer-events:none;
+    content:"";position:absolute;inset:3px;border:1px dashed #9b674789;border-radius:5px;pointer-events:none;
   }
-  #homeCard::after,#mute::after{
-    content:"";position:absolute;top:0;left:calc(50% - 2px);
-    width:4px;height:4px;background:#ffe1a0;transform:rotate(45deg);pointer-events:none;
+  #homeCard:active,#mute:active{
+    background-color:#c6a474;
+    box-shadow:inset 0 1px 3px #704c3638;
   }
-  #homeCard:active,#mute:active{transform:translateY(2px);filter:brightness(1.12)}
-  #homeCard:focus-visible,#mute:focus-visible{outline:2px solid #fff2c6;outline-offset:4px}
-  #homeCard svg,#mute svg{width:26px;height:26px;flex:none;color:#fff5dc;stroke:currentColor;filter:none}
-
+  #homeCard:focus-visible,#mute:focus-visible{outline:2px solid #754a31;outline-offset:3px}
+  #homeCard svg,#mute svg{width:27px;height:27px;flex:none;color:inherit;stroke:currentColor;filter:drop-shadow(0 1px 0 #fff2d599)}
+  .boothControlLabel{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+  #mute[aria-pressed="true"]{color:#47543b;background-color:#c8c5a0}
+  #mute[aria-pressed="true"]::before{border-color:#68734f99}
+  @media(prefers-reduced-motion:reduce){#homeCard,#mute{transition:none}}
 
 .celebration{position:absolute;inset:0;overflow:hidden;pointer-events:none}
 .celebration img{position:absolute;object-fit:contain;filter:sepia(.18) saturate(.88) drop-shadow(0 7px 3px #39172b55)}
@@ -296,7 +310,7 @@ button{touch-action:manipulation}
 }
 @media(prefers-reduced-motion:reduce){#roundComplete.show .harvestParty span{animation:none;opacity:1}}
  .playerEntry{text-align:left;margin:18px 0 4px}
-.playerEntry label{display:block;font-size:17px;font-weight:600;color:#462710;margin-bottom:7px}
+.playerEntry label{display:flex;align-items:baseline;justify-content:space-between;gap:8px;white-space:nowrap;font-size:17px;font-weight:600;color:#462710;margin-bottom:7px}
 .playerEntry label span{font-size:14px;font-weight:500}
 .playerEntry input{display:block;width:100%;min-height:48px;padding:10px 12px;border:2px solid #ac7842;border-radius:12px;background:#fffdf5;color:#462710;font:500 18px 'Fredoka',system-ui,sans-serif;user-select:text;-webkit-user-select:text;touch-action:manipulation}
 .playerEntry input:focus{outline:3px solid #eaa246;outline-offset:2px}
@@ -544,7 +558,7 @@ button{touch-action:manipulation}
 button:focus-visible,a:focus-visible,[role="button"]:focus-visible,#leaderList:focus-visible{
   outline:3px solid #d98935;outline-offset:3px;
 }
-.playerEntry label span{display:block;margin-top:3px;font-size:14px;font-weight:500;color:#754c34}
+.playerEntry label span{display:block;margin:0 0 0 auto;min-width:0;text-align:right;white-space:normal;font-size:clamp(11px,3.1vw,14px);font-weight:500;color:#754c34}
 .playerEntry input[readonly]{background:#f6e8cf;border-color:#c2a071;color:#5c3b28}
 #ready .sub{font-size:17px}
 #ready .howto{font-size:16px;gap:10px;margin:16px 0 8px}
@@ -613,13 +627,18 @@ button:focus-visible,a:focus-visible,[role="button"]:focus-visible,#leaderList:f
       <button id="debugWin" aria-label="Preview: win this level">Win level</button>
       <button id="debugLoss" aria-label="Preview: lose this game">Lose game</button>
     </div>
+    <nav class="boothControls" aria-label="Game controls">
     <button id="homeCard" aria-label="Back to the card">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" stroke="none" fill-rule="evenodd" d="M12 2 1.5 11H5v10h5v-7h4v7h5V11h3.5L12 2Z"/></svg>
+      <span class="boothControlLabel">Home</span>
     </button>
-    <button id="mute" aria-label="Sound on/off">
+    <button id="mute" aria-label="Sound on/off" aria-pressed="false">
       <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path d="M3 9h4l6-5v16l-6-5H3Z" fill="currentColor" stroke="none"/><path id="sndWave" d="M17 7a7 7 0 0 1 0 10"/></svg>
+      <span class="boothControlLabel" id="soundControlLabel">Sound</span>
     </button>
+    </nav>
+    <canvas id="levelIntroCanvas" hidden aria-hidden="true"></canvas>
 
     <div id="ready" class="overlay" role="dialog" aria-modal="true" aria-labelledby="readyTitle">
       <div class="panel">
@@ -631,7 +650,7 @@ button:focus-visible,a:focus-visible,[role="button"]:focus-visible,#leaderList:f
           <div><i aria-hidden="true">💣</i>Avoid bombs. You have 3 hearts.</div>
         </div>
         <div class="playerEntry">
-          <label for="playerName">Player name <span>· Play for 1st place!</span></label>
+          <label for="playerName">Player name <span>Shoot for 1st place!</span></label>
           <div class="playerNameRow"><input id="playerName" name="nickname" type="text" maxlength="24" autocomplete="nickname" autocapitalize="words" enterkeyhint="go" placeholder="Your name" aria-describedby="playerHint playerError"><button id="editPlayerName" class="ghostBtn" type="button" hidden>Edit</button></div>
           <small id="playerError" role="alert" hidden></small>
           <small id="playerHint">Your name and best score appear on the leaderboard.</small>
@@ -1641,7 +1660,19 @@ const hillsY =l=>railY(l)-94;          // hills top
 const railY  =l=>laneTop(l)+LANE_STEP-40;          // rail top = the rail plane targets stand on
 let SPR=150;                  // 300px sprites at 1/3
 const cv=document.getElementById('game'), ctx=cv.getContext('2d'), wrap=document.getElementById('wrap');
+const introCv=document.getElementById('levelIntroCanvas'),introCtx=introCv.getContext('2d');
+const footerControls=document.querySelector('.boothControls');
 let scale=1;
+let footerControlRects=[];
+function measureFooterControls(){
+  const bounds=cv.getBoundingClientRect();
+  if(!bounds.width||!bounds.height)return;
+  footerControlRects=['homeCard','mute'].map(id=>{
+    const box=document.getElementById(id).getBoundingClientRect();
+    return {x:(box.left-bounds.left)*W/bounds.width,y:(box.top-bounds.top)*H/bounds.height,
+      w:box.width*W/bounds.width,h:box.height*H/bounds.height};
+  });
+}
 function resize(){
   const stage=document.getElementById('stage');
   const viewport=window.visualViewport;
@@ -1667,7 +1698,10 @@ function resize(){
   cv.style.width=cw+'px';cv.style.height=ch+'px';
   cv.width=Math.round(cw*d);cv.height=Math.round(ch*d);
   ctx.setTransform(cv.width/W,0,0,cv.height/H,0,0);ctx.imageSmoothingQuality='high';
+  introCv.width=cv.width;introCv.height=cv.height;
+  introCtx.setTransform(introCv.width/W,0,0,introCv.height/H,0,0);introCtx.imageSmoothingQuality='high';
   sizeLeafCanvas();if(!cardOpen)drawCover();
+  measureFooterControls();
 }
 
 // ---------- art ----------
@@ -2776,31 +2810,65 @@ const plaqueY=OY+57;
 const plaqueHeight=36;
 function drawFooterDrapery(top){
   ctx.save();
-  const fabric=ctx.createLinearGradient(0,top,0,H);
-  fabric.addColorStop(0,'#321825');fabric.addColorStop(.32,'#7c3440');fabric.addColorStop(1,'#431d2c');
-  ctx.fillStyle=fabric;ctx.fillRect(0,top,W,H-top);
-  for(let x=-12;x<W;x+=36){
-    const fold=ctx.createLinearGradient(x,0,x+36,0);
-    fold.addColorStop(0,'#160f203d');fold.addColorStop(.4,'#ef977f22');fold.addColorStop(.68,'#ab565119');fold.addColorStop(1,'#180d244d');
-    ctx.fillStyle=fold;ctx.fillRect(x,top,36,H-top);
+  ctx.fillStyle='#38212a';ctx.fillRect(0,top,W,H-top);
+  // One continuous linen tablecloth with a softly uneven, hanging hem.
+  const hem=H-6;
+  ctx.beginPath();ctx.moveTo(0,top);ctx.lineTo(W,top);ctx.lineTo(W,hem);
+  for(let x=W;x>0;x-=35)ctx.quadraticCurveTo(x-17.5,hem+3,x-35,hem);
+  ctx.lineTo(0,top);ctx.closePath();ctx.clip();
+  const linen=ctx.createLinearGradient(0,top,0,hem);
+  linen.addColorStop(0,'#c5a67a');linen.addColorStop(.22,'#f3dfb8');linen.addColorStop(.75,'#e9cfa2');linen.addColorStop(1,'#ceaa79');
+  ctx.fillStyle=linen;ctx.fillRect(0,top,W,H-top);
+  // Woven harvest plaid: faded rust, sage and fine oatmeal threads.
+  for(let x=-12;x<W;x+=52){
+    ctx.fillStyle='#a64f3430';ctx.fillRect(x,top,17,H-top);
+    ctx.fillStyle='#6e79552b';ctx.fillRect(x+25,top,5,H-top);
+    ctx.fillStyle='#8a56352e';ctx.fillRect(x+20,top,1,H-top);
   }
-  // Layered swags and stitched gold edging over the hanging velvet.
-  for(let x=0;x<W;x+=W/3){
-    const width=W/3;
-    ctx.beginPath();ctx.moveTo(x,top);ctx.lineTo(x+width,top);
-    ctx.bezierCurveTo(x+width*.8,top+30,x+width*.2,top+30,x,top);
-    ctx.closePath();ctx.fillStyle='#58232d';ctx.fill();
-    ctx.beginPath();ctx.moveTo(x,top+3);
-    ctx.bezierCurveTo(x+width*.22,top+29,x+width*.78,top+29,x+width,top+3);
-    ctx.strokeStyle='#d5a05c';ctx.lineWidth=2;ctx.stroke();
-    ctx.translate(0,3);ctx.strokeStyle='#edcc8c66';ctx.lineWidth=.7;ctx.stroke();ctx.translate(0,-3);
-    const tasselX=x+width;
-    ctx.fillStyle='#e4b46c';ctx.beginPath();ctx.ellipse(tasselX,top+8,3,5,0,0,Math.PI*2);ctx.fill();
-    ctx.beginPath();ctx.moveTo(tasselX-4,top+13);ctx.lineTo(tasselX+4,top+13);ctx.lineTo(tasselX+3,top+23);ctx.lineTo(tasselX-3,top+23);ctx.closePath();ctx.fill();
+  for(let y=top+13;y<H;y+=25){
+    ctx.fillStyle='#ae5b3730';ctx.fillRect(0,y,W,7);
+    ctx.fillStyle='#71805b24';ctx.fillRect(0,y+11,W,2);
   }
-  ctx.fillStyle='#351c26';ctx.fillRect(0,H-7,W,7);
-  ctx.fillStyle='#b47b46';ctx.fillRect(0,H-7,W,1);
-  ctx.fillStyle='#ecc48866';ctx.fillRect(0,H-4,W,1);
+  ctx.fillStyle='#fff4da24';
+  for(let x=1;x<W;x+=4)ctx.fillRect(x,top,.5,H-top);
+  for(let y=top+1;y<H;y+=4)ctx.fillRect(0,y,W,.5);
+  // Soft, widely spaced folds make the patterned linen hang naturally.
+  for(const x of [12,W*.28,W*.72,W-26]){
+    const fold=ctx.createLinearGradient(x-9,0,x+14,0);
+    fold.addColorStop(0,'#80533000');fold.addColorStop(.45,'#80533024');fold.addColorStop(.62,'#fff4da38');fold.addColorStop(1,'#fff4da00');
+    ctx.fillStyle=fold;ctx.fillRect(x-9,top,23,H-top);
+  }
+  const pockets=footerControlRects.length===2?footerControlRects:
+    [{x:W*.22,y:H-62,w:77,h:44},{x:W*.60,y:H-62,w:77,h:44}];
+  for(const box of pockets){
+    const x=box.x-7,y=box.y-6,w=box.w+14,h=box.h+12;
+    // A faint stitched linen backing joins each fabric tab to the tablecloth.
+    rr(ctx,x,y,w,h,10);ctx.fillStyle='#f5e4c229';ctx.fill();
+    ctx.strokeStyle='#fff3d145';ctx.lineWidth=.7;ctx.stroke();
+    rr(ctx,x-3,y-3,w+6,h+6,12);ctx.setLineDash([1.5,3]);
+    ctx.strokeStyle='#a5784e45';ctx.lineWidth=.7;ctx.stroke();ctx.setLineDash([]);
+  }
+  // Printed autumn leaves and a small wheat sprig echo a Thanksgiving place setting.
+  for(const side of [-1,1]){
+    const x=side<0?27:W-27,y=H-33;
+    drawLeaf(ctx,x,y,8,side*.6,'#aa513b',false);
+    drawLeaf(ctx,x+side*11,y+11,6,-side*.8,'#a4813d',false);
+  }
+  ctx.save();ctx.translate(W/2,H-32);ctx.strokeStyle='#83703d';ctx.lineWidth=1.1;
+  ctx.beginPath();ctx.moveTo(0,10);ctx.quadraticCurveTo(-2,0,0,-12);ctx.stroke();
+  for(let i=0;i<3;i++)for(const side of [-1,1]){
+    ctx.beginPath();ctx.ellipse(side*3.3,5-i*6,2,4,side*.65,0,Math.PI*2);
+    ctx.fillStyle='#a47c3e';ctx.fill();
+  }
+  ctx.restore();
+  // Folded hem and fine stitching, rather than theatrical gold trim.
+  ctx.beginPath();ctx.moveTo(0,hem-6);
+  for(let x=0;x<W;x+=35)ctx.quadraticCurveTo(x+17.5,hem-3,x+35,hem-6);
+  ctx.strokeStyle='#aa7a4c55';ctx.lineWidth=4;ctx.stroke();
+  ctx.setLineDash([2,3]);ctx.strokeStyle='#8e614a88';ctx.lineWidth=.7;ctx.stroke();ctx.setLineDash([]);
+  const shade=ctx.createLinearGradient(0,top,0,top+13);
+  shade.addColorStop(0,'#3b221c80');shade.addColorStop(1,'#3b221c00');
+  ctx.fillStyle=shade;ctx.fillRect(0,top,W,13);
   ctx.restore();
 }
 function drawBooth(){
@@ -2826,44 +2894,49 @@ function drawBooth(){
   if(IMG['fg-counter-props']) ctx.drawImage(IMG['fg-counter-props'],-18,counterTop-26,W+36,90);
 }
 function drawLettering(){
+  const c=arguments[0]||ctx;
   const inRound=['intro','play','paused','celebrate','over'].includes(state);
   const introProgress=state==='intro'?levelIntroPose().remaining:null;
   const shownHit=introProgress==null?goalHit:Math.ceil(cfg().goal*introProgress-1e-9);
   const signCenter=plaqueY+plaqueHeight*.46;
-  ctx.save();
+  c.save();
   if(inRound){
     const goal=cfg().goal,progress=introProgress??clamp(goalHit/goal,0,1);
     const x=(W-278)/2+18,y=plaqueY+7,width=242,height=22;
-    rr(ctx,x,y,width,height,3);ctx.clip();
-    ctx.fillStyle='#49212a';ctx.fillRect(x,y,width,height);
+    rr(c,x,y,width,height,3);c.clip();
+    c.fillStyle='#49212a';c.fillRect(x,y,width,height);
     if(progress>0){
-      const green=ctx.createLinearGradient(0,y,0,y+height);
+      const green=c.createLinearGradient(0,y,0,y+height);
       green.addColorStop(0,'#5d8c50');green.addColorStop(1,'#36643c');
-      ctx.fillStyle=green;ctx.fillRect(x,y,width*progress,height);
-      ctx.fillStyle='#acc98255';ctx.fillRect(x,y,width*progress,1);
+      c.fillStyle=green;c.fillRect(x,y,width*progress,height);
+      c.fillStyle='#acc98255';c.fillRect(x,y,width*progress,1);
     }
   }
-  ctx.restore();
-  ctx.save();
-  ctx.textAlign='center';ctx.textBaseline='middle';ctx.lineJoin='round';
+  c.restore();
+  c.save();
+  c.textAlign='center';c.textBaseline='middle';c.lineJoin='round';
   const label=inRound?'LEVEL '+level+'  ·  '+shownHit+'/'+cfg().goal:'TURKEY SHOOT';
-  ctx.font=(inRound?'18px':'21px')+' "Lilita One", sans-serif';
-  ctx.lineWidth=3;ctx.strokeStyle=inRound?'#233422':'#50171f';
-  ctx.strokeText(label,W/2,signCenter+1);
-  ctx.fillStyle='#fff0c9';ctx.fillText(label,W/2,signCenter);
-  ctx.restore();
+  c.font=(inRound?'18px':'21px')+' "Lilita One", sans-serif';
+  c.lineWidth=3;c.strokeStyle=inRound?'#233422':'#50171f';
+  c.strokeText(label,W/2,signCenter+1);
+  c.fillStyle='#fff0c9';c.fillText(label,W/2,signCenter);
+  c.restore();
 }
 function drawLevelIntro(){
+  const c=introCtx;
+  introCv.hidden=state!=='intro';
+  footerControls.inert=state==='intro';
+  c.clearRect(0,0,W,H);
   if(state!=='intro'||!levelIntro)return;
   const {eased}=levelIntroPose();
   const centerY=H*.43,destinationY=plaqueY+plaqueHeight/2;
   const y=centerY+(destinationY-centerY)*eased,scale=1.16-.16*eased;
-  ctx.save();
-  ctx.fillStyle='rgba(22,15,21,'+(.52*(1-eased))+')';ctx.fillRect(0,0,W,H);
-  ctx.translate(W/2,y);ctx.scale(scale,scale);ctx.translate(-W/2,-destinationY);
-  if(IMG['fg-sign'])ctx.drawImage(IMG['fg-sign'],(W-278)/2,plaqueY,278,plaqueHeight);
-  drawLettering();
-  ctx.restore();
+  c.save();
+  c.fillStyle='rgba(22,15,21,'+(.52*(1-eased))+')';c.fillRect(0,0,W,H);
+  c.translate(W/2,y);c.scale(scale,scale);c.translate(-W/2,-destinationY);
+  if(IMG['fg-sign'])c.drawImage(IMG['fg-sign'],(W-278)/2,plaqueY,278,plaqueHeight);
+  drawLettering(c);
+  c.restore();
 }
 function drawLighting(){
   const th=theme();
@@ -2973,7 +3046,7 @@ cv.addEventListener('pointerdown',ev=>{
 cv.addEventListener('pointermove',ev=>{ if(ev.pointerType==='mouse'){ const p=toLocal(ev); crosshair.x=p.x; crosshair.y=p.y; crosshair.show=state==='play'; } });
 cv.addEventListener('pointerleave',()=>{ crosshair.show=false; });
 const muteBtn=document.getElementById('mute'), sndWave=document.getElementById('sndWave');
-function syncMute(){ sndWave.setAttribute('d',muted?'M17 9l5 6M22 9l-5 6':'M17 7a7 7 0 0 1 0 10'); muteBtn.setAttribute('aria-label',muted?'Turn sound on':'Turn sound off'); }
+function syncMute(){ sndWave.setAttribute('d',muted?'M17 9l5 6M22 9l-5 6':'M17 7a7 7 0 0 1 0 10'); muteBtn.setAttribute('aria-label',muted?'Turn sound on':'Turn sound off');muteBtn.setAttribute('aria-pressed',String(muted));document.getElementById('soundControlLabel').textContent=muted?'Muted':'Sound'; }
 muteBtn.addEventListener('click',e=>{ e.stopPropagation(); muted=!muted; ensureAudio(); try{ localStorage.setItem('turkeyMute',muted?'1':'0'); }catch(_){} syncMute(); syncHarvestMusic(); }); syncMute();
 document.addEventListener('visibilitychange',()=>{if(document.hidden)pauseGame();syncHarvestMusic();});
 
