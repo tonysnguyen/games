@@ -2301,19 +2301,22 @@ try{
   const saved=normalizePlayerName(localStorage.getItem('turkeyPlayerName')||'');
   if(allowedPlayerName(saved))playerName=saved;
 }catch{}
-function setNameLocked(locked){
-  playerInput.readOnly=locked;
-  editPlayerName.hidden=!locked;
-  document.getElementById('playerHint').textContent=locked?
-    'Playing as '+playerInput.value+'. Use Edit to change your name.':
+function syncPlayerNameHint(hasSavedName){
+  // Keep native editing available so a direct mobile tap can open the keyboard.
+  playerInput.readOnly=false;
+  editPlayerName.hidden=!hasSavedName;
+  document.getElementById('playerHint').textContent=hasSavedName?
+    'Playing as '+playerInput.value+'. Tap your name to edit.':
     'Add your name for the leaderboard, or start as Guest.';
 }
 playerInput.value=playerName;
-setNameLocked(Boolean(playerName));
+syncPlayerNameHint(Boolean(playerName));
 editPlayerName.addEventListener('click',()=>{
-  setNameLocked(false);
-  playerInput.focus();
-  playerInput.select();
+  // Focus synchronously inside the tap; don't hide the tapped control first on iOS.
+  playerInput.focus({preventScroll:true});
+  playerInput.setSelectionRange(0,playerInput.value.length);
+  playerError.hidden=true;
+  playerInput.removeAttribute('aria-invalid');
 });
 playerInput.addEventListener('input',()=>{
   playerError.hidden=true;
@@ -2330,7 +2333,7 @@ function rememberPlayer(){
   }
   playerName=name;
   playerInput.value=name;
-  setNameLocked(Boolean(name));
+  syncPlayerNameHint(Boolean(name));
   try{localStorage.setItem('turkeyPlayerName',name);}catch{}
   return true;
 }
