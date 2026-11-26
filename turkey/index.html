@@ -741,7 +741,7 @@ button:focus-visible,a:focus-visible,[role="button"]:focus-visible,#leaderList:f
         <div class="from">from Tony, Amy &amp; Major <svg class="paw" viewBox="0 0 32 32"><ellipse cx="16" cy="21" rx="7.5" ry="6.5"/><ellipse cx="7" cy="13" rx="3.2" ry="4"/><ellipse cx="12.5" cy="7.5" rx="3.2" ry="4"/><ellipse cx="19.5" cy="7.5" rx="3.2" ry="4"/><ellipse cx="25" cy="13" rx="3.2" ry="4"/></svg></div>
         <div class="leaderboardStage">
         <section id="leaderboard" aria-labelledby="leaderTitle">
-          <h3 id="leaderTitle">Top 30 leaderboard</h3>
+          <h3 id="leaderTitle">Top 100 leaderboard</h3>
           <p id="scoreSync" role="status"></p>
           <button class="ghostBtn" id="retryScore" hidden>Retry score upload</button>
           <p id="leaderStatus" role="status"></p>
@@ -3345,7 +3345,7 @@ fontsReady.then(()=>{
       &&Number.isFinite(saved.score)&&saved.score>=0&&Number.isInteger(saved.level)&&saved.level>=1
       &&Number.isInteger(saved.turkeyHits)&&saved.turkeyHits>=0)pendingScore=saved;
   }catch{}
-  const leaderboardSize=30;
+  const leaderboardSize=100;
   const rankList=document.getElementById('leaderList');
   const pinnedRank=document.getElementById('leaderPinned');
   let playerRow=null;
@@ -3395,7 +3395,8 @@ fontsReady.then(()=>{
     list.scrollTop=0;
     playerRow=null;
     pinnedRank.hidden=true;
-    for(let index=0;index<availableRanks;index++){
+    const entryCount=Math.min(docs.length,availableRanks,leaderboardSize);
+    for(let index=0;index<entryCount;index++){
       const doc=docs[index];
       const entry=doc?.data(),row=document.createElement('tr');
       if(index<3) row.classList.add('podium'+(index+1));
@@ -3450,12 +3451,13 @@ fontsReady.then(()=>{
       const fetchRanks=count=>sdk.getDocs(sdk.query(collection,sdk.orderBy('score','desc'),sdk.limit(count)));
       let availableRanks=leaderboardSize;
       let snapshot;
-      try{
-        snapshot=await fetchRanks(availableRanks);
-      }catch(error){
-        if(error.code!=='permission-denied') throw error;
-        availableRanks=10;
-        snapshot=await fetchRanks(availableRanks);
+      // Keep older published rule limits usable until the 100-entry rule is deployed.
+      for(const count of [leaderboardSize,50,30,10]){
+        try{
+          snapshot=await fetchRanks(count);availableRanks=count;break;
+        }catch(error){
+          if(error.code!=='permission-denied'||count===10)throw error;
+        }
       }
       if(request!==leaderRequest||currentResult!==result)return;
       renderLeaderboard(snapshot.docs,user.uid,availableRanks);
@@ -3475,7 +3477,7 @@ fontsReady.then(()=>{
         }
       }
       if(request!==leaderRequest||currentResult!==result)return;
-      message.textContent=availableRanks===leaderboardSize?'':'Showing the top 10 for now.';
+      message.textContent=snapshot.empty?'Be the first on the leaderboard!':availableRanks===leaderboardSize?'':'Showing the top '+availableRanks+' for now.';
     }catch(error){
       if(request!==leaderRequest||currentResult!==result)return;
       refresh.hidden=false;
