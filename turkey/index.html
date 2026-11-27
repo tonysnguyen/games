@@ -3395,7 +3395,7 @@ fontsReady.then(()=>{
     list.scrollTop=0;
     playerRow=null;
     pinnedRank.hidden=true;
-    const entryCount=Math.min(docs.length,availableRanks,leaderboardSize);
+    const entryCount=leaderboardSize; // Keep all 100 numbered places visible, including unfilled ranks.
     for(let index=0;index<entryCount;index++){
       const doc=docs[index];
       const entry=doc?.data(),row=document.createElement('tr');
